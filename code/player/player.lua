@@ -1,4 +1,6 @@
-local Player = {x = 0, y = 0, index = 1, animation = {}, box = {}, color = {1,1,1,1}}
+Player = {x = 0, y = 0, index = 1, animation = {}, box = {}, color = {1,1,1,1}}
+require("code.player.player_drawing")
+
 local Input = require("code.player.player_input")
 
 function Player:update(dt)
@@ -16,16 +18,9 @@ function Player:update(dt)
     self.box.y = self.y
 end
 
-function Player:draw()
-    love.graphics.setColor(self.color)
-    love.graphics.rectangle("line", self.box.x, self.box.y, self.box.w, self.box.h)
-    local spriteNum = math.floor(self.animation.currentTime / self.animation.duration * #self.animation.quads) + 1
-    love.graphics.draw(self.animation.spriteSheet, self.animation.quads[spriteNum], self.x, self.y)
-end
-
 function Player:create(x, y, index, animation, box)
     self.__index = self
-    return setmetatable({
+    local obj = setmetatable({
         x = x,
         y = y,
         index = index,
@@ -34,6 +29,8 @@ function Player:create(x, y, index, animation, box)
         box = box,
         color = {1,1,1,1}
     }, self)
+    
+    return obj
 end
 
 return Player

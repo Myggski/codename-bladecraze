@@ -40,7 +40,7 @@ function player_input:get_input(index)
     else
         if index == 1 then
             input = get_digital_axis()
-        elseif #joysticks == 1 then
+        elseif #joysticks == 1 and index==2 then
             input = get_digital_axis(joysticks[1])
         end
     end
