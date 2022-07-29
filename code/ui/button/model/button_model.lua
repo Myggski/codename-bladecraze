@@ -49,13 +49,13 @@ function button:remove_listener(event_type, callback)
 end
 
 function button:try_button_click(x, y, btn, is_touch, is_pressing)
-  if btn == 1 and self.rectangle:is_inside(x, y) and is_pressing then
+  if btn == BUTTON_CLICK_TYPES.LEFT and self.rectangle:is_inside(x, y) and is_pressing then
     self:set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
 
     for index, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.CLICK]) do
       callback()
      end
-  elseif btn == 1 and not is_pressing then
+  elseif btn == BUTTON_CLICK_TYPES.LEFT and not is_pressing then
     self:clear_state()
 
     for index, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.RELEASE]) do

@@ -1,3 +1,9 @@
+BUTTON_CLICK_TYPES = {
+  LEFT = 1,
+  RIGHT = 2,
+  MIDDLE = 3,
+}
+
 BUTTON_EVENT_TYPES = {
   CLICK = "click",
   RELEASE = "release",
