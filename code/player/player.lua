@@ -1,33 +1,9 @@
 Player = {}
-
-local rectangle = require("code.engine.rectangle")
-local player_drawing = require("code.player.player_drawing")
-
 require("code.player.player_input")
+local rectangle = require("code.engine.rectangle")
 local animations = require("code.engine.animations")
-
-local player_animations = {
-  {
-    idle_animation = {128,36,16,28,4},
-    run_animation = {192,36,16,28,4},
-    hit_animation = {256,36,16,28,1},
-  },
-  {
-    idle_animation = {128,68,16,28,4},
-    run_animation = {192,68,16,28,4},
-    hit_animation = {256,68,16,28,1},
-  },
-  {
-    idle_animation = {128,228,16,28,4},
-    run_animation = {192,228,16,28,4},
-    hit_animation = {256,228,16,28,1},
-  },
-  {
-    idle_animation = {128,164,16,28,4},
-    run_animation = {192,164,16,28,4},
-    hit_animation = {256,164,16,28,1},
-  },
-}
+local player_drawing = require("code.player.player_drawing")
+local player_data = require("code.player.player_data")
 
 function Player:update(dt)
   self.input = player_input:get_input(self.index)
@@ -56,17 +32,17 @@ function Player:create(data)
 
   local idle_animation = animations.newAnimation(
     data.image,
-    player_animations[data.index].idle_animation,
+    player_data[data.index].idle_animation,
     1
   )
   local run_animation = animations.newAnimation(
     data.image,
-    player_animations[data.index].run_animation,
+    player_data[data.index].run_animation,
     0.5
   )
   local hit_animation = animations.newAnimation(
     data.image,
-    player_animations[data.index].hit_animation,
+    player_data[data.index].hit_animation,
     2
   )
 
