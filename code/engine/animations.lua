@@ -1,7 +1,7 @@
 
 local animations = {}
 
-function animations.newAnimation(image, image_data, duration)
+function animations.new_animation(image, image_data, duration)
   local offset_x, offset_y, width, height, frame_count = unpack(image_data)
   local animation = {}
   animation.quads = {};

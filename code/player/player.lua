@@ -30,17 +30,17 @@ end
 function Player:create(data)
   self.__index = self
 
-  local idle_animation = animations.newAnimation(
+  local idle_animation = animations.new_animation(
     data.image,
     player_data[data.index].idle_animation,
     1
   )
-  local run_animation = animations.newAnimation(
+  local run_animation = animations.new_animation(
     data.image,
     player_data[data.index].run_animation,
     0.5
   )
-  local hit_animation = animations.newAnimation(
+  local hit_animation = animations.new_animation(
     data.image,
     player_data[data.index].hit_animation,
     2
