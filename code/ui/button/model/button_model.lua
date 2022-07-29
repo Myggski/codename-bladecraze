@@ -1,4 +1,4 @@
-local rectangle = require("code.core.rectangle")
+local rectangle = require("code.engine.rectangle")
 local button_model = {}
 
 function button_model:load_button(x, y)

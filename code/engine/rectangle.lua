@@ -10,6 +10,13 @@ function rectangle:create(x, y, w, h)
   }, self)
 end
 
+function rectangle:create2(position, bounds)
+  self.__index = self
+  local x, y = unpack(position)
+  local w, h = unpack(bounds)
+  return rectangle:create(x,y,w,h)
+end
+
 function rectangle:is_inside(x, y)
   return self.x <= x and self.y <= y and (self.x + self.w) >= x and (self.y + self.h) >= y
 end
