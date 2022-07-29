@@ -1,7 +1,7 @@
 local rectangle = require("code.core.rectangle")
-local button = {}
+local button_model = {}
 
-function button:load_button(x, y)
+function button_model:load_button(x, y)
   self.image = love.graphics.newImage(self.image_url)
 
   local image_width = self.image:getWidth();
@@ -21,26 +21,26 @@ function button:load_button(x, y)
   self.quads[BUTTON_ANIMATION_STATE_TYPES.CLICK] = click_quad
 end
 
-function button:get_quad()
+function button_model:get_quad()
   return self.quads[self.button_state]
 end
 
-function button:set_state(state)
+function button_model:set_state(state)
   self.button_state_previous = self.button_state
   self.button_state = state
 end
 
-function button:clear_state()
+function button_model:clear_state()
   self.button_state = self.button_state_previous
   self.button_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT
 end
 
-function button:add_listener(event_type, callback)
+function button_model:add_listener(event_type, callback)
   self.callbacks[event_type] = self.callbacks[event_type] or {}
   table.insert(self.callbacks[event_type], callback)
 end
 
-function button:remove_listener(event_type, callback)
+function button_model:remove_listener(event_type, callback)
   local index = table.index_of(self.callbacks[event_type], callback)
 
   if (index) then
@@ -48,7 +48,7 @@ function button:remove_listener(event_type, callback)
   end
 end
 
-function button:try_button_click(x, y, btn, is_touch, is_pressing)
+function button_model:try_button_click(x, y, btn, is_touch, is_pressing)
   if btn == BUTTON_CLICK_TYPES.LEFT and self.rectangle:is_inside(x, y) and is_pressing then
     self:set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
 
@@ -64,7 +64,7 @@ function button:try_button_click(x, y, btn, is_touch, is_pressing)
   end
 end
 
-function button:try_button_hover()
+function button_model:try_button_hover()
   local x, y = love.mouse.getPosition()
   if (self.rectangle:is_inside(x, y)) then
     if (not self.is_mouse_hovering) then
@@ -85,4 +85,4 @@ function button:try_button_hover()
   end
 end
 
-return button
+return button_model
