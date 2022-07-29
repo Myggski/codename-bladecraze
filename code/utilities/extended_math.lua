@@ -3,6 +3,7 @@ function math.dist(x1,y1, x2,y2) return ((x2-x1)^2+(y2-y1)^2)^0.5 end
 
 -- Clamps a number to within a certain range.
 function math.clamp(low, n, high) return math.min(math.max(low, n), high) end
+function math.clamp01(n) return math.min(math.max(0, n), 1) end
 
 -- Linear interpolation between two numbers.
 function math.lerp(a,b,t) return (1-t)*a + t*b end

@@ -1,4 +1,4 @@
-Player = {x = 0, y = 0, index = 1, animation = {}, box = {}, color = {1,1,1,1}}
+Player = {}
 require("code.player.player_drawing")
 
 local Input = require("code.player.player_input")
