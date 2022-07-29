@@ -33,6 +33,14 @@ local function draw()
   end
 end
 
+local function remove_all()
+  for index = 1, #buttons do
+    local button = buttons[i]
+    table.remove(buttons, table.index_of(button));
+    button = nil
+  end
+end
+
 function button_model:create(x, y, image_url)
   self.__index = self
 
@@ -72,5 +80,6 @@ game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
 game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
 game_event_manager:add_listener(GAME_EVENT_TYPES.UPDATE, update)
 game_event_manager:add_listener(GAME_EVENT_TYPES.DRAW, draw)
+game_event_manager:add_listener(GAME_EVENT_TYPES.QUIT, remove_all)
 
 return button_model
