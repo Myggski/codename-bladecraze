@@ -1,4 +1,3 @@
-
 local animations = {}
 
 function animations.new_animation(image, image_data, duration)
@@ -11,13 +10,15 @@ function animations.new_animation(image, image_data, duration)
 
   local i = 0;
   for y = offset_y, image:getHeight() - height, height do
-      for x = offset_x, image:getWidth() - width, width do
-          table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, image:getDimensions()))
-          i = i + 1
-          if (i >= frame_count) then
-              return animation
-          end
-      end
+    for x = offset_x, image:getWidth() - width, width do
+        table.insert(animation.quads,
+          love.graphics.newQuad(x, y, width,height,
+          image:getDimensions()))
+        i = i + 1
+        if (i >= frame_count) then
+            return animation
+        end
+    end
   end
   return animation
 end
