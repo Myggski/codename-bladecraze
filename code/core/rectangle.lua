@@ -1,9 +1,4 @@
-local rectangle = {
-  x = nil,
-  y = nil,
-  w = nil,
-  h = nil
-}
+local rectangle = {}
 
 function rectangle:create(x, y, w, h)
   self.__index = self

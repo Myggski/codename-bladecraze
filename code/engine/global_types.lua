@@ -13,6 +13,7 @@ BUTTON_ANIMATION_STATE_TYPES = {
 
 GAME_EVENT_TYPES = {
   LOAD = "load",
+  QUIT = "quit",
   MOUSE_PRESSED = "mousepressed",
   MOUSE_RELEASED = "mousereleased",
   DRAW = "draw",

@@ -37,7 +37,7 @@ end
 
 function button:add_listener(event_type, callback)
   self.callbacks[event_type] = self.callbacks[event_type] or {}
-  table.insert(self.callbacks[event_type], #self.callbacks[event_type] + 1, callback)
+  table.insert(self.callbacks[event_type], callback)
 end
 
 function button:remove_listener(event_type, callback)
