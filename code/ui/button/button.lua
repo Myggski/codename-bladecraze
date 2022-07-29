@@ -1,8 +1,7 @@
 local game_event_manager = require("code.engine.game_event.game_event_manager")
 local button_model = require("code.ui.button.model.button_model")
 local button_view = require("code.ui.button.view.button_view")
-local buttons = {
-}
+local buttons = {}
 
 local function mousepressed(x, y, btn, is_touch)
   for index = 1, #buttons do
@@ -35,7 +34,7 @@ end
 
 local function remove_all()
   for index = 1, #buttons do
-    local button = buttons[i]
+    local button = buttons[index]
     table.remove(buttons, table.index_of(button));
     button = nil
   end
