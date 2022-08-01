@@ -1,5 +1,7 @@
-require("code.utilitizes.table_extension")
+require("code.utilities.love_extension")
+require("code.utilities.table_extension")
 require("code.engine.global_types")
+local camera = require("code.engine.camera")
 local game_event_manager = require("code.engine.game_event.game_event_manager")
 
 function love.load()
@@ -11,6 +13,8 @@ function love.update(dt)
 end
 
 function love.draw()
+  local scale = camera:get_scale()
+  love.graphics.scale(scale.x, scale.y)
   game_event_manager:invoke(GAME_EVENT_TYPES.DRAW)
 end
 

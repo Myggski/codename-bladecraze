@@ -1,12 +1,14 @@
+local camera = require("code.engine.camera")
 local rectangle = {}
+local scale = camera:get_scale()
 
 function rectangle:create(x, y, w, h)
   self.__index = self
   return setmetatable({
       x = x,
       y = y,
-      w = w,
-      h = h,
+      w = w * scale.x,
+      h = h * scale.y,
   }, self)
 end
 

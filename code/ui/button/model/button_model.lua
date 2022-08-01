@@ -2,12 +2,12 @@ local rectangle = require("code.core.rectangle")
 local button_model = {}
 
 function button_model:load_button(x, y)
-  self.image = love.graphics.newImage(self.image_url)
+  self.image = love.graphics.newPixelImage(self.image_url)
 
-  local image_width = self.image:getWidth();
-  local image_height = self.image:getHeight();
-  local quad_width = (image_width / table.get_size(BUTTON_ANIMATION_STATE_TYPES));
-  local quad_height = image_height;
+  local image_width = self.image:getWidth()
+  local image_height = self.image:getHeight()
+  local quad_width = (image_width / table.get_size(BUTTON_ANIMATION_STATE_TYPES))
+  local quad_height = image_height
 
   local button_rectangle = rectangle:create(x, y, quad_width, quad_height)
   self.rectangle = button_rectangle
