@@ -24,4 +24,6 @@ GAME_EVENT_TYPES = {
   MOUSE_RELEASED = "mousereleased",
   DRAW = "draw",
   UPDATE = "update",
+  JOYSTICK_ADDED = "joystickadded",
+  JOYSTICK_REMOVED = "joystickremoved",
 }
