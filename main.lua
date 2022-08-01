@@ -54,6 +54,14 @@ function love.mousereleased(x, y, btn, is_touch, pressed)
   game_event_manager:invoke(GAME_EVENT_TYPES.MOUSE_RELEASED, x, y, btn, is_touch, pressed)
 end
 
+function love.joystickadded(joystick)
+  game_event_manager:invoke(GAME_EVENT_TYPES.JOYSTICK_ADDED, joystick)
+end
+
+function love.joystickremoved(joystick)
+  game_event_manager:invoke(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick)
+end
+
 --Can be stopped by returning true instead
 function love.quit()
   local ready_to_quit = false
