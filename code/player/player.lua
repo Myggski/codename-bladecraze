@@ -1,18 +1,19 @@
-Player = {}
 require("code.player.player_input")
 local rectangle = require("code.engine.rectangle")
 local animations = require("code.engine.animations")
 local player_drawing = require("code.player.player_drawing")
-local player_data = require("code.player.player_data")
+local character_data = require("code.player.character_data")
 
-function Player:update(dt)
+local player = {}
+
+function player:update(dt)
   self.input = player_input:get_input(self.index)
 
-  --change between idle and run animations
-  if (self.input.x ~= 0 or self.input.y ~= 0) then
-    self.current_animation = self.run_animation
-  else
+  --Change between idle and run animations
+  if (self.input.x == 0 and self.input.y == 0) then
     self.current_animation = self.idle_animation
+  else
+    self.current_animation = self.run_animation
   end
 
   --Update animation
@@ -21,28 +22,33 @@ function Player:update(dt)
       self.current_animation.current_time = self.current_animation.current_time - self.current_animation.duration
   end
 
-
   --Move player
   self.box.x = self.box.x + self.input.x
   self.box.y = self.box.y + self.input.y
 end
 
-function Player:create(data)
+function player:draw()
+  player_drawing.draw_player(self)
+  player_drawing.draw_player_bounding_box(self)
+  player_drawing.draw_name(self.box.x, self.box.y, self.name)
+end
+
+function player:create(data)
   self.__index = self
 
   local idle_animation = animations.new_animation(
     data.image,
-    player_data[data.index].idle_animation,
+    character_data[data.character].idle_animation,
     1
   )
   local run_animation = animations.new_animation(
     data.image,
-    player_data[data.index].run_animation,
+    character_data[data.character].run_animation,
     0.5
   )
   local hit_animation = animations.new_animation(
     data.image,
-    player_data[data.index].hit_animation,
+    character_data[data.character].hit_animation,
     2
   )
 
@@ -52,7 +58,9 @@ function Player:create(data)
       run_animation = run_animation,
       hit_animation = hit_animation,
       current_animation = idle_animation,
-      box = rectangle:create2(data.position, data.bounds), --x, y, w ,h 
+      box = rectangle:create2(data.position, data.bounds),
+      character = data.character,
+      name = character_data[data.character].name,
       color = {1,1,1,1},
       input = {},
   }, self)
@@ -60,4 +68,4 @@ function Player:create(data)
   return obj
 end
 
-return Player
+return player
