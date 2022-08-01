@@ -1,4 +1,4 @@
-require("code.player.player_input")
+local player_input = require("code.player.player_input")
 local rectangle = require("code.engine.rectangle")
 local animations = require("code.engine.animations")
 local player_drawing = require("code.player.player_drawing")
@@ -19,7 +19,7 @@ function player:update(dt)
   --Update animation
   self.current_animation.current_time = self.current_animation.current_time + dt
   if self.current_animation.current_time > self.current_animation.duration then
-      self.current_animation.current_time = self.current_animation.current_time - self.current_animation.duration
+    self.current_animation.current_time = self.current_animation.current_time - self.current_animation.duration
   end
 
   --Move player
@@ -52,17 +52,20 @@ function player:create(data)
     2
   )
 
+  local x, y = unpack(data.position)
+  local w, h = unpack(data.bounds)
+
   local obj = setmetatable({
-      index = data.index,
-      idle_animation = idle_animation,
-      run_animation = run_animation,
-      hit_animation = hit_animation,
-      current_animation = idle_animation,
-      box = rectangle:create2(data.position, data.bounds),
-      character = data.character,
-      name = character_data[data.character].name,
-      color = {1,1,1,1},
-      input = {},
+    index = data.index,
+    idle_animation = idle_animation,
+    run_animation = run_animation,
+    hit_animation = hit_animation,
+    current_animation = idle_animation,
+    box = rectangle:create(x, y, w, h),
+    character = data.character,
+    name = character_data[data.character].name,
+    color = { 1, 1, 1, 1 },
+    input = {},
   }, self)
 
   return obj

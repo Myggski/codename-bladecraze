@@ -1,5 +1,7 @@
-player_input = {}
 
+local game_event_manager = require("code.engine.game_event.game_event_manager")
+
+local player_input = {}
 local function get_digital_axis(joystick)
   local value = { x = 0, y = 0 }
   local pressed_keys = { up = false, down = false, left = false, right = false }
@@ -32,10 +34,24 @@ local function get_digital_axis(joystick)
   return value
 end
 
+local joysticks = {}
+local function joystick_added(joystick)
+  if (joystick:isGamepad()) then
+    table.insert(joysticks, joystick)
+  end
+end
+
+local function joystick_removed(joystick)
+  local index = table.index_of(joysticks, joystick)
+  if (index) then
+    table.remove(joysticks, index)
+  end
+end
+
 function player_input:get_input(index)
   local input = { x = 0, y = 0 }
-  local joysticks = love.joystick.getJoysticks()
-  if #joysticks > 1 then
+
+  if #joysticks > 1 and index <= #joysticks then
     input = get_digital_axis(joysticks[index])
   else
     if index == 1 then
@@ -44,8 +60,12 @@ function player_input:get_input(index)
       input = get_digital_axis(joysticks[1])
     end
   end
-  input.x, input.y = math.normalize(input.x, input.y)
+
+  input = math.normalize2(input)
   return input
 end
+
+game_event_manager:add_listener(GAME_EVENT_TYPES.JOYSTICK_ADDED, joystick_added)
+game_event_manager:add_listener(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick_removed)
 
 return player_input
