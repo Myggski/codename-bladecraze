@@ -6,17 +6,16 @@ local camera = {
 }
 
 function camera:get_scale()
-  return {
-    x = love.graphics.getWidth() / self.visual_resolution_x,
-    y = love.graphics.getHeight() / self.visual_resolution_y,
-  }
+  return love.graphics.getWidth() / self.visual_resolution_x, love.graphics.getHeight() / self.visual_resolution_y
 end
 
 function camera:get_translate()
-  return {
-    x = self.translate_position_x,
-    y = self.translate_position_y,
-  }
+  return self.translate_position_x, self.translate_position_y
+end
+
+function camera:screen_to_world(screen_x, screen_y)
+  local scale_x, scale_y = self:get_scale()
+  return screen_x / scale_x, screen_y / scale_y
 end
 
 return camera
