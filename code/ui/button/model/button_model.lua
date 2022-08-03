@@ -1,29 +1,5 @@
-local rectangle = require("code.engine.rectangle")
+local camera = require("code.engine.camera")
 local button_model = {}
-
-function button_model:load_button(x, y)
-  self.image = love.graphics.newPixelImage(self.image_url)
-
-  local image_width = self.image:getWidth()
-  local image_height = self.image:getHeight()
-  local quad_width = (image_width / table.get_size(BUTTON_ANIMATION_STATE_TYPES))
-  local quad_height = image_height
-
-  local button_rectangle = rectangle:create(x, y, quad_width, quad_height)
-  self.rectangle = button_rectangle
-
-  local idle_quad = love.graphics.newQuad(0, 0, quad_width, quad_height, image_width, image_height) -- Idle
-  local hover_quad = love.graphics.newQuad(quad_width, 0, quad_width, quad_height, image_width, image_height) -- Hover
-  local click_quad = love.graphics.newQuad(quad_width * 2, 0, quad_width, quad_height, image_width, image_height) -- Click
-
-  self.quads[BUTTON_ANIMATION_STATE_TYPES.DEFAULT] = idle_quad
-  self.quads[BUTTON_ANIMATION_STATE_TYPES.HOVER] = hover_quad
-  self.quads[BUTTON_ANIMATION_STATE_TYPES.CLICK] = click_quad
-end
-
-function button_model:get_quad()
-  return self.quads[self.button_state]
-end
 
 function button_model:set_state(state)
   self.button_state_previous = self.button_state
@@ -48,32 +24,35 @@ function button_model:remove_listener(event_type, callback)
   end
 end
 
-function button_model:try_button_click(x, y, btn, is_touch, is_pressing)
-  if btn == BUTTON_CLICK_TYPES.LEFT and self.rectangle:is_inside(x, y) and is_pressing then
+function button_model:try_button_click(screen_x, screen_y, btn, is_touch, is_pressing)
+  local world_x, world_y = camera:screen_to_world(screen_x, screen_y)
+  if btn == BUTTON_CLICK_TYPES.LEFT and self.rectangle:is_inside(world_x, world_y) and is_pressing then
     self:set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
 
-    for index, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.CLICK]) do
+    for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.CLICK]) do
       callback()
-     end
+    end
   elseif btn == BUTTON_CLICK_TYPES.LEFT and not is_pressing then
     self:clear_state()
 
-    for index, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.RELEASE]) do
+    for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.RELEASE]) do
       callback()
-     end
+    end
   end
 end
 
 function button_model:try_button_hover()
-  local x, y = love.mouse.getPosition()
-  if (self.rectangle:is_inside(x, y)) then
+  local screen_x, screen_y = love.mouse.getPosition()
+  local world_x, world_y = camera:screen_to_world(screen_x, screen_y)
+
+  if (self.rectangle:is_inside(world_x, world_y)) then
     if (not self.is_mouse_hovering) then
       self:set_state(BUTTON_ANIMATION_STATE_TYPES.HOVER)
-      self.is_mouse_hovering = true 
+      self.is_mouse_hovering = true
 
       for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.ENTER]) do
         callback()
-       end
+      end
     end
   elseif (self.is_mouse_hovering) then
     self:clear_state()
@@ -81,7 +60,7 @@ function button_model:try_button_hover()
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.LEAVE]) do
       callback()
-     end
+    end
   end
 end
 

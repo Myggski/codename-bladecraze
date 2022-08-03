@@ -1,6 +1,7 @@
 local game_event_manager = require("code.engine.game_event.game_event_manager")
 local button_model = require("code.ui.button.model.button_model")
 local button_view = require("code.ui.button.view.button_view")
+local rectangle = require("code.engine.rectangle")
 local buttons = {}
 
 local function mousepressed(x, y, btn, is_touch)
@@ -27,35 +28,32 @@ end
 local function draw()
   for index = 1, #buttons do
     local button = buttons[index]
-    local quad = button_model.get_quad(button)
-    button_view.draw(button.image, quad,  button.rectangle)
+    button_view.draw(button)
   end
 end
 
 local function remove_all()
-  for index = 1, #buttons do
+  for index = #buttons, 1, -1 do
     local button = buttons[index]
     table.remove(buttons, table.index_of(button));
     button = nil
   end
 end
 
-function button_model:create(x, y, image_url)
+function button_model:create(x, y, w, h)
+  local image = love.graphics.newPixelImage("assets/button.png")
+  local sprite_batch = love.graphics.newSpriteBatch(image)
+
   self.__index = self
 
   local obj = setmetatable({
-    image_url = image_url,
-    image = nil,
-    rectangle = nil,
-    is_mouse_hovering = false,
     button_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
     button_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
-    quads = {
-      leave = nil,
-      enter = nil,
-      click = nil,
-      release = nil,
-    },
+    image = image,
+    sprite_batch = sprite_batch,
+    rectangle = rectangle:create(x, y, w, h),
+    is_mouse_hovering = false,
+    quads = button_view.create_quads(sprite_batch),
     callbacks = {
       click = {},
       release = {},
@@ -64,7 +62,6 @@ function button_model:create(x, y, image_url)
     }
   }, self)
 
-  button_model.load_button(obj, x, y)
   table.insert(buttons, obj)
 
   return obj

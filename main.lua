@@ -9,7 +9,6 @@ local player_character = require("code.player.player")
 local button = require("code.ui.button.button")
 
 function love.load()
-  button:create(0, 0, "assets/button.png")
   game_event_manager:invoke(GAME_EVENT_TYPES.LOAD)
 
   sprite_sheet_image = love.graphics.newPixelImage("assets/0x72_DungeonTilesetII_v1.4.png")
@@ -41,8 +40,8 @@ function love.update(dt)
 end
 
 function love.draw()
-  local scale = camera:get_scale()
-  love.graphics.scale(scale.x, scale.y)
+  local scale_x, scale_y = camera:get_scale()
+  love.graphics.scale(scale_x, scale_y)
   game_event_manager:invoke(GAME_EVENT_TYPES.DRAW)
 
   for i = 1, #players do
