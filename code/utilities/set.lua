@@ -1,22 +1,20 @@
 set = {}
     
-function set.create (t)
+function set.create(t)
   local res = {}
   for _, l in ipairs(t) do res[l] = true end
   return res
 end
 
 function set.union (a,b)
-  local res = set.new{}
+  local res = set.create{}
   for k in pairs(a) do res[k] = true end
   for k in pairs(b) do res[k] = true end
   return res
 end
 
 function set.add(in_set, key)
-  if not set.contains(in_set, key) then
-    in_set[key] = true
-  end
+  in_set[key] = true
 end
 
 function set.intersection (a,b)
@@ -28,7 +26,7 @@ function set.intersection (a,b)
 end
 
 function set.delete(in_set, key)
-  if in_set[key] ~= nil then
+  if set.contains(in_set, key) then
     in_set[key] = nil
   end
 end
@@ -47,8 +45,8 @@ function set.print (s)
   print(set.tostring(s))
 end
 
-function set.contains (in_set, data)
-  return in_set[data] ~= nil
+function set.contains(in_set, key)
+  return in_set[key] ~= nil
 end
 
 return set
