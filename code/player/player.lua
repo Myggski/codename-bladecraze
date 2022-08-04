@@ -3,34 +3,88 @@ local rectangle = require("code.engine.rectangle")
 local animations = require("code.engine.animations")
 local player_drawing = require("code.player.player_drawing")
 local character_data = require("code.player.character_data")
+local spatial_grid = require("code.engine.spatial_grid")
+local game_event_manager = require("code.engine.game_event.game_event_manager")
+
+local projectile_manager = require("code.projectile")
 
 local player = {}
+local grid = nil
+
+function player:check_collisions()
+  local clients = grid:find_near({ x = self.center_position.x, y = self.center_position.y }, { w = 32, h = 32 },
+  set.create{self.guid})
+
+  self.nearby_clients = table.get_size(clients)
+
+  local overlapping = false
+  for key, value in pairs(clients) do
+    local x, y, w, h = key.position.x, key.position.y, key.dimensions.w, key.dimensions.h
+
+    x = x - w / 2
+    y = y - w / 2
+
+    if self.box:overlap(x, y, w, h) then
+      overlapping = true
+    end
+  end
+  self.color = overlapping and { 1, 0, 0, 1 } or { 1, 1, 1, 1 }
+end
 
 function player:update(dt)
-  self.input = player_input:get_input(self.index)
+  self.input = player_input:get_input(self.index, self.center_position)
+  --Move player
+  self.center_position.x = self.center_position.x + self.input.move_dir.x
+  self.center_position.y = self.center_position.y + self.input.move_dir.y
+
+  self.box.x = self.center_position.x - self.box.w / 2
+  self.box.y = self.center_position.y - self.box.h / 2
+
+  self.client.position = self.center_position
+
+  grid:update(self.client)
+  self:check_collisions()
+
+  if self.input.aim_dir.x ~= 0 then
+    self.direction = self.input.aim_dir.x > 0 and 1 or -1
+  end
+
+  if self.input.shoot then
+    if self.projectile_type ~= nil then
+      if (self.shoot_timer <= 0) then
+        local proj = projectile_manager.projectile:get(self.projectile_type)
+        proj.center_position.x = self.center_position.x + self.input.aim_dir.x * 16
+        proj.center_position.y = self.center_position.y + self.input.aim_dir.y * 16
+        
+        proj.move_dir = self.input.aim_dir
+        proj.angle = math.atan2(self.input.aim_dir.y, self.input.aim_dir.x) + 1.5708
+        self.shoot_timer = self.shoot_cd
+      end
+    end
+  end
 
   --Change between idle and run animations
+  local animation = self.animations.current
   if (self.input.x == 0 and self.input.y == 0) then
-    self.current_animation = self.idle_animation
+    animation = self.animations.idle
   else
-    self.current_animation = self.run_animation
+    animation = self.animations.run
   end
-
-  --Update animation
-  self.current_animation.current_time = self.current_animation.current_time + dt
-  if self.current_animation.current_time > self.current_animation.duration then
-    self.current_animation.current_time = self.current_animation.current_time - self.current_animation.duration
-  end
-
-  --Move player
-  self.box.x = self.box.x + self.input.x
-  self.box.y = self.box.y + self.input.y
+  
+  self.shoot_timer = self.shoot_timer - dt
+  player_drawing.update_animation(animation, dt)
+  self.animations.current = animation
 end
 
 function player:draw()
+  love.graphics.setColor(self.color)
   player_drawing.draw_player(self)
-  -- player_drawing.draw_player_bounding_box(selfw)
-  player_drawing.draw_name(self.box.x, self.box.y, self.name)
+  local str = ""
+  for key, value in pairs(self.stats) do
+    str = str .. key .. ":" .. value .. "\n"
+  end
+  player_drawing.draw_text(self.box.x, self.box.y, self.nearby_clients)
+  player_drawing.draw_text(self.box.x, self.box.y+20, str)
 end
 
 function player:create(data)
@@ -52,18 +106,33 @@ function player:create(data)
     2
   )
 
+  grid = data.grid
+
+  local animations = { current = idle_animation, idle = idle_animation, run = run_animation, hit = hit_animation }
+  
   local x, y = unpack(data.position)
   local w, h = unpack(data.bounds)
 
+  local guid = character_data[data.character].name
+  local center_position = { x = x, y = y }
+  local client = grid:new_client({ x = center_position.x, y = center_position.y }, { w = 16, h = 16 }, guid)
+
   local obj = setmetatable({
+    active = true,
+    shoot_cd = 0.1,
+    shoot_timer = 0,
+    projectile_type = character_data[data.character].projectile_type,
     index = data.index,
-    idle_animation = idle_animation,
-    run_animation = run_animation,
-    hit_animation = hit_animation,
-    current_animation = idle_animation,
-    box = rectangle:create(x, y, w, h),
+    animations = animations,
+    stats = character_data[data.character].stats,
+    box = rectangle:create(x - w / 2, y - h / 2, w, h),
     character = data.character,
     name = character_data[data.character].name,
+    client = client,
+    center_position = center_position,
+    guid = guid,
+    nearby_clients = 0,
+    direction = 1,
     color = { 1, 1, 1, 1 },
     input = {},
   }, self)
