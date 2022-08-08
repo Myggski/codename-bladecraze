@@ -27,3 +27,13 @@ GAME_EVENT_TYPES = {
   JOYSTICK_ADDED = "joystickadded",
   JOYSTICK_REMOVED = "joystickremoved",
 }
+
+ENTITY_EVENT_TYPES = {
+  ACTIVATED = "activated",
+  DEACTIVATED = "deactivated"
+}
+PROJECTILE_TYPES = {
+  ARROW = 1,
+  BULLET = 2,
+  MAGIC = 3,
+}

@@ -5,9 +5,9 @@ local projectile = {}
 local projectile_pool = {}
 
 local projectile_data = {}
-projectile_data[PROJECTILE_TYPES.ARROW] = { speed = 50, bounds = { 7, 21 }, quad_data = { 308, 186, 7, 21 } }
-projectile_data[PROJECTILE_TYPES.BULLET] = { speed = 70, bounds = { 16, 16 }, quad_data = { 288, 320, 16, 16 } }
-projectile_data[PROJECTILE_TYPES.MAGIC] = { speed = 30, bounds = { 16, 16 }, quad_data = { 288, 240, 16, 16 } }
+projectile_data[PROJECTILE_TYPES.ARROW] = { speed = 100, bounds = { 7, 21 }, quad_data = { 308, 186, 7, 21 } }
+projectile_data[PROJECTILE_TYPES.BULLET] = { speed = 130, bounds = { 16, 16 }, quad_data = { 288, 320, 16, 16 } }
+projectile_data[PROJECTILE_TYPES.MAGIC] = { speed = 70, bounds = { 16, 16 }, quad_data = { 288, 240, 16, 16 } }
 
 
 local sprite_sheet = nil
