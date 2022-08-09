@@ -69,7 +69,7 @@ function player_input.get_input(index, position)
     end
   else
     if index == 1 then
-      input.move_dir.x, input.move_dir.y = get_digital_axis(_, true)
+      input.move_dir.x, input.move_dir.y = get_digital_axis(nil, true)
       local mouse_x, mouse_y = love.mouse.getPosition()
 
       --Make this use the screen to world 

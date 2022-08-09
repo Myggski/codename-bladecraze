@@ -38,13 +38,13 @@ function spatial_grid:get_cell_index(x, y)
     return xIndex, yIndex
 end
 
-function spatial_grid:draw()
-    for y = 1, grid.bounds.y_max, cell_height do
-        for x = 1, grid.bounds.x_max, cell_width do
-            love.graphics.rectangle("line", x, y, cell_width, cell_height)
-        end
-    end
-end
+-- function spatial_grid:draw()
+--     for y = 1, grid.bounds.y_max, cell_height do
+--         for x = 1, grid.bounds.x_max, cell_width do
+--             love.graphics.rectangle("line", x, y, cell_width, cell_height)
+--         end
+--     end
+-- end
 
 --[[
     insert the client into every cell that it occupies
