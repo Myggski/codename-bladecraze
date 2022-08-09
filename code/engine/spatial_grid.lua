@@ -39,30 +39,26 @@ function spatial_grid:get_cell_index(x, y)
     return xIndex, yIndex
 end
 
-function spatial_grid:draw()
-    for y = 1, grid.bounds.y_max, cell_height do
-        for x = 1, grid.bounds.x_max, cell_width do
-            love.graphics.rectangle("line", x, y, cell_width, cell_height)
-        end
-    end
+function spatial_grid:get_indices(x, y, w, h)
+    local half_w, half_h = w / 2, h / 2
+
+    local min_x_index, min_y_index = self:get_cell_index(x - half_w, y - half_h)
+    local max_x_index, max_y_index = self:get_cell_index(x + half_w, y + half_h)
+
+    return min_x_index, min_y_index, max_x_index, max_y_index
 end
 
 --[[
     insert the client into every cell that it occupies
 ]]
 function spatial_grid:insert(client)
-
-    local x, y = client.position.x, client.position.y
-    local half_w, half_h = client.dimensions.w / 2, client.dimensions.h / 2
-
-    local min_x_index, min_y_index = self:get_cell_index(x - half_w, y - half_h)
-    local max_x_index, max_y_index = self:get_cell_index(x + half_w, y + half_h)
+    local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(client.position.x, client.position.y,
+        client.dimensions.w, client.dimensions.h)
 
     client.indices = { min_x_index, min_y_index, max_x_index, max_y_index }
-
-    for i = min_x_index, max_x_index do
-        for j = min_y_index, max_y_index do
-            local key = hash_key(i, j)
+    for x = min_x_index, max_x_index do
+        for y = min_y_index, max_y_index do
+            local key = hash_key(x, y)
 
             if not set.contains(self.cells, key) then
                 self.cells[key] = {}
@@ -77,17 +73,14 @@ end
     and return all the other clients that occupy the same 
 ]]
 function spatial_grid:find_near(position, bounds, exclude_guids)
-    local x, y = position.x, position.y
-    local half_w, half_h = bounds.w / 2, bounds.h / 2
-
-    local min_x_index, min_y_index = self:get_cell_index(x - half_w, y - half_h)
-    local max_x_index, max_y_index = self:get_cell_index(x + half_w, y + half_h)
+    local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(position.x, position.y,
+        bounds.w, bounds.h)
 
     local clients_set = {}
 
-    for i = min_x_index, max_x_index do
-        for j = min_y_index, max_y_index do
-            local key = hash_key(i, j)
+    for x = min_x_index, max_x_index do
+        for y = min_y_index, max_y_index do
+            local key = hash_key(x, y)
             if set.contains(self.cells, key) then
                 for k, v in ipairs(self.cells[key]) do
                     if not set.contains(exclude_guids, v.guid) then
@@ -112,9 +105,9 @@ function spatial_grid:remove_client(client)
     local min_x_index, min_y_index = client.indices[1], client.indices[2]
     local max_x_index, max_y_index = client.indices[3], client.indices[4]
 
-    for i = min_x_index, max_x_index do
-        for j = min_y_index, max_y_index do
-            local key = hash_key(i, j)
+    for x = min_x_index, max_x_index do
+        for y = min_y_index, max_y_index do
+            local key = hash_key(x, y)
             if set.contains(self.cells, key) then
                 local index = table.index_of(self.cells[key], client)
                 table.remove(self.cells[key], index)

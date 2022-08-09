@@ -6,10 +6,10 @@ function set.create(t)
   return res
 end
 
-function set.union (a,b)
+function set.union (set_a,set_b)
   local res = set.create{}
-  for k in pairs(a) do res[k] = true end
-  for k in pairs(b) do res[k] = true end
+  for k in pairs(set_a) do res[k] = true end
+  for k in pairs(set_b) do res[k] = true end
   return res
 end
 
@@ -17,10 +17,10 @@ function set.add(in_set, key)
   in_set[key] = true
 end
 
-function set.intersection (a,b)
+function set.intersection (set_a,set_b)
   local res = set.new{}
-  for k in pairs(a) do
-    res[k] = b[k]
+  for k in pairs(set_a) do
+    res[k] = set_b[k]
   end
   return res
 end
