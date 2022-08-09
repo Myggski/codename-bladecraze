@@ -4,6 +4,7 @@ local button_view = require("code.ui.button.view.button_view")
 local rectangle = require("code.engine.rectangle")
 
 local buttons = {}
+local button_text_canvas = nil
 local sprite_batch = nil
 local quads = nil
 local images = {}
@@ -30,7 +31,7 @@ local function update(dt)
 end
 
 local function draw()
-  if (not sprite_batch) then
+  if sprite_batch == nil then
     return
   end
 
@@ -42,6 +43,7 @@ local function draw()
   end
 
   love.graphics.draw(sprite_batch)
+  love.graphics.draw(button_text_canvas)
 end
 
 local function remove_all()
@@ -93,7 +95,7 @@ function button_model:remove()
   end
 end
 
-function button_model:create(x, y, w, h)
+function button_model:create(x, y, w, h, text)
   self.__index = self
 
   if (#buttons == 0) then
@@ -107,6 +109,7 @@ function button_model:create(x, y, w, h)
     rectangle = rectangle:create(x, y, w, h),
     is_mouse_hovering = false,
     quads = quads,
+    text = text,
     callbacks = {
       click = {},
       release = {},
