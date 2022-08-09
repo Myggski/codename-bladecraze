@@ -1,4 +1,5 @@
 require("code.engine.global_types")
+require("code.engine.game_data")
 require("code.utilities.love_extension")
 require("code.utilities.table_extension")
 require("code.utilities.extended_math")

@@ -60,7 +60,7 @@ local function joystick_removed(joystick)
   end
 end
 
-function player_input:get_input(index, position)
+function player_input.get_input(index, position)
   local x, y = position.x, position.y
   local input = { move_dir = {x = 0, y = 0}, aim_dir = {x = 0, y = 0} }
   if #joysticks > 1 and index > 1 then
@@ -71,13 +71,12 @@ function player_input:get_input(index, position)
     if index == 1 then
       input.move_dir.x, input.move_dir.y = get_digital_axis(_, true)
       local mouse_x, mouse_y = love.mouse.getPosition()
-      mouse_x = mouse_x / 5
-      mouse_y = mouse_y / 5
-      input.aim_dir.x = mouse_x - x
-      input.aim_dir.y = mouse_y - y
+
+      --Make this use the screen to world 
+      input.aim_dir.x = mouse_x - (x * 5)
+      input.aim_dir.y = mouse_y - (y * 5)
       input.shoot = mouse_pressed 
     elseif #joysticks == 1 and index == 2 then
-      --input.move_dir.x, input.move_dir.y  = get_digital_axis(joysticks[1])
       local lx, ly = joysticks[1]:getGamepadAxis("leftx"), joysticks[1]:getGamepadAxis("lefty")
       local rx, ry = joysticks[1]:getGamepadAxis("rightx"), joysticks[1]:getGamepadAxis("righty")
       if (math.abs(lx) > analog_stick_deadzone) then

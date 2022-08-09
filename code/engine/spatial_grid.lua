@@ -2,11 +2,10 @@ require("code.utilities.set")
 
 local spatial_grid = {}
 
-function spatial_grid:create(bounds, dimensions)
+function spatial_grid:create(bounds)
     self.__index = self
     return setmetatable({
         bounds = bounds,
-        dimensions = dimensions,
         cells = {}
     }, self)
 end
@@ -34,8 +33,8 @@ function spatial_grid:get_cell_index(x, y)
 
     x = math.clamp01(x / self.bounds.x_max)
     y = math.clamp01(y / self.bounds.y_max)
-    local xIndex = math.floor(x * self.dimensions.w) + 1
-    local yIndex = math.floor(y * self.dimensions.h) + 1
+    local xIndex = math.floor(x * GRID_COL_COUNT) + 1
+    local yIndex = math.floor(y * GRID_ROW_COUNT) + 1
     return xIndex, yIndex
 end
 
