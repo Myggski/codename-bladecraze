@@ -6,7 +6,6 @@ require("code.utilities.extended_math")
 local camera = require("code.engine.camera")
 local game_event_manager = require("code.engine.game_event.game_event_manager")
 local player_character = require("code.player.player")
-local button = require("code.ui.button.button")
 
 function love.load()
   game_event_manager:invoke(GAME_EVENT_TYPES.LOAD)
