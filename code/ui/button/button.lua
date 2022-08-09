@@ -2,7 +2,11 @@ local game_event_manager = require("code.engine.game_event.game_event_manager")
 local button_model = require("code.ui.button.model.button_model")
 local button_view = require("code.ui.button.view.button_view")
 local rectangle = require("code.engine.rectangle")
+
 local buttons = {}
+local sprite_batch = nil
+local quads = nil
+local images = {}
 
 local function mousepressed(x, y, btn, is_touch)
   for index = 1, #buttons do
@@ -26,34 +30,83 @@ local function update(dt)
 end
 
 local function draw()
+  if (not sprite_batch) then
+    return
+  end
+
+  sprite_batch:clear()
+  
   for index = 1, #buttons do
     local button = buttons[index]
     button_view.draw(button)
   end
+
+  love.graphics.draw(sprite_batch)
 end
 
 local function remove_all()
   for index = #buttons, 1, -1 do
     local button = buttons[index]
-    table.remove(buttons, table.index_of(button));
-    button = nil
+    button.remove(button)
+  end
+end
+
+local function add_events()
+  game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
+  game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
+  game_event_manager:add_listener(GAME_EVENT_TYPES.UPDATE, update)
+  game_event_manager:add_listener(GAME_EVENT_TYPES.DRAW, draw)
+  game_event_manager:add_listener(GAME_EVENT_TYPES.QUIT, remove_all)
+end
+
+local function remove_events()
+  game_event_manager:remove_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
+  game_event_manager:remove_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
+  game_event_manager:remove_listener(GAME_EVENT_TYPES.UPDATE, update)
+  game_event_manager:remove_listener(GAME_EVENT_TYPES.DRAW, draw)
+  game_event_manager:remove_listener(GAME_EVENT_TYPES.QUIT, remove_all)
+end
+
+local function setup_button()
+  if (images["assets/button.png"] == nil) then
+    images["assets/button.png"] = love.graphics.newPixelImage("assets/button.png")
+  end
+
+  --if they use the same image, we can use the same sprite and sprite_batch
+  if (sprite_batch == nil) then
+    sprite_batch = love.graphics.newSpriteBatch(images["assets/button.png"])
+  end
+
+  if (quads == nil) then
+    quads = button_view.create_quads(sprite_batch)
+  end
+
+  add_events()
+end
+
+function button_model:remove()
+  table.remove(buttons, table.index_of(self));
+  self = nil
+
+  if (#buttons == 0) then
+    remove_events()
   end
 end
 
 function button_model:create(x, y, w, h)
-  local image = love.graphics.newPixelImage("assets/button.png")
-  local sprite_batch = love.graphics.newSpriteBatch(image)
-
   self.__index = self
+
+  if (#buttons == 0) then
+    setup_button()
+  end
 
   local obj = setmetatable({
     button_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
     button_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
-    image = image,
     sprite_batch = sprite_batch,
     rectangle = rectangle:create(x, y, w, h),
     is_mouse_hovering = false,
-    quads = button_view.create_quads(sprite_batch),
+    quads = quads,
     callbacks = {
       click = {},
       release = {},
@@ -66,16 +119,5 @@ function button_model:create(x, y, w, h)
 
   return obj
 end
-
-function button_model:remove()
-  table.remove(buttons, table.index_of(self));
-  self = nil
-end
-
-game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
-game_event_manager:add_listener(GAME_EVENT_TYPES.UPDATE, update)
-game_event_manager:add_listener(GAME_EVENT_TYPES.DRAW, draw)
-game_event_manager:add_listener(GAME_EVENT_TYPES.QUIT, remove_all)
 
 return button_model
