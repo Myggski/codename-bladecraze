@@ -26,7 +26,7 @@ end
 
 function button_model:try_button_click(screen_x, screen_y, btn, is_touch, is_pressing)
   local world_x, world_y = camera:screen_to_world(screen_x, screen_y)
-  if btn == BUTTON_CLICK_TYPES.LEFT and self.rectangle:is_inside(world_x, world_y) and is_pressing then
+  if btn == is_pressing and BUTTON_CLICK_TYPES.LEFT and self.rectangle:is_inside(world_x, world_y) then
     self:set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.CLICK]) do

@@ -52,13 +52,14 @@ end
 ]]--
 local function setup_quad_data(texture)
   local image_width, image_height = texture:getWidth() / number_of_button_animations, texture:getHeight()
-  local x = { 0, nine_slice_dots[1].x, nine_slice_dots[2].x, image_width }
-  local y = { 0, nine_slice_dots[1].y, nine_slice_dots[2].y, image_height }
+  -- Gets position of x and y position depending on the current and next column in the grid (index 4 doesn't exsist so it ends where the image ends)
+  local grid_position_x = { 0, nine_slice_dots[1].x, nine_slice_dots[2].x, image_width }
+  local grid_position_y = { 0, nine_slice_dots[1].y, nine_slice_dots[2].y, image_height }
 
   for index = 0, table.get_size(quad_data) - 1 do
     local index_x, index_y = (index % 3) + 1, math.floor((index / 3) + 1)
-    local start_x, start_y = x[index_x], y[index_y]
-    local end_x, end_y = x[index_x + 1], y[index_y + 1]
+    local start_x, start_y = grid_position_x[index_x], grid_position_y[index_y]
+    local end_x, end_y = grid_position_x[index_x + 1], grid_position_y[index_y + 1]
     local edge_x, edge_y = end_x == image_width, end_y == image_height
 
     quad_data[index + 1] = setmetatable(quad_data[index + 1], new_quad(start_x, start_y, end_x, end_y, edge_x, edge_y))
