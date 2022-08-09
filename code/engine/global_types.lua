@@ -33,6 +33,7 @@ ENTITY_EVENT_TYPES = {
   DEACTIVATED = "deactivated"
 }
 PROJECTILE_TYPES = {
+  NONE = 0,
   ARROW = 1,
   BULLET = 2,
   MAGIC = 3,
