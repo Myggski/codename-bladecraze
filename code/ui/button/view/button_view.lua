@@ -1,3 +1,5 @@
+local font_silver = require("code.engine.font_silver")
+
 --[[
   9-Slice Scaling - Resizing Technique
   https://en.wikipedia.org/wiki/9-slice_scaling
@@ -52,7 +54,7 @@ end
 ]]--
 local function setup_quad_data(texture)
   local image_width, image_height = texture:getWidth() / number_of_button_animations, texture:getHeight()
-  -- Gets position of x and y position depending on the current and next column in the grid (index 4 doesn't exsist so it ends where the image ends)
+  -- Gets position of x and y position depending on the current and next column in the grid. Index 4 doesn't exsist so it ends where the image ends)
   local grid_position_x = { 0, nine_slice_dots[1].x, nine_slice_dots[2].x, image_width }
   local grid_position_y = { 0, nine_slice_dots[1].y, nine_slice_dots[2].y, image_height }
 
@@ -170,8 +172,13 @@ local function get_sprite_batch(sprite_batch, rectangle, quads, animation_state)
 end
 
 local function draw(button)
-  button.sprite_batch = get_sprite_batch(button.sprite_batch, button.rectangle, button.quads, button.button_state)
-  love.graphics.draw(button.sprite_batch)
+  get_sprite_batch(button.sprite_batch, button.rectangle, button.quads, button.button_state)
+  --love.graphics.draw(button.sprite_batch)
+
+  if (button.text) then
+    font_silver:set_normal_font()
+    love.graphics.print(button.text, button.rectangle.x + button.rectangle.w / 2, button.rectangle.y + button.rectangle.h / 2)
+  end
 end
 
 return {
