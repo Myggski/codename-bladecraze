@@ -41,8 +41,8 @@ function set.tostring (in_set)
   return s .. "}"
 end
 
-function set.print (s)
-  print(set.tostring(s))
+function set.print(in_set)
+  print(set.tostring(in_set))
 end
 
 function set.contains(in_set, key)
