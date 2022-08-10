@@ -1,8 +1,8 @@
 set = {}
     
-function set.create(t)
+function set.create(in_table)
   local res = {}
-  for _, l in ipairs(t) do res[l] = true end
+  for _, l in ipairs(in_table) do res[l] = true end
   return res
 end
 
