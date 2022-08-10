@@ -1,6 +1,10 @@
 local camera = {
-  visual_resolution_x = GAME_WIDTH,
-  visual_resolution_y = GAME_HEIGHT,
+  --[[
+    resolution can be changed to
+    GAME_WIDTH and GAME_HEIGHT globals
+    ]]
+  visual_resolution_x = 256,
+  visual_resolution_y = 144,
   translate_position_x = 0,
   translate_position_y = 0,
 }
