@@ -1,3 +1,5 @@
+local font_silver = require("code.engine.font_silver")
+
 --[[
   9-Slice Scaling - Resizing Technique
   https://en.wikipedia.org/wiki/9-slice_scaling
@@ -11,7 +13,7 @@
   ---------------------------      ----------------------
   | 7 |        8        | 9 |
   ---------------------------
-]]--
+]]
 
 
 local number_of_button_animations = table.get_size(BUTTON_ANIMATION_STATE_TYPES)
@@ -30,7 +32,7 @@ local quad_data = { -- Hardcoding scalable quads for simplicity
 
 --[[
 -  Creates a new quad for the setmetatable-function
-]]--
+]]
 local function new_quad(x1, y1, x2, y2, edge_x, edge_y)
   local x, y = x1, y1
   local width, height = x2 - x1, y2 - y1
@@ -49,10 +51,10 @@ end
 --[[
 -  Creates and setup all the data for the quads on a button
 -  Sets the position and size in the texture, also sets if it's on the edge of the texture
-]]--
+]]
 local function setup_quad_data(texture)
   local image_width, image_height = texture:getWidth() / number_of_button_animations, texture:getHeight()
-  -- Gets position of x and y position depending on the current and next column in the grid (index 4 doesn't exsist so it ends where the image ends)
+  -- Gets position of x and y position depending on the current and next column in the grid. Index 4 doesn't exsist so it ends where the image ends)
   local grid_position_x = { 0, nine_slice_dots[1].x, nine_slice_dots[2].x, image_width }
   local grid_position_y = { 0, nine_slice_dots[1].y, nine_slice_dots[2].y, image_height }
 
@@ -138,7 +140,7 @@ local function setup_sprite_batch_quad(active_quads, index, x, y, width_to_add, 
   if (quad_data[index].scale_y) then
     scale_y = math.max((height_to_add + quad_height) / quad_height, 1)
   end
- 
+
   -- Check if quad is the last quad on y- and/or x-axis and moves it
   if (quad_data[index].edge_x) then
     position_x = position_x + width_to_add
@@ -149,29 +151,40 @@ local function setup_sprite_batch_quad(active_quads, index, x, y, width_to_add, 
   end
 
 
-  return active_quads[index], position_x, position_y, 0, scale_x, scale_y
+  return active_quads[index], math.round(position_x), math.round(position_y), 0, scale_x, scale_y
 end
 
 --[[
--  Get the active quads for the current button animation and sets them up with proper sizes and positions in the sprite batch
+-  Sets the active quads for the current button animation and sets them up with proper sizes and positions in the sprite batch
 ]]
-local function get_sprite_batch(sprite_batch, rectangle, quads, animation_state)
-  local active_quads = get_active_quads(quads, animation_state)
-  local texture = sprite_batch:getTexture()
+local function set_sprite_batch(button)
+  local active_quads = get_active_quads(button.quads, button.button_state)
+  local texture = button.sprite_batch:getTexture()
   local texture_width, texture_height = texture:getWidth(), texture:getHeight()
   local image_width, image_height = texture_width / number_of_button_animations, texture_height
-  local width_to_add, height_to_add = rectangle.w - image_width, rectangle.h - image_height
+  local width_to_add, height_to_add = button.rectangle.w - image_width, button.rectangle.h - image_height
 
   for index = 1, #active_quads do
-    sprite_batch:add(setup_sprite_batch_quad(active_quads, index, rectangle.x, rectangle.y, width_to_add, height_to_add))
+    button.sprite_batch:add(setup_sprite_batch_quad(active_quads, index, button.rectangle.x, button.rectangle.y,
+      width_to_add, height_to_add))
   end
+end
 
-  return sprite_batch
+--[[
+-  Sets the button text in the center of the button and adds the text to the "text batch" that will be rendered later together
+]]
+local function add_text(button)
+  local button_center_x, button_center_y = button.rectangle:center()
+  local text_width, text_height = font_silver:get_text_size(button.font, button.text)
+  local animation_y_offset = button.button_state - 1 -- When the button is being pressed down, the text should follow
+  local text_x, text_y = button_center_x - text_width / 2, (button_center_y - text_height / 2) + animation_y_offset
+
+  return button.texts:add(button.text, math.round(text_x), math.floor(text_y))
 end
 
 local function draw(button)
-  button.sprite_batch = get_sprite_batch(button.sprite_batch, button.rectangle, button.quads, button.button_state)
-  love.graphics.draw(button.sprite_batch)
+  set_sprite_batch(button)
+  add_text(button)
 end
 
 return {

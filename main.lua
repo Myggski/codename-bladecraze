@@ -18,7 +18,12 @@ local level1 = require("code.level1")
 
 local game_event_manager = require("code.engine.game_event.game_event_manager")
 
+local draw_canvas = {}
+
 function love.load()
+  draw_canvas = love.graphics.newCanvas(camera.visual_resolution_x, camera.visual_resolution_y)
+  draw_canvas:setFilter("nearest", "nearest")
+
   game_event_manager:invoke(GAME_EVENT_TYPES.LOAD)
 end
 
@@ -27,10 +32,17 @@ function love.update(dt)
 end
 
 function love.draw()
-  local scale_x, scale_y = camera:get_scale()
-  love.graphics.scale(scale_x, scale_y)
-  game_event_manager:invoke(GAME_EVENT_TYPES.DRAW)
-  --love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
+  love.graphics.setCanvas(draw_canvas)
+  love.graphics.clear(0, 0, 0, 0) -- Resets canvas
+
+  game_event_manager:invoke(GAME_EVENT_TYPES.DRAW, draw_canvas)
+
+  for i = 1, #players do
+    players[i]:draw()
+  end
+
+  love.graphics.setCanvas()
+  love.graphics.draw(draw_canvas, 0, 0, 0, camera:get_scale());
 end
 
 function love.mousepressed(x, y, btn, is_touch)

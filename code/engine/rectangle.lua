@@ -1,6 +1,4 @@
-local camera = require("code.engine.camera")
 local rectangle = {}
-local scale = camera:get_scale()
 
 function rectangle:create(x, y, w, h)
   self.__index = self
@@ -16,7 +14,11 @@ function rectangle:is_inside(x, y)
   return self.x <= x and self.y <= y and (self.x + self.w) >= x and (self.y + self.h) >= y
 end
 
-function rectangle:overlap(x,y,w,h)
+function rectangle:center()
+  return self.x + self.w / 2, self.y + self.h / 2
+end
+
+function rectangle:overlap(x, y, w, h)
   return (
       self.x <= x + w and
           self.x + self.w >= x and

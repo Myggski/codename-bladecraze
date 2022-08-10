@@ -2,11 +2,13 @@ local game_event_manager = require("code.engine.game_event.game_event_manager")
 local button_model = require("code.ui.button.model.button_model")
 local button_view = require("code.ui.button.view.button_view")
 local rectangle = require("code.engine.rectangle")
+local font_silver = require("code.engine.font_silver")
 
 local buttons = {}
 local sprite_batch = nil
 local quads = nil
 local images = {}
+local text_batch_list = {}
 
 local function mousepressed(x, y, btn, is_touch)
   for index = 1, #buttons do
@@ -15,7 +17,7 @@ local function mousepressed(x, y, btn, is_touch)
   end
 end
 
-local function mousereleased(x, y, btn, is_touch, presses)
+local function mousereleased(x, y, btn, is_touch)
   for index = 1, #buttons do
     local button = buttons[index]
     button:try_button_click(x, y, btn, is_touch, false)
@@ -30,18 +32,26 @@ local function update(dt)
 end
 
 local function draw()
-  if (not sprite_batch) then
+  if #buttons == 0 then
     return
   end
 
   sprite_batch:clear()
-  
+
+  for _, text_batch in pairs(text_batch_list) do
+    text_batch:clear()
+  end
+
   for index = 1, #buttons do
     local button = buttons[index]
     button_view.draw(button)
   end
 
   love.graphics.draw(sprite_batch)
+
+  for _, text_batch in pairs(text_batch_list) do
+    love.graphics.draw(text_batch)
+  end
 end
 
 local function remove_all()
@@ -67,21 +77,28 @@ local function remove_events()
   game_event_manager:remove_listener(GAME_EVENT_TYPES.QUIT, remove_all)
 end
 
-local function setup_button()
-  if (images["assets/button.png"] == nil) then
-    images["assets/button.png"] = love.graphics.newPixelImage("assets/button.png")
+local function setup_button(font)
+
+  if (#buttons == 0) then
+    if (images["assets/button.png"] == nil) then
+      images["assets/button.png"] = love.graphics.newPixelImage("assets/button.png")
+    end
+
+    --if they use the same image, we can use the same sprite and sprite_batch
+    if (sprite_batch == nil) then
+      sprite_batch = love.graphics.newSpriteBatch(images["assets/button.png"])
+    end
+
+    if (quads == nil) then
+      quads = button_view.create_quads(sprite_batch)
+    end
+
+    add_events()
   end
 
-  --if they use the same image, we can use the same sprite and sprite_batch
-  if (sprite_batch == nil) then
-    sprite_batch = love.graphics.newSpriteBatch(images["assets/button.png"])
+  if (text_batch_list[font:getHeight()] == nil) then
+    text_batch_list[font:getHeight()] = love.graphics.newText(font)
   end
-
-  if (quads == nil) then
-    quads = button_view.create_quads(sprite_batch)
-  end
-
-  add_events()
 end
 
 function button_model:remove()
@@ -93,12 +110,11 @@ function button_model:remove()
   end
 end
 
-function button_model:create(x, y, w, h)
+function button_model:create(x, y, w, h, text, font)
+  font = font or font_silver.normal
   self.__index = self
 
-  if (#buttons == 0) then
-    setup_button()
-  end
+  setup_button(font)
 
   local obj = setmetatable({
     button_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
@@ -107,6 +123,9 @@ function button_model:create(x, y, w, h)
     rectangle = rectangle:create(x, y, w, h),
     is_mouse_hovering = false,
     quads = quads,
+    text = text,
+    font = font,
+    texts = text_batch_list[font:getHeight()],
     callbacks = {
       click = {},
       release = {},
