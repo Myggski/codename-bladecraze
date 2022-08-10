@@ -46,7 +46,7 @@ function set.print(in_set)
 end
 
 function set.contains(in_set, key)
-  return in_set[key] ~= nil
+  return not (in_set[key] == nil)
 end
 
 return set

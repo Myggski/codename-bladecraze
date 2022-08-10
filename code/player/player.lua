@@ -39,7 +39,7 @@ end
 function player:handle_shoot()
   if (self.shoot_timer <= 0) then
     local instance = projectile_pool:get_projectile(self.projectile_type)
-    if instance ~= nil then
+    if instance then
 
       --[[
         future: 
