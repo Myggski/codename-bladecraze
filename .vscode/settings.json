@@ -1,7 +1,7 @@
 {
   "Lua.diagnostics.globals": [
     "love",
-    "PROJECTILE_TYPES",
+    "GAME",
     "ENTITY_EVENT_TYPES"
   ],
   "editor.tabSize": 2

@@ -56,8 +56,8 @@ local function load()
   create_players()
 
   local projectile_pool_size = 20
-  for _, value in pairs(PROJECTILE_TYPES) do
-    if (value ~= PROJECTILE_TYPES.NONE) then
+  for _, value in pairs(GAME.PROJECTILE_TYPES) do
+    if (value ~= GAME.PROJECTILE_TYPES.NONE) then
       projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
     end
   end

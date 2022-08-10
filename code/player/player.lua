@@ -92,7 +92,7 @@ function player:update(dt)
     self.direction = self.input.aim_dir.x > 0 and 1 or -1
   end
 
-  if not (self.input.action == PLAYER_ACTIONS.NONE) then
+  if not (self.input.action == PLAYER.ACTIONS.NONE) then
     self:handle_action(self.input.action)
   end
 

@@ -46,15 +46,15 @@ local function get_digital_axis(joystick, keyboard)
 end
 
 local function get_action(joystick, keyboard)
-  local action = PLAYER_ACTIONS.NONE
+  local action = PLAYER.ACTIONS.NONE
   if keyboard then
-    action = mouse_pressed and PLAYER_ACTIONS.BASIC or PLAYER_ACTIONS.NONE
-    action = keyboard.isDown("q") and PLAYER_ACTIONS.SPECIAL or action
-    action = keyboard.isDown("r") and PLAYER_ACTIONS.ULTIMATE or action
+    action = mouse_pressed and PLAYER.ACTIONS.BASIC or PLAYER.ACTIONS.NONE
+    action = keyboard.isDown("q") and PLAYER.ACTIONS.SPECIAL or action
+    action = keyboard.isDown("r") and PLAYER.ACTIONS.ULTIMATE or action
   elseif joystick then
-    action = joystick:isGamepadDown("a") and PLAYER_ACTIONS.BASIC or PLAYER_ACTIONS.NONE
-    action = joystick:isGamepadDown("b") and PLAYER_ACTIONS.ULTIMATE or action
-    action = joystick:isGamepadDown("x") and PLAYER_ACTIONS.SPECIAL or action
+    action = joystick:isGamepadDown("a") and PLAYER.ACTIONS.BASIC or PLAYER.ACTIONS.NONE
+    action = joystick:isGamepadDown("b") and PLAYER.ACTIONS.ULTIMATE or action
+    action = joystick:isGamepadDown("x") and PLAYER.ACTIONS.SPECIAL or action
   end
   return action
 end
@@ -109,7 +109,7 @@ local function joystick_removed(joystick)
 end
 
 function player_input.get_input(index, position)
-  local input = { move_dir = {x = 0, y = 0}, aim_dir = {x = 0, y = 0}, action = PLAYER_ACTIONS.NONE}
+  local input = { move_dir = {x = 0, y = 0}, aim_dir = {x = 0, y = 0}, action = PLAYER.ACTIONS.NONE}
   if #joysticks > 1 and index > 1 then
     if index-1 <= #joysticks then
       input.move_dir = get_move_direction(joysticks[index-1])

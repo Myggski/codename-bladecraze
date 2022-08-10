@@ -9,7 +9,7 @@ local character_data = {
     idle_animation = { 128, 36, 16, 28, 4 },
     run_animation = { 192, 36, 16, 28, 4 },
     hit_animation = { 256, 36, 16, 28, 1 },
-    projectile_type = PROJECTILE_TYPES.ARROW,
+    projectile_type = GAME.PROJECTILE_TYPES.ARROW,
   },
   knight = {
     name = "The Tank",
@@ -32,7 +32,7 @@ local character_data = {
     idle_animation = { 128, 228, 16, 28, 4 },
     run_animation = { 192, 228, 16, 28, 4 },
     hit_animation = { 256, 228, 16, 28, 1 },
-    projectile_type = PROJECTILE_TYPES.BULLET,
+    projectile_type = GAME.PROJECTILE_TYPES.BULLET,
   },
   wizard = {
     name = "Arcanist",
@@ -44,7 +44,7 @@ local character_data = {
     idle_animation = { 128, 164, 16, 28, 4 },
     run_animation = { 192, 164, 16, 28, 4 },
     hit_animation = { 256, 164, 16, 28, 1 },
-    projectile_type = PROJECTILE_TYPES.MAGIC,
+    projectile_type = GAME.PROJECTILE_TYPES.MAGIC,
   },
 }
 
