@@ -100,7 +100,7 @@ function projectile:create(sprite_sheet, entity_grid, type, pool)
     pool = pool,
     ignore_targets = {},
     client = client,
-    angle = 1.5708,
+    angle = math.rad(90),
     active = false,
     move_dir = { x = 1, y = 1 },
     speed = projectile_data[type].speed,
