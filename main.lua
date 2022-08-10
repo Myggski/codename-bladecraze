@@ -30,7 +30,7 @@ function love.draw()
   local scale_x, scale_y = camera:get_scale()
   love.graphics.scale(scale_x, scale_y)
   game_event_manager:invoke(GAME_EVENT_TYPES.DRAW)
-  love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
+  --love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 end
 
 function love.mousepressed(x, y, btn, is_touch)

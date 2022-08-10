@@ -5,7 +5,6 @@ local grid = nil
 local sprite_sheet = nil
 function projectile_pool:create(image, type, count, entity_grid)
   grid = entity_grid
-  print(grid)
   if sprite_sheet == nil then
     sprite_sheet = image
   end
