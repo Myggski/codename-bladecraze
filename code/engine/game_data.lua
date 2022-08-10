@@ -8,7 +8,7 @@ GAME = {
     ARROW = 1,
     BULLET = 2,
     MAGIC = 3,
-  }
+  },
 }
 PLAYER = {
   ACTIONS = {
@@ -16,10 +16,6 @@ PLAYER = {
     BASIC = 1,
     SPECIAL = 2,
     ULTIMATE = 3
-  }
+  },
 }
 GAME.TILE_SIZE = GAME.GAME_WIDTH / GAME.GRID_COL_COUNT
-
-
-
-
