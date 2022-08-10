@@ -5,7 +5,6 @@ local rectangle = require("code.engine.rectangle")
 local font_silver = require("code.engine.font_silver")
 
 local buttons = {}
-local button_text_canvas = nil
 local sprite_batch = nil
 local quads = nil
 local images = {}
