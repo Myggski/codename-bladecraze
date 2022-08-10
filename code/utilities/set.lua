@@ -2,7 +2,7 @@ set = {}
     
 function set.create(in_table)
   local res = {}
-  for _, l in ipairs(in_table) do res[l] = true end
+  for _, val in ipairs(in_table) do res[val] = true end
   return res
 end
 
