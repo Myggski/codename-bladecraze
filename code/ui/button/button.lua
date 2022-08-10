@@ -2,10 +2,11 @@ local game_event_manager = require("code.engine.game_event.game_event_manager")
 local button_model = require("code.ui.button.model.button_model")
 local button_view = require("code.ui.button.view.button_view")
 local rectangle = require("code.engine.rectangle")
+local font_silver = require("code.engine.font_silver")
 
 local buttons = {}
-local button_text_canvas = nil
 local sprite_batch = nil
+local texts = nil
 local quads = nil
 local images = {}
 
@@ -16,7 +17,7 @@ local function mousepressed(x, y, btn, is_touch)
   end
 end
 
-local function mousereleased(x, y, btn, is_touch, presses)
+local function mousereleased(x, y, btn, is_touch)
   for index = 1, #buttons do
     local button = buttons[index]
     button:try_button_click(x, y, btn, is_touch, false)
@@ -31,19 +32,20 @@ local function update(dt)
 end
 
 local function draw()
-  if sprite_batch == nil then
+  if #buttons == 0 then
     return
   end
 
   sprite_batch:clear()
-  
+  texts:clear()
+
   for index = 1, #buttons do
     local button = buttons[index]
     button_view.draw(button)
   end
 
   love.graphics.draw(sprite_batch)
-  love.graphics.draw(button_text_canvas)
+  love.graphics.draw(texts)
 end
 
 local function remove_all()
@@ -83,6 +85,10 @@ local function setup_button()
     quads = button_view.create_quads(sprite_batch)
   end
 
+  if (texts == nil) then
+    texts = love.graphics.newText(font_silver.normal)
+  end
+
   add_events()
 end
 
@@ -110,6 +116,7 @@ function button_model:create(x, y, w, h, text)
     is_mouse_hovering = false,
     quads = quads,
     text = text,
+    texts = texts,
     callbacks = {
       click = {},
       release = {},

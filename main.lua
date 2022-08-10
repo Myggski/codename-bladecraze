@@ -6,14 +6,14 @@ require("code.utilities.extended_math")
 local camera = require("code.engine.camera")
 local game_event_manager = require("code.engine.game_event.game_event_manager")
 local player_character = require("code.player.player")
-local button = require("code.ui.button.button")
+
+local draw_canvas = {}
 
 function love.load()
+  draw_canvas = love.graphics.newCanvas(camera.visual_resolution_x, camera.visual_resolution_y)
+  draw_canvas:setFilter("nearest", "nearest")
+
   game_event_manager:invoke(GAME_EVENT_TYPES.LOAD)
-
-  button:create(64, 64, 32, 16, "Hello")
-
-  button:create(16, 16, 16, 16, "Hello")
 
   sprite_sheet_image = love.graphics.newPixelImage("assets/0x72_DungeonTilesetII_v1.4.png")
   local characters = { "elf", "knight", "lizard", "wizard" }
@@ -44,13 +44,17 @@ function love.update(dt)
 end
 
 function love.draw()
-  local scale_x, scale_y = camera:get_scale()
-  love.graphics.scale(scale_x, scale_y)
-  game_event_manager:invoke(GAME_EVENT_TYPES.DRAW)
+  love.graphics.setCanvas(draw_canvas)
+  love.graphics.clear(0, 0, 0, 0) -- Resets canvas
+
+  game_event_manager:invoke(GAME_EVENT_TYPES.DRAW, draw_canvas)
 
   for i = 1, #players do
     players[i]:draw()
   end
+
+  love.graphics.setCanvas()
+  love.graphics.draw(draw_canvas, 0, 0, 0, camera:get_scale());
 end
 
 function love.mousepressed(x, y, btn, is_touch)
