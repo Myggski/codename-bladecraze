@@ -6,9 +6,9 @@ local font_silver = require("code.engine.font_silver")
 
 local buttons = {}
 local sprite_batch = nil
-local texts = nil
 local quads = nil
 local images = {}
+local text_batch_list = {}
 
 local function mousepressed(x, y, btn, is_touch)
   for index = 1, #buttons do
@@ -37,7 +37,10 @@ local function draw()
   end
 
   sprite_batch:clear()
-  texts:clear()
+
+  for _, text_batch in pairs(text_batch_list) do
+    text_batch:clear()
+  end
 
   for index = 1, #buttons do
     local button = buttons[index]
@@ -45,7 +48,10 @@ local function draw()
   end
 
   love.graphics.draw(sprite_batch)
-  love.graphics.draw(texts)
+
+  for _, text_batch in pairs(text_batch_list) do
+    love.graphics.draw(text_batch)
+  end
 end
 
 local function remove_all()
@@ -71,25 +77,28 @@ local function remove_events()
   game_event_manager:remove_listener(GAME_EVENT_TYPES.QUIT, remove_all)
 end
 
-local function setup_button()
-  if (images["assets/button.png"] == nil) then
-    images["assets/button.png"] = love.graphics.newPixelImage("assets/button.png")
+local function setup_button(font)
+
+  if (#buttons == 0) then
+    if (images["assets/button.png"] == nil) then
+      images["assets/button.png"] = love.graphics.newPixelImage("assets/button.png")
+    end
+
+    --if they use the same image, we can use the same sprite and sprite_batch
+    if (sprite_batch == nil) then
+      sprite_batch = love.graphics.newSpriteBatch(images["assets/button.png"])
+    end
+
+    if (quads == nil) then
+      quads = button_view.create_quads(sprite_batch)
+    end
+
+    add_events()
   end
 
-  --if they use the same image, we can use the same sprite and sprite_batch
-  if (sprite_batch == nil) then
-    sprite_batch = love.graphics.newSpriteBatch(images["assets/button.png"])
+  if (text_batch_list[font:getHeight()] == nil) then
+    text_batch_list[font:getHeight()] = love.graphics.newText(font)
   end
-
-  if (quads == nil) then
-    quads = button_view.create_quads(sprite_batch)
-  end
-
-  if (texts == nil) then
-    texts = love.graphics.newText(font_silver.normal)
-  end
-
-  add_events()
 end
 
 function button_model:remove()
@@ -101,12 +110,11 @@ function button_model:remove()
   end
 end
 
-function button_model:create(x, y, w, h, text)
+function button_model:create(x, y, w, h, text, font)
+  font = font or font_silver.normal
   self.__index = self
 
-  if (#buttons == 0) then
-    setup_button()
-  end
+  setup_button(font)
 
   local obj = setmetatable({
     button_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
@@ -116,7 +124,8 @@ function button_model:create(x, y, w, h, text)
     is_mouse_hovering = false,
     quads = quads,
     text = text,
-    texts = texts,
+    font = font,
+    texts = text_batch_list[font:getHeight()],
     callbacks = {
       click = {},
       release = {},

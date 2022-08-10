@@ -1,7 +1,8 @@
 local game_event_manager = require("code.engine.game_event.game_event_manager")
 
 local font_silver = {
-  normal = nil
+  normal = nil,
+  large = nil,
 }
 
 local function load()
@@ -12,8 +13,8 @@ function font_silver:set_normal_font()
   love.graphics.setFont(self.normal)
 end
 
-function font_silver:get_text_size(text)
-  return self.normal:getWidth(text), self.normal:getHeight()
+function font_silver:get_text_size(font, text)
+  return font:getWidth(text), font:getHeight()
 end
 
 if (font_silver.normal == nil) then

@@ -151,7 +151,7 @@ local function setup_sprite_batch_quad(active_quads, index, x, y, width_to_add, 
   end
 
 
-  return active_quads[index], math.floor(position_x + 0.5), math.floor(position_y + 0.5), 0, scale_x, scale_y
+  return active_quads[index], math.round(position_x), math.round(position_y), 0, scale_x, scale_y
 end
 
 --[[
@@ -175,11 +175,11 @@ end
 ]]
 local function add_text(button)
   local button_center_x, button_center_y = button.rectangle:center()
-  local text_width, text_height = font_silver:get_text_size(button.text)
+  local text_width, text_height = font_silver:get_text_size(button.font, button.text)
   local animation_y_offset = button.button_state - 1 -- When the button is being pressed down, the text should follow
   local text_x, text_y = button_center_x - text_width / 2, (button_center_y - text_height / 2) + animation_y_offset
 
-  return button.texts:add(button.text, math.floor(text_x + 0.5), math.floor(text_y + 0.5))
+  return button.texts:add(button.text, math.round(text_x), math.floor(text_y))
 end
 
 local function draw(button)
