@@ -26,15 +26,16 @@ function spatial_grid:new_client(position, dimensions, guid)
 end
 
 function spatial_grid:draw_debug()
-    for y=0, self.bounds.y_max-1, TILE_SIZE do
-        for x=0, self.bounds.x_max-1, TILE_SIZE do
-          love.graphics.rectangle("line", x, y, TILE_SIZE, TILE_SIZE)
+    for y = 0, self.bounds.y_max - 1, GAME.TILE_SIZE do
+        for x = 0, self.bounds.x_max - 1, GAME.TILE_SIZE do
+            love.graphics.rectangle("line", x, y, GAME.TILE_SIZE, GAME.TILE_SIZE)
         end
-      end
-      love.graphics.setColor(1,0,1,1)
-      love.graphics.rectangle("line", 0, 0, self.bounds.x_max, self.bounds.y_max)
-      love.graphics.setColor(1,1,1,1)
+    end
+    love.graphics.setColor(1, 0, 1, 1)
+    love.graphics.rectangle("line", 0, 0, self.bounds.x_max, self.bounds.y_max)
+    love.graphics.setColor(1, 1, 1, 1)
 end
+
 --[[
     get the player position between 0.0-1.0 of the bounds
     and return the matching cell indices
@@ -43,8 +44,8 @@ function spatial_grid:get_cell_index(x, y)
 
     x = math.clamp01(x / self.bounds.x_max)
     y = math.clamp01(y / self.bounds.y_max)
-    local xIndex = math.floor(x * GRID_COL_COUNT) + 1
-    local yIndex = math.floor(y * GRID_ROW_COUNT) + 1
+    local xIndex = math.floor(x * GAME.GRID_COL_COUNT) + 1
+    local yIndex = math.floor(y * GAME.GRID_ROW_COUNT) + 1
     return xIndex, yIndex
 end
 

@@ -27,7 +27,6 @@ function player:check_collisions(desired_location)
     y = math.floor(y - w / 2)
     if box:overlap(x, y, w, h) then
       overlapping = true
-
     end
   end
   return overlapping
@@ -43,9 +42,9 @@ function player:handle_shoot()
     if instance ~= nil then
 
       --[[
-      future: 
-      add cleaner way to prevent arrows from colliding
-      with player or themselves
+        future: 
+        add cleaner way to prevent arrows from colliding
+        with player or themselves
       ]]
       instance.client.guid = "projectile" .. self.guid
       local start_pos = {
@@ -89,17 +88,17 @@ function player:update(dt)
     grid:update(self.client)
   end
 
-  if self.input.aim_dir.x ~= 0 then
+  if not (self.input.aim_dir.x == 0) then
     self.direction = self.input.aim_dir.x > 0 and 1 or -1
   end
 
-  if self.input.action ~= PLAYER_ACTIONS.NONE then
+  if not (self.input.action == PLAYER_ACTIONS.NONE) then
     self:handle_action(self.input.action)
   end
 
   --Change between idle and run animations
   local animation = self.animations.current
-  if (self.input.x == 0 and self.input.y == 0) then
+  if self.input.x == 0 and self.input.y == 0 then
     animation = self.animations.idle
   else
     animation = self.animations.run
@@ -136,7 +135,9 @@ function player:create(data)
   )
 
   --every player should be on the same grid
-  grid = data.grid
+  if grid == nil then
+    grid = data.grid
+  end
 
   local animations = { current = idle_animation, idle = idle_animation, run = run_animation, hit = hit_animation }
 

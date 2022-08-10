@@ -16,7 +16,7 @@ local active_entities = {}
 
 local sprite_sheet_image = nil
 local function create_grid()
-  local bounds = { x_min = 0, y_min = 0, x_max = GAME_WIDTH, y_max = GAME_HEIGHT }
+  local bounds = { x_min = 0, y_min = 0, x_max = GAME.GAME_WIDTH, y_max = GAME.GAME_HEIGHT }
   grid = spatial_grid:create(bounds)
 end
 
@@ -24,9 +24,9 @@ local function create_players()
   local classes = { "elf", "wizard", "knight", "lizard" }
   players = {}
   for i = 1, 2 do
-    local player_position = {i*40, 32 }
+    local player_position = { i * 40, 32 }
     local player_bounds = { 16, 28 }
-    
+
     players[i] = player_character:create
     {
       image = sprite_sheet_image,
@@ -51,7 +51,7 @@ end
 local function load()
   sprite_sheet_image = love.graphics.newPixelImage("assets/0x72_DungeonTilesetII_v1.4.png")
   button:create(128, 128, 16, 16)
-  
+
   create_grid()
   create_players()
 

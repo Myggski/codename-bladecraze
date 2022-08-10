@@ -1,5 +1,4 @@
 local function draw_player(player)
-  -- texture, quad, x, y, r, sx, sy, ox, oy, kx, ky
   love.graphics.setColor(player.color)
 
   local current_animation = player.animations.current
@@ -13,7 +12,12 @@ local function draw_player(player)
   love.graphics.draw(
     current_animation.sprite_sheet,
     quad, player.center_position.x,
-    player.center_position.y, 0, player.direction, 1, origin_x, origin_y
+    player.center_position.y,
+    0,
+    player.direction,
+    1,
+    origin_x,
+    origin_y
   )
 end
 

@@ -10,9 +10,18 @@ projectile_data[PROJECTILE_TYPES.MAGIC] = { speed = 70, bounds = { 16, 16 }, qua
 
 local grid = nil
 
+
+function projectile:shoot(start_position, direction, ignore_targets_set)
+  self.center_position = start_position
+  self.ignore_targets = ignore_targets_set
+  set.add(self.ignore_targets, self.client.guid)
+  self.move_dir = direction
+  self.angle = math.atan2(direction.y, direction.x) + math.rad(90)
+end
+
 function projectile:check_collisions()
   local clients = grid:find_near({ x = self.center_position.x, y = self.center_position.y }, { w = 32, h = 32 },
-  self.ignore_targets)
+    self.ignore_targets)
   self.nearby_clients = table.get_size(clients)
 
   local overlapping = false
@@ -28,7 +37,6 @@ function projectile:check_collisions()
     end
   end
 end
-
 
 function projectile:update(dt)
   local x, y = self.center_position.x, self.center_position.y
@@ -85,8 +93,8 @@ function projectile:create(sprite_sheet, entity_grid, type, pool)
   local center_position = { x = 0, y = 0 }
   local x, y, w, h = unpack(projectile_data[type].quad_data)
   local quad = love.graphics.newQuad(x, y, w, h, sprite_sheet:getDimensions())
-  local client = grid:new_client(center_position, {w=16, h=16}, "asdf")
-  
+  local client = grid:new_client(center_position, { w = 16, h = 16 }, "asdf")
+
   local obj = setmetatable({
     type = type,
     pool = pool,
@@ -104,17 +112,5 @@ function projectile:create(sprite_sheet, entity_grid, type, pool)
 
   return obj
 end
-
-function projectile:shoot(start_position, direction, ignore_targets_set)
-  self.center_position = start_position
-  self.ignore_targets = ignore_targets_set
-  set.add(self.ignore_targets, self.client.guid)
-  self.move_dir = direction
-  self.angle = math.atan2(direction.y, direction.x) + 1.5708
-end
-
-
-
-
 
 return projectile

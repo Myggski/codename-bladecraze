@@ -15,6 +15,7 @@ function projectile_pool:create(image, type, count, entity_grid)
     end
   end
 end
+
 function projectile_pool:get_projectile(type)
   if (projectile_pool[type] == nil) then
     print("could not get projectile: type not found")
