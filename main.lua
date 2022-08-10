@@ -5,6 +5,15 @@ require("code.utilities.table_extension")
 require("code.utilities.extended_math")
 
 local camera = require("code.engine.camera")
+
+
+--[[
+  Due to the level listening to game_events,
+  only a require is needed to load it.
+
+  We will have to change that later when we make
+  a level select of some kind
+]]
 local level1 = require("code.level1")
 
 local game_event_manager = require("code.engine.game_event.game_event_manager")
@@ -21,6 +30,7 @@ function love.draw()
   local scale_x, scale_y = camera:get_scale()
   love.graphics.scale(scale_x, scale_y)
   game_event_manager:invoke(GAME_EVENT_TYPES.DRAW)
+  love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 end
 
 function love.mousepressed(x, y, btn, is_touch)

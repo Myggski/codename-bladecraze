@@ -8,8 +8,8 @@ local function draw_player(player)
     #current_animation.quads) + 1
 
   local quad = current_animation.quads[sprite_index]
-  local _,_,w,h = quad:getViewport()
-  local origin_x, origin_y = w/2, h/2
+  local _, _, w, h = quad:getViewport()
+  local origin_x, origin_y = w / 2, h / 2
   love.graphics.draw(
     current_animation.sprite_sheet,
     quad, player.center_position.x,
@@ -18,8 +18,9 @@ local function draw_player(player)
 end
 
 local function draw_player_bounding_box(player)
-  love.graphics.setColor(1,0,0,1)
+  love.graphics.setColor(1, 0, 0, 1)
   love.graphics.rectangle("line", player.box.x, player.box.y, player.box.w, player.box.h)
+  love.graphics.setColor(1, 1, 1, 1)
 end
 
 local function draw_text(x, y, text)
@@ -28,6 +29,15 @@ local function draw_text(x, y, text)
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.print(text, x, y, angle, scale_x,
     scale_y, offset_x, offset_y, skew_x, skew_y)
+end
+
+local function draw_stats(player)
+  local str = ""
+  for key, value in pairs(player.stats) do
+    str = str .. key .. ":" .. value .. "\n"
+  end
+
+  draw_text(player.box.x, player.box.y + 20, str)
 end
 
 local function update_animation(animation, dt)
@@ -43,6 +53,7 @@ end
 
 return {
   draw_text = draw_text,
+  draw_stats = draw_stats,
   draw_player = draw_player,
   draw_player_bounding_box = draw_player_bounding_box,
   update_animation = update_animation

@@ -1,17 +1,12 @@
 local rectangle = require("code.engine.rectangle")
 local game_event_manager = require("code.engine.game_event.game_event_manager")
 local camera = require("code.engine.camera")
-
 local projectile = {}
-local projectile_pool = {}
 
 local projectile_data = {}
 projectile_data[PROJECTILE_TYPES.ARROW] = { speed = 100, bounds = { 7, 21 }, quad_data = { 308, 186, 7, 21 } }
 projectile_data[PROJECTILE_TYPES.BULLET] = { speed = 130, bounds = { 16, 16 }, quad_data = { 288, 320, 16, 16 } }
 projectile_data[PROJECTILE_TYPES.MAGIC] = { speed = 70, bounds = { 16, 16 }, quad_data = { 288, 240, 16, 16 } }
-
-
-local sprite_sheet = nil
 
 local grid = nil
 
@@ -32,13 +27,8 @@ function projectile:check_collisions()
       return
     end
   end
-  --self.color = overlapping and { 1, 0, 0, 1 } or { 1, 1, 1, 1 }
 end
 
-function projectile:set_ignore_targets(ignore_targets)
-  self.ignore_targets = ignore_targets
-  set.add(self.ignore_targets, self.client.guid)
-end
 
 function projectile:update(dt)
   local x, y = self.center_position.x, self.center_position.y
@@ -84,18 +74,19 @@ end
 function projectile:deactivate()
   self.active = false
   grid:remove_client(self.client)
-  local prevCount = #self.pool
   table.insert(self.pool, self)
-  print(prevCount, #self.pool)
   game_event_manager:invoke(ENTITY_EVENT_TYPES.DEACTIVATED, self)
 end
 
-function projectile:create(type, pool)
+function projectile:create(sprite_sheet, entity_grid, type, pool)
   self.__index = self
+
+  grid = entity_grid
   local center_position = { x = 0, y = 0 }
   local x, y, w, h = unpack(projectile_data[type].quad_data)
   local quad = love.graphics.newQuad(x, y, w, h, sprite_sheet:getDimensions())
   local client = grid:new_client(center_position, {w=16, h=16}, "asdf")
+  
   local obj = setmetatable({
     type = type,
     pool = pool,
@@ -114,40 +105,16 @@ function projectile:create(type, pool)
   return obj
 end
 
-function projectile:get(type)
-  if (projectile_pool[type] == nil) then
-    print("could not get projectile: type not found")
-    return
-  end
-  -- local current = projectile_pool[type].current_index
-  -- local count = projectile_pool[type].count
-  -- if (current > count) then
-  --   current = 1
-  -- end
-  --local instance = projectile_pool[type].list[current]
-  local count = #projectile_pool[type].list
-  if count == 0 then
-    return nil
-  end
-  local instance = table.remove(projectile_pool[type].list, count)
-  instance:activate()
-  --current = current + 1
-  --projectile_pool[type].current_index = current
-  return instance
+function projectile:shoot(start_position, direction, ignore_targets_set)
+  self.center_position = start_position
+  self.ignore_targets = ignore_targets_set
+  set.add(self.ignore_targets, self.client.guid)
+  self.move_dir = direction
+  self.angle = math.atan2(direction.y, direction.x) + 1.5708
 end
 
-function projectile:create_pool(image, type, count, entity_grid)
-  grid = entity_grid
-  if sprite_sheet == nil then
-    sprite_sheet = image
-  end
-  if projectile_pool[type] == nil then
-    projectile_pool[type] = {current_index = 1, count = count, list = {}}
-    for i = 1, count do
-      print(projectile_pool[type])
-      table.insert(projectile_pool[type].list, projectile:create(type, projectile_pool[type].list))
-    end
-  end
-end
 
-return {projectile = projectile, projectile_pool = projectile_pool}
+
+
+
+return projectile

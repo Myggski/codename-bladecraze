@@ -18,10 +18,10 @@ end
 
 function rectangle:overlap(x,y,w,h)
   return (
-      self.x < x + w and
-          self.x + self.w > x and
-          self.y < y + h and
-          self.y + self.h > y)
+      self.x <= x + w and
+          self.x + self.w >= x and
+          self.y <= y + h and
+          self.y + self.h >= y)
 end
 
 return rectangle

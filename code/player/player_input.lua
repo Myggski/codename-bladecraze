@@ -1,6 +1,6 @@
 
 local game_event_manager = require("code.engine.game_event.game_event_manager")
-
+local camera = require("code.engine.camera")
 local player_input = {}
 
 local mouse_pressed = false
@@ -18,8 +18,7 @@ local function get_digital_axis(joystick, keyboard)
   local x, y = 0, 0
   local pressed_keys = { up = false, down = false, left = false, right = false }
   --Get keyboard or controller-dpad input
-  if keyboard == true then
-    local keyboard = love.keyboard
+  if keyboard then
     pressed_keys.left = keyboard.isDown("left") or keyboard.isDown("a")
     pressed_keys.right = keyboard.isDown("right") or keyboard.isDown("d")
     pressed_keys.up = keyboard.isDown("up") or keyboard.isDown("w")
@@ -46,6 +45,55 @@ local function get_digital_axis(joystick, keyboard)
   return x, y
 end
 
+local function get_action(joystick, keyboard)
+  local action = PLAYER_ACTIONS.NONE
+  if keyboard then
+    action = mouse_pressed and PLAYER_ACTIONS.BASIC or PLAYER_ACTIONS.NONE
+    action = keyboard.isDown("q") and PLAYER_ACTIONS.SPECIAL or action
+    action = keyboard.isDown("r") and PLAYER_ACTIONS.ULTIMATE or action
+  elseif joystick then
+    action = joystick:isGamepadDown("a") and PLAYER_ACTIONS.BASIC or PLAYER_ACTIONS.NONE
+    action = joystick:isGamepadDown("b") and PLAYER_ACTIONS.ULTIMATE or action
+    action = joystick:isGamepadDown("x") and PLAYER_ACTIONS.SPECIAL or action
+  end
+  return action
+end
+
+local function get_move_direction(joystick, keyboard)
+  local move_dir = {x = 0, y = 0}
+  if joystick then
+    local lx, ly = joystick:getGamepadAxis("leftx"), joystick:getGamepadAxis("lefty")
+    if (math.abs(lx) > analog_stick_deadzone) then
+      move_dir.x = lx
+    end
+    if (math.abs(ly) > analog_stick_deadzone) then
+      move_dir.y = ly
+    end
+  else
+    move_dir.x, move_dir.y = get_digital_axis(nil, keyboard)
+  end
+  return move_dir
+end
+
+local function get_aim_direction(joystick, mouse, player_position)
+  local aim_dir = {x = 0, y = 0}
+  if joystick then
+    local rx, ry = joystick:getGamepadAxis("rightx"), joystick:getGamepadAxis("righty")
+    if (math.abs(rx) > analog_stick_deadzone) then
+      aim_dir.x = rx
+    end
+    if (math.abs(ry) > analog_stick_deadzone) then
+      aim_dir.y = ry
+    end
+  else
+    local mouse_x, mouse_y = mouse.getPosition()
+    mouse_x, mouse_y = camera:screen_to_world(mouse_x, mouse_y)
+    aim_dir.x = mouse_x - (player_position.x)
+    aim_dir.y = mouse_y - (player_position.y)
+  end
+  return aim_dir
+end
+
 local joysticks = {}
 local function joystick_added(joystick)
   if (joystick:isGamepad()) then
@@ -61,37 +109,22 @@ local function joystick_removed(joystick)
 end
 
 function player_input.get_input(index, position)
-  local x, y = position.x, position.y
-  local input = { move_dir = {x = 0, y = 0}, aim_dir = {x = 0, y = 0} }
+  local input = { move_dir = {x = 0, y = 0}, aim_dir = {x = 0, y = 0}, action = PLAYER_ACTIONS.NONE}
   if #joysticks > 1 and index > 1 then
     if index-1 <= #joysticks then
-      input.move_dir.x, input.move_dir.y = get_digital_axis(joysticks[index-1], nil)
+      input.move_dir = get_move_direction(joysticks[index-1])
+      input.aim_dir = get_aim_direction(joysticks[index-1])
+      input.action = get_action(joysticks[index-1])
     end
   else
     if index == 1 then
-      input.move_dir.x, input.move_dir.y = get_digital_axis(nil, true)
-      local mouse_x, mouse_y = love.mouse.getPosition()
-
-      --Make this use the screen to world 
-      input.aim_dir.x = mouse_x - (x * 5)
-      input.aim_dir.y = mouse_y - (y * 5)
-      input.shoot = mouse_pressed 
+      input.move_dir = get_move_direction(nil, love.keyboard)
+      input.aim_dir = get_aim_direction(nil, love.mouse, position)
+      input.action = get_action(nil, love.keyboard)
     elseif #joysticks == 1 and index == 2 then
-      local lx, ly = joysticks[1]:getGamepadAxis("leftx"), joysticks[1]:getGamepadAxis("lefty")
-      local rx, ry = joysticks[1]:getGamepadAxis("rightx"), joysticks[1]:getGamepadAxis("righty")
-      if (math.abs(lx) > analog_stick_deadzone) then
-        input.move_dir.x = lx
-      end
-      if (math.abs(ly) > analog_stick_deadzone) then
-        input.move_dir.y = ly
-      end
-      if (math.abs(rx) > analog_stick_deadzone) then
-        input.aim_dir.x = rx
-      end
-      if (math.abs(ry) > analog_stick_deadzone) then
-        input.aim_dir.y = ry
-      end
-      input.shoot = joysticks[1]:isGamepadDown("a")
+      input.move_dir = get_move_direction(joysticks[1])
+      input.aim_dir = get_aim_direction(joysticks[1])
+      input.action = get_action(joysticks[1])
     end
   end
 

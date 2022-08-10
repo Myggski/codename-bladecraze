@@ -10,7 +10,7 @@ local level1 = {}
 
 local grid = {}
 local players = {}
-local projectile_manager = require("code.projectile")
+local projectile_pool = require("code.projectiles.projectile_pool")
 
 local active_entities = {}
 
@@ -58,7 +58,7 @@ local function load()
   local projectile_pool_size = 20
   for _, value in pairs(PROJECTILE_TYPES) do
     if (value ~= PROJECTILE_TYPES.NONE) then
-      projectile_manager.projectile:create_pool(sprite_sheet_image, value, projectile_pool_size, grid)
+      projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
     end
   end
 end
