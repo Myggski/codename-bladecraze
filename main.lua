@@ -37,10 +37,6 @@ function love.draw()
 
   game_event_manager:invoke(GAME_EVENT_TYPES.DRAW, draw_canvas)
 
-  for i = 1, #players do
-    players[i]:draw()
-  end
-
   love.graphics.setCanvas()
   love.graphics.draw(draw_canvas, 0, 0, 0, camera:get_scale());
 end

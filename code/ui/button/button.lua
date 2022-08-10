@@ -123,7 +123,7 @@ function button_model:create(x, y, w, h, text, font)
     rectangle = rectangle:create(x, y, w, h),
     is_mouse_hovering = false,
     quads = quads,
-    text = text,
+    text = text or "",
     font = font,
     texts = text_batch_list[font:getHeight()],
     callbacks = {
