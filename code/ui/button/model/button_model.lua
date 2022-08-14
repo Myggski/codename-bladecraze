@@ -24,9 +24,9 @@ function button_model:remove_listener(event_type, callback)
   end
 end
 
-function button_model:try_button_click(screen_x, screen_y, btn, is_touch, is_pressing)
-  local world_x, world_y = camera:screen_to_world(screen_x, screen_y)
-  if btn == BUTTON_CLICK_TYPES.LEFT and is_pressing and self.rectangle:is_inside(world_x, world_y) then
+function button_model:try_button_click(x, y, btn, is_touch, is_pressing)
+  local screen_x, screen_y = camera:screen_coordinates(x, y)
+  if btn == BUTTON_CLICK_TYPES.LEFT and is_pressing and self.rectangle:is_inside(screen_x, screen_y) then
     self:set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.CLICK]) do
@@ -42,10 +42,9 @@ function button_model:try_button_click(screen_x, screen_y, btn, is_touch, is_pre
 end
 
 function button_model:try_button_hover()
-  local screen_x, screen_y = love.mouse.getPosition()
-  local world_x, world_y = camera:screen_to_world(screen_x, screen_y)
+  local screen_x, screen_y = camera:mouse_position_screen()
 
-  if (self.rectangle:is_inside(world_x, world_y)) then
+  if (self.rectangle:is_inside(screen_x, screen_y)) then
     if (not self.is_mouse_hovering) then
       self:set_state(BUTTON_ANIMATION_STATE_TYPES.HOVER)
       self.is_mouse_hovering = true

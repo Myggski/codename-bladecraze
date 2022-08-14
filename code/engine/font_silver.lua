@@ -2,7 +2,6 @@ local game_event_manager = require("code.engine.game_event.game_event_manager")
 
 local font_silver = {
   normal = nil,
-  large = nil,
 }
 
 local function load()
@@ -18,7 +17,7 @@ function font_silver:get_text_size(font, text)
 end
 
 if (font_silver.normal == nil) then
-  game_event_manager:add_listener(GAME_EVENT_TYPES.LOAD, load)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.LOAD, load)
 end
 
 return font_silver

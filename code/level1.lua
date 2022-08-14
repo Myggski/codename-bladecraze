@@ -36,6 +36,7 @@ local function create_players()
       class = classes[i],
       grid = grid
     }
+
     set.add(active_entities, players[i])
   end
 end
@@ -48,16 +49,30 @@ local function entity_deactivated(entity)
   set.delete(active_entities, entity)
 end
 
+local function set_camera_position()
+  local position_x, position_y = 0, 0
+
+  for index = 1, #players do
+    position_x = position_x + players[index].center_position.x
+    position_y = position_y + players[index].center_position.y
+  end
+
+  position_x = position_x / #players
+  position_y = position_y / #players
+
+  camera:lookAt(position_x, position_y)
+end
+
 local function load()
   sprite_sheet_image = love.graphics.newPixelImage("assets/0x72_DungeonTilesetII_v1.4.png")
-  button:create(128, 128, 16, 16)
+  button:create(8, 8, 38, 20, "Start")
 
   create_grid()
   create_players()
 
   local projectile_pool_size = 20
   for _, value in pairs(GAME.PROJECTILE_TYPES) do
-    if (value ~= GAME.PROJECTILE_TYPES.NONE) then
+    if (not (value == GAME.PROJECTILE_TYPES.NONE)) then
       projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
     end
   end
@@ -69,6 +84,8 @@ local function update(dt)
       entity:update(dt)
     end
   end
+
+  set_camera_position()
 end
 
 local function draw()
@@ -80,10 +97,10 @@ local function draw()
   end
 end
 
-game_event_manager:add_listener(GAME_EVENT_TYPES.UPDATE, update)
-game_event_manager:add_listener(GAME_EVENT_TYPES.DRAW, draw)
-game_event_manager:add_listener(GAME_EVENT_TYPES.LOAD, load)
-game_event_manager:add_listener(ENTITY_EVENT_TYPES.ACTIVATED, entity_activated)
-game_event_manager:add_listener(ENTITY_EVENT_TYPES.DEACTIVATED, entity_deactivated)
+game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, update)
+game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, draw)
+game_event_manager.add_listener(GAME_EVENT_TYPES.LOAD, load)
+game_event_manager.add_listener(ENTITY_EVENT_TYPES.ACTIVATED, entity_activated)
+game_event_manager.add_listener(ENTITY_EVENT_TYPES.DEACTIVATED, entity_deactivated)
 
 return level1

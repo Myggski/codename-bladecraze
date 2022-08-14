@@ -76,14 +76,14 @@ end
 
 function projectile:activate()
   self.active = true
-  game_event_manager:invoke(ENTITY_EVENT_TYPES.ACTIVATED, self)
+  game_event_manager.invoke(ENTITY_EVENT_TYPES.ACTIVATED, self)
 end
 
 function projectile:deactivate()
   self.active = false
   grid:remove_client(self.client)
   table.insert(self.pool, self)
-  game_event_manager:invoke(ENTITY_EVENT_TYPES.DEACTIVATED, self)
+  game_event_manager.invoke(ENTITY_EVENT_TYPES.DEACTIVATED, self)
 end
 
 function projectile:create(sprite_sheet, entity_grid, type, pool)

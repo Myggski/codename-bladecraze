@@ -86,8 +86,7 @@ local function get_aim_direction(joystick, mouse, player_position)
       aim_dir.y = ry
     end
   else
-    local mouse_x, mouse_y = mouse.getPosition()
-    mouse_x, mouse_y = camera:screen_to_world(mouse_x, mouse_y)
+    local mouse_x, mouse_y = camera:mouse_position_world()
     aim_dir.x = mouse_x - (player_position.x)
     aim_dir.y = mouse_y - (player_position.y)
   end
@@ -134,9 +133,9 @@ function player_input.get_input(index, position)
   return input
 end
 
-game_event_manager:add_listener(GAME_EVENT_TYPES.JOYSTICK_ADDED, joystick_added)
-game_event_manager:add_listener(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick_removed)
-game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
+game_event_manager.add_listener(GAME_EVENT_TYPES.JOYSTICK_ADDED, joystick_added)
+game_event_manager.add_listener(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick_removed)
+game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
+game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
 
 return player_input

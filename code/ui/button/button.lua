@@ -62,19 +62,19 @@ local function remove_all()
 end
 
 local function add_events()
-  game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-  game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
-  game_event_manager:add_listener(GAME_EVENT_TYPES.UPDATE, update)
-  game_event_manager:add_listener(GAME_EVENT_TYPES.DRAW, draw)
-  game_event_manager:add_listener(GAME_EVENT_TYPES.QUIT, remove_all)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, update)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, draw)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.QUIT, remove_all)
 end
 
 local function remove_events()
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.UPDATE, update)
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.DRAW, draw)
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.QUIT, remove_all)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.UPDATE, update)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.DRAW_HUD, draw)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.QUIT, remove_all)
 end
 
 local function setup_button(font)
