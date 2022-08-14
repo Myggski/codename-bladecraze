@@ -50,6 +50,20 @@ local function entity_deactivated(entity)
   set.delete(active_entities, entity)
 end
 
+local function set_camera_position()
+  local position_x, position_y = 0, 0
+
+  for index = 1, #players do
+    position_x = position_x + players[index].center_position.x
+    position_y = position_y + players[index].center_position.y
+  end
+
+  position_x = position_x / #players
+  position_y = position_y / #players
+
+  camera:lookAt(position_x, position_y)
+end
+
 local function load()
   sprite_sheet_image = asset_manager:get_image("0x72_DungeonTilesetII_v1.4.png")
   button:create(128, 128, 64, 16, "mono text", asset_manager:get_font("Silver.ttf", 16, "mono"))
@@ -72,6 +86,8 @@ local function update(dt)
       entity:update(dt)
     end
   end
+
+  set_camera_position()
 end
 
 local function draw()
