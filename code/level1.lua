@@ -49,18 +49,21 @@ local function entity_deactivated(entity)
   set.delete(active_entities, entity)
 end
 
-local function set_camera_position()
+local function set_camera_position(dt)
   local position_x, position_y = 0, 0
+  local is_outside = false
 
   for index = 1, #players do
     position_x = position_x + players[index].center_position.x
     position_y = position_y + players[index].center_position.y
+
+    is_outside = is_outside or camera:is_outside(players[index].center_position.x, players[index].center_position.y)
   end
 
   position_x = position_x / #players
   position_y = position_y / #players
 
-  camera:lookAt(position_x, position_y)
+  camera:look_at(position_x, position_y)
 end
 
 local function load()
@@ -85,7 +88,7 @@ local function update(dt)
     end
   end
 
-  set_camera_position()
+  set_camera_position(dt)
 end
 
 local function draw()

@@ -25,7 +25,13 @@ function love.update(dt)
 end
 
 function love.draw()
-  camera:draw()
+  camera:start_draw_world()
+  game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_WORLD)
+  camera:stop_draw_world()
+
+  camera:start_draw_hud()
+  game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD)
+  camera:stop_draw_hud()
 end
 
 function love.mousepressed(x, y, btn, is_touch)
@@ -42,6 +48,18 @@ end
 
 function love.joystickremoved(joystick)
   game_event_manager.invoke(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick)
+end
+
+function love.keypressed(key, scancode, is_repeat)
+  game_event_manager.invoke(GAME_EVENT_TYPES.KEY_PRESSED, key, scancode, is_repeat)
+
+  if key == "escape" then
+    love.event.quit()
+  end
+end
+
+function love.keyreleased(key, scancode)
+  game_event_manager.invoke(GAME_EVENT_TYPES.KEY_RELEASED, key, scancode)
 end
 
 --Can be stopped by returning true instead

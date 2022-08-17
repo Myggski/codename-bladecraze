@@ -4,30 +4,33 @@ local camera = {
     resolution can be changed to
     GAME_WIDTH and GAME_HEIGHT globals
     ]]
-  visual_resolution_x = 384,
-  visual_resolution_y = 208,
+  logical_resolution_x = 213.33,
+  logical_resolution_y = 120,
   x = 0,
   y = 0,
-  canvas = {},
+  scale = 6,
+  current_scale = 6,
+  canvas_game = {},
+  canvas_hud = {},
+  is_fullscreen = false,
 }
 camera.__index = camera
 
-function camera:get_scale()
-  return love.graphics.getWidth() / self.visual_resolution_x, love.graphics.getHeight() / self.visual_resolution_y
-end
-
 -- Returns coordinates without the scaling and camera position
 function camera:screen_coordinates(x, y)
-  local scale_x, scale_y = self:get_scale()
-  return x / scale_x, y / scale_y
+  return x / self.scale, y / self.scale
+end
+
+-- Returns actual size of screen
+function camera:get_screen_size()
+  return self.logical_resolution_x * self.scale, self.logical_resolution_y * self.scale
 end
 
 -- Returns coordinates without scaling but adding camera position
 function camera:world_coordinates(x, y)
-  local scale_x, scale_y = self:get_scale()
-  local width, height = love.graphics.getWidth(), love.graphics.getHeight()
+  local width, height = self:get_screen_size()
 
-  local centered_x, centered_y = (x - width / 2) / scale_x, (y - height / 2) / scale_y
+  local centered_x, centered_y = (x - width / 2) / self.scale, (y - height / 2) / self.scale
   return centered_x + self.x, centered_y + self.y
 end
 
@@ -49,38 +52,57 @@ function camera:get_position()
 end
 
 -- Sets what the camera should look at
-function camera:lookAt(x, y)
+function camera:look_at(x, y)
   self.x, self.y = x, y
 end
 
-function camera:attach()
-  local canvas_x, canvas_y = self.visual_resolution_x / 2, self.visual_resolution_y / 2
+-- Is outside of cameras view
+function camera:is_outside(x, y)
+  local half_width, half_height = self.logical_resolution_x / 2, self.logical_resolution_y / 2
+  return x < self.x - half_width or x > self.x + half_width or y < self.y - half_height or y > self.y + half_height
+end
+
+function camera:start_draw_world()
+  love.graphics.setCanvas(camera.canvas_game)
+  love.graphics.clear(0, 0, 0, 0) -- Resets canvas
+
   love.graphics.push()
+  local canvas_x, canvas_y = self.logical_resolution_x / 2, self.logical_resolution_y / 2
   love.graphics.translate(math.round(canvas_x), math.round(canvas_y)) -- Center the origin
   love.graphics.translate(math.round(-self.x), math.round(-self.y)) -- Sets the camera position
 end
 
-function camera:detatch()
+function camera:stop_draw_world()
   love.graphics.pop()
+  love.graphics.setCanvas()
+  love.graphics.draw(camera.canvas_game, 0, 0, 0, camera.scale, camera.current_scale) -- Draw canvas upscaled
+end
+
+function camera:start_draw_hud()
+  love.graphics.setCanvas(camera.canvas_hud)
+  love.graphics.clear(0, 0, 0, 0) -- Resets canvas
+end
+
+function camera:stop_draw_hud()
+  love.graphics.setCanvas()
+  love.graphics.draw(camera.canvas_hud, 0, 0, 0, camera.scale, camera.scale) -- Draw canvas upscaled
+end
+
+function camera:toggle_fullscreen()
+  self.is_fullscreen = love.window.setFullscreen(not self.is_fullscreen, "desktop")
 end
 
 function camera:load()
-  self.canvas = love.graphics.newCanvas(self.visual_resolution_x, self.visual_resolution_y)
-  self.canvas:setFilter("nearest", "nearest")
-end
+  self:toggle_fullscreen()
 
-function camera:draw()
-  love.graphics.setCanvas(self.canvas)
-  love.graphics.clear(0, 0, 0, 0) -- Resets canvas
-
-  camera:attach()
-  game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_WORLD, self.canvas)
-  camera:detatch()
-
-  game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD, camera.canvas)
-
-  love.graphics.setCanvas()
-  love.graphics.draw(self.canvas, 0, 0, 0, self:get_scale()) -- Draw canvas upscaled
+  if self.is_fullscreen then
+    local width, height = love.graphics.getWidth(), love.graphics.getHeight()
+    self.logical_resolution_x, self.logical_resolution_y = width / self.scale, height / self.scale
+    self.canvas_game = love.graphics.newCanvas(self.logical_resolution_x, self.logical_resolution_y)
+    self.canvas_hud = love.graphics.newCanvas(self.logical_resolution_x, self.logical_resolution_y)
+    self.canvas_game:setFilter("nearest", "nearest")
+    self.canvas_hud:setFilter("nearest", "nearest")
+  end
 end
 
 return camera

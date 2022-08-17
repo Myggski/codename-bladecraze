@@ -27,6 +27,8 @@ GAME_EVENT_TYPES = {
   UPDATE = "update",
   JOYSTICK_ADDED = "joystickadded",
   JOYSTICK_REMOVED = "joystickremoved",
+  KEY_PRESSED = "keypressed",
+  KEY_RELEASED = "keyreleased",
 }
 
 ENTITY_EVENT_TYPES = {
