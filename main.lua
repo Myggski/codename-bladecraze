@@ -1,8 +1,8 @@
-require("code.engine.global_types")
-require("code.engine.game_data")
-require("code.utilities.love_extension")
-require("code.utilities.table_extension")
-require("code.utilities.extended_math")
+require "code.engine.global_types"
+require "code.engine.game_data"
+require "code.utilities.love_extension"
+require "code.utilities.table_extension"
+require "code.utilities.extended_math"
 
 --[[
   Due to the level listening to game_events,
@@ -11,9 +11,9 @@ require("code.utilities.extended_math")
   We will have to change that later when we make
   a level select of some kind
 ]]
-local level1 = require("code.level1")
-local camera = require("code.engine.camera")
-local game_event_manager = require("code.engine.game_event.game_event_manager")
+local level1 = require "code.level1"
+local camera = require "code.engine.camera"
+local game_event_manager = require "code.engine.game_event.game_event_manager"
 
 function love.load()
   camera:load()
@@ -29,9 +29,9 @@ function love.draw()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_WORLD)
   camera:stop_draw_world()
 
-  camera:start_draw_hud()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD)
-  camera:stop_draw_hud()
+  love.graphics.setCanvas()
+  love.graphics.draw(camera.canvas_game, 0, 0, 0, camera.scale, camera.current_scale) -- Draw canvas upscaled  
 end
 
 function love.mousepressed(x, y, btn, is_touch)

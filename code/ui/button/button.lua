@@ -3,6 +3,7 @@ local button_model = require("code.ui.button.model.button_model")
 local button_view = require("code.ui.button.view.button_view")
 local rectangle = require("code.engine.rectangle")
 local font_silver = require("code.engine.font_silver")
+local camera = require("code.engine.camera")
 
 local buttons = {}
 local sprite_batch = nil
@@ -28,6 +29,7 @@ local function update(dt)
   for index = 1, #buttons do
     local button = buttons[index]
     button:try_button_hover()
+    print(camera:screen_to_world(button.rectangle.x, button.rectangle.y))
   end
 end
 
