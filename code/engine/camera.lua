@@ -99,6 +99,22 @@ end
 -- Turns on or off fullscreen
 function camera:toggle_fullscreen() self.is_fullscreen = love.window.setFullscreen(not self.is_fullscreen, "desktop") end
 
+-- Returns camera position in game world
+function camera:get_position() return self.x or 0, self.y or 0 end
+
+-- Returns the mouse position on the screen
+function camera:mouse_position_screen() return self:screen_coordinates(love.mouse.getPosition()) end
+
+-- Returns the mouse position in the world
+function camera:mouse_position_world()
+  local screen_x, screen_y = self:mouse_position_screen()
+
+  return self:world_coordinates(screen_x * self:get_zoom_aspect_ratio(), screen_y * self:get_zoom_aspect_ratio())
+end
+
+-- Turns on or off fullscreen
+function camera:toggle_fullscreen() self.is_fullscreen = love.window.setFullscreen(not self.is_fullscreen, "desktop") end
+
 -- Sets what the camera should look at
 function camera:look_at(world_x, world_y) self.x, self.y = world_x, world_y end
 

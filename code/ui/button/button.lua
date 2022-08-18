@@ -28,6 +28,7 @@ local function update(dt)
   for index = 1, #buttons do
     local button = buttons[index]
     button:try_button_hover()
+    print(camera:screen_to_world(button.rectangle.x, button.rectangle.y))
   end
 end
 
