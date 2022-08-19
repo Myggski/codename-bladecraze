@@ -6,6 +6,8 @@ local camera = require("code.engine.camera")
 local player_character = require("code.player.player")
 local button = require("code.ui.button.button")
 
+local asset_manager = require("code.engine.asset_manager")
+
 local level1 = {}
 
 local grid = {}
@@ -49,7 +51,7 @@ local function entity_deactivated(entity)
 end
 
 local function load()
-  sprite_sheet_image = love.graphics.newPixelImage("assets/0x72_DungeonTilesetII_v1.4.png")
+  sprite_sheet_image = asset_manager:get_image("0x72_DungeonTilesetII_v1.4.png")
   button:create(128, 128, 16, 16)
 
   create_grid()
@@ -57,7 +59,7 @@ local function load()
 
   local projectile_pool_size = 20
   for _, value in pairs(GAME.PROJECTILE_TYPES) do
-    if (value ~= GAME.PROJECTILE_TYPES.NONE) then
+    if not (value == GAME.PROJECTILE_TYPES.NONE) then
       projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
     end
   end

@@ -14,3 +14,7 @@ function table.get_size(table)
   end
   return count
 end
+
+function table.contains_key(table, key)
+  return not (table[key] == nil)
+end
