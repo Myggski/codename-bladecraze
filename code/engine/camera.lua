@@ -89,6 +89,30 @@ function camera:get_position() return self.x or 0, self.y or 0 end
 -- Returns the mouse position on the screen
 function camera:mouse_position_screen() return self:screen_coordinates(love.mouse.getPosition()) end
 
+function camera:unfollow(target)
+  local index = table.index_of(self.follow_targets, target)
+
+  if not index == nil then
+    table.remove(self.follow_targets, index)
+  end
+end
+
+-- Sets what the camera should look at
+function camera:look_at(world_x, world_y) self.x, self.y = world_x, world_y end
+
+function camera:try_zoom(is_outside, dt)
+  if is_outside and self.zoom > -2 then
+    self:zoom_game(-dt)
+>>>>>>> bc69291 (Fixed scaling and moved logic into the camera)
+  end
+end
+
+-- Returns camera position in game world
+function camera:get_position() return self.x or 0, self.y or 0 end
+
+-- Returns the mouse position on the screen
+function camera:mouse_position_screen() return self:screen_coordinates(love.mouse.getPosition()) end
+
 -- Returns the mouse position in the world
 function camera:mouse_position_world()
   local screen_x, screen_y = self:mouse_position_screen()
@@ -145,7 +169,7 @@ end
 
 -- Preparing to draw the game world
 function camera:start_draw_world()
-  love.graphics.setCanvas(camera.canvas_game)
+  love.graphics.setCanvas(camera.canvas)
   love.graphics.clear(0, 0, 0, 0)
   love.graphics.push()
 
