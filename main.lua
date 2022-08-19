@@ -11,7 +11,8 @@ require "code.utilities.extended_math"
   We will have to change that later when we make
   a level select of some kind
 ]]
-local level1 = require "code.level1"
+require "code.level1"
+
 local camera = require "code.engine.camera"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 
@@ -22,6 +23,7 @@ end
 
 function love.update(dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
+  camera:update(dt)
 end
 
 function love.draw()
@@ -29,9 +31,9 @@ function love.draw()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_WORLD)
   camera:stop_draw_world()
 
+  camera:start_draw_hud()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD)
-  love.graphics.setCanvas()
-  love.graphics.draw(camera.canvas_game, 0, 0, 0, camera.scale, camera.current_scale) -- Draw canvas upscaled  
+  camera:stop_draw_hud()
 end
 
 function love.mousepressed(x, y, btn, is_touch)
