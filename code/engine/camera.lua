@@ -16,7 +16,9 @@ ZOOM_ANIMATION_SPEED = 0.0625
 ZOOM_ANIMATION_STATE = {
   NONE = 0,
   IN = 1,
+  IN_HORIZONTALLY = 1,
   OUT = 2,
+  OUT_HORIZONTALLY = 2,
 }
 
 local camera = {
@@ -28,6 +30,8 @@ local camera = {
   delta_time = 0,
   is_fullscreen = false,
   follow_targets = {},
+  furthest_target_x = {},
+  furthest_target_y = {},
   zoom = 0,
   zoom_animation_coroutine = nil,
 }
