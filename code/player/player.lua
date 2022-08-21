@@ -46,16 +46,22 @@ function player:handle_shoot()
         add cleaner way to prevent arrows from colliding
         with player or themselves
       ]]
+      local center_x, center_y = self.box:center()
       instance.client.guid = "projectile" .. self.guid
       local start_pos = {
-        x = self.center_position.x + self.input.aim_dir.x * 16,
-        y = self.center_position.y + self.input.aim_dir.y * 16
+        x = center_x + self.input.aim_dir.x * 16,
+        y = center_y + self.input.aim_dir.y * 16
       }
       local ignore_targets = set.create({ self.guid })
       instance:shoot(start_pos, self.input.aim_dir, ignore_targets)
       self.shoot_timer = self.shoot_cd
     end
   end
+end
+
+function player:get_moving_direction()
+  local x, y = self.box:center_x() - self.previous_position.x, self.box:center_y() - self.previous_position.y
+  return math.normalize(x, y)
 end
 
 function player:handle_melee()
@@ -71,17 +77,19 @@ function player:handle_ultimate()
 end
 
 function player:update(dt)
-  self.input = player_input.get_input(self.index, self.center_position)
+  local center_position = { x = self.box:center_x(), y = self.box:center_y() }
+  self.input = player_input.get_input(self.index, center_position)
 
   local new_position = { x = 0, y = 0 }
-  new_position.x = self.center_position.x + self.input.move_dir.x * 100 * dt
-  new_position.y = self.center_position.y + self.input.move_dir.y * 100 * dt
+
+  new_position.x = center_position.x + self.input.move_dir.x * 100 * dt
+  new_position.y = center_position.y + self.input.move_dir.y * 100 * dt
 
   local collided = self:check_collisions(new_position)
 
   --Move player if no collisions
   if collided == false then
-    self.center_position = new_position
+    self.previous_position = { x = center_position.x, y = center_position.y }
     self.client.position = new_position
     self.box.x = new_position.x - self.box.w / 2
     self.box.y = new_position.y - self.box.h / 2
@@ -163,7 +171,7 @@ function player:create(data)
     class = data.class,
     name = character_data[data.class].name,
     client = client,
-    center_position = center_position,
+    previous_position = { x = 0, y = 0 },
     guid = guid,
     active = true,
     shoot_cd = 0.1,

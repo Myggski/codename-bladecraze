@@ -45,7 +45,7 @@ function projectile:update(dt)
   self.center_position.x = x
   self.center_position.y = y
 
-  if camera:is_outside(x, y) then
+  if camera:is_outside(self.box) then
     self:deactivate()
   end
 

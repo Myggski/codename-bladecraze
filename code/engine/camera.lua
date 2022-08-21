@@ -9,12 +9,17 @@
   SCREEN COORDINATES = Pixel coordinates on the screen that is upscaled same as the images.
 ]]
 
-MIN_ZOOM = -3
-MAX_ZOOM = 0
+ZOOM_MIN = -3
+ZOOM_MAX = 0
+ZOOM_ANIMATION_STEP = 0.5
+ZOOM_ANIMATION_SPEED = 0.025
+
 ZOOM_ANIMATION_STATE = {
   NONE = 0,
   IN = 1,
+  IN_HORIZONTALLY = 1,
   OUT = 2,
+  OUT_HORIZONTALLY = 2,
 }
 
 local camera = {
@@ -26,43 +31,43 @@ local camera = {
   delta_time = 0,
   is_fullscreen = false,
   follow_targets = {},
+  furthest_target_x = {},
+  furthest_target_y = {},
   zoom = 0,
   zoom_animation_coroutine = nil,
-  zoom_animation_initial_state = ZOOM_ANIMATION_STATE.NONE,
-  zoom_animation_current_state = ZOOM_ANIMATION_STATE.NONE,
 }
 camera.__index = camera
 
 -- Get screen size with scale and zoom
 function camera:get_screen_game_size()
   local width, height = love.graphics.getWidth(), love.graphics.getHeight()
+
   return width / (self.scale + self.zoom), height / (self.scale + self.zoom)
 end
 
 function camera:get_screen_game_half_size()
   local width, height = self:get_screen_game_size()
+
   return width / 2, height / 2
 end
 
 function camera:get_aspect_ratio()
   local width, height = camera:get_screen_game_size()
+
   return width / height
 end
 
-function camera:get_screen_game_hud_diff()
-  return self.scale / (self.scale + self.zoom)
-end
+-- Returns scale diff between game and hud
+function camera:get_screen_game_hud_diff() return self.scale / (self.scale + self.zoom) end
 
 -- Returns actual screen pixel coordinates to game virtual coordinates
-function camera:screen_coordinates(pixel_x, pixel_y)
-  return pixel_x / (self.scale), pixel_y / (self.scale)
-end
+function camera:screen_coordinates(pixel_x, pixel_y) return pixel_x / self.scale, pixel_y / self.scale end
 
 -- Returns centered screen world coordinates
 function camera:world_coordinates(screen_x, screen_y)
   local width, height = self:get_screen_game_size()
-
   local centered_x, centered_y = (screen_x - width / 2), (screen_y - height / 2)
+
   return centered_x + self.x, centered_y + self.y
 end
 
@@ -73,12 +78,12 @@ function camera:follow(target) table.insert(self.follow_targets, target) end
 function camera:unfollow(target)
   local index = table.index_of(self.follow_targets, target)
 
-  if not index == nil then
+  if not (index == nil) then
     table.remove(self.follow_targets, index)
   end
 end
 
--- Returns camera position
+-- Returns camera position in game world
 function camera:get_position() return self.x, self.y end
 
 -- Returns the mouse position on the screen
@@ -88,6 +93,7 @@ function camera:mouse_position_screen() return self:screen_coordinates(love.mous
 function camera:mouse_position_world()
   local pixel_x, pixel_y = love.mouse.getPosition()
   local screen_x, screen_y = self:screen_coordinates(pixel_x, pixel_y);
+
   return self:world_coordinates(screen_x * self:get_screen_game_hud_diff(), screen_y * self:get_screen_game_hud_diff())
 end
 
@@ -98,21 +104,22 @@ function camera:toggle_fullscreen() self.is_fullscreen = love.window.setFullscre
 function camera:look_at(world_x, world_y) self.x, self.y = world_x, world_y end
 
 -- Returns true or false if its outside of camera in both x and y axis
-function camera:is_outside_directions(world_x, world_y, border_margin_percentage)
-  border_margin_percentage = border_margin_percentage or 0
-  local half_width, half_height = camera:get_screen_game_half_size()
-  half_width, half_height = half_width - (half_width * border_margin_percentage),
-      half_height - (half_height * border_margin_percentage)
+function camera:is_outside_directions(rectangle_x, rectangle_y, margin_percentage)
+  margin_percentage = margin_percentage or 0
 
-  local is_outside_x = world_x < self.x - half_width or world_x > self.x + half_width
-  local is_outside_y = world_y < self.y - half_height or world_y > self.y + half_height
+  local half_width, half_height = camera:get_screen_game_half_size()
+  half_width = half_width - (half_width * margin_percentage) / self:get_aspect_ratio()
+  half_height = half_height - (half_height * margin_percentage)
+
+  local is_outside_x = rectangle_x.x < self.x - half_width or rectangle_x.x + rectangle_x.w > self.x + half_width
+  local is_outside_y = rectangle_y.y < self.y - half_height or rectangle_y.y + rectangle_y.h > self.y + half_height
 
   return is_outside_x, is_outside_y
 end
 
 -- Returns true if its outside in any direction
-function camera:is_outside(world_x, world_y, border_margin_percentage)
-  local is_outside_x, is_outside_y = self:is_outside_directions(world_x, world_y, border_margin_percentage)
+function camera:is_outside(target_rectangle, margin_percentage)
+  local is_outside_x, is_outside_y = self:is_outside_directions(target_rectangle, target_rectangle, margin_percentage)
 
   return is_outside_x or is_outside_y
 end
@@ -123,9 +130,8 @@ function camera:start_draw_world()
   love.graphics.clear(0, 0, 0, 0)
   love.graphics.push()
 
-  local width, height = camera:get_screen_game_size()
-  local canvas_x, canvas_y = width / 2, height / 2
-  love.graphics.translate(math.round(canvas_x), math.round(canvas_y)) -- Center the origin
+  local half_width, half_height = camera:get_screen_game_half_size()
+  love.graphics.translate(math.round(half_width), math.round(half_height)) -- Center the origin
   love.graphics.translate(math.round(-self.x), math.round(-self.y)) -- Sets the camera position
 end
 
@@ -133,7 +139,7 @@ end
 function camera:stop_draw_world()
   love.graphics.pop()
   love.graphics.setCanvas()
-  love.graphics.draw(camera.canvas_game, 0, 0, 0, camera.scale + camera.zoom) -- Draw canvas upscaled
+  love.graphics.draw(camera.canvas_game, 0, 0, 0, camera.scale + camera.zoom)
 end
 
 -- Preparing to draw the game hud
@@ -145,7 +151,7 @@ end
 -- Resets everything after drawing the hud
 function camera:stop_draw_hud()
   love.graphics.setCanvas()
-  love.graphics.draw(camera.canvas_hud, 0, 0, 0, camera.scale) -- Draw canvas upscaled
+  love.graphics.draw(camera.canvas_hud, 0, 0, 0, camera.scale)
 end
 
 function camera:set_canvas_game(width, height)
@@ -158,94 +164,117 @@ function camera:set_canvas_hud(width, height)
   self.canvas_hud:setFilter("nearest", "nearest")
 end
 
-function camera:set_canvas()
-  local width, height = camera:get_screen_game_size()
+function camera:get_zoom_animation_state(is_inside_outer, is_inside_inner)
+  local animation_state = ZOOM_ANIMATION_STATE.NONE
 
-  self:set_canvas_game(width, height)
-  self:set_canvas_hud(width, height)
+  if self.zoom >= ZOOM_MIN and is_inside_outer then
+    animation_state = ZOOM_ANIMATION_STATE.OUT
+  elseif self.zoom < ZOOM_MAX and not is_inside_inner then
+    animation_state = ZOOM_ANIMATION_STATE.IN
+  end
+
+  return animation_state
+end
+
+function camera:try_zoom()
+  self.furthest_target_x, self.furthest_target_y = self:get_furthest_targets()
+  local is_inside_outer_x, is_inside_outer_y = self:is_outside_directions(
+    self.furthest_target_x.box,
+    self.furthest_target_y.box
+  )
+  local is_inside_inner_x, is_inside_inner_y = self:is_outside_directions(
+    self.furthest_target_x.box,
+    self.furthest_target_y.box,
+    0.3
+  )
+  local animation_state = self:get_zoom_animation_state(
+    is_inside_outer_x or is_inside_outer_y,
+    is_inside_inner_x or is_inside_inner_y
+  )
+
+  if self.zoom_animation_coroutine == nil and not (animation_state == ZOOM_ANIMATION_STATE.NONE) then
+    self.zoom_animation_coroutine = coroutine.create(function()
+      self:animate_zoom(animation_state)
+    end)
+  end
+
+  if not (self.zoom_animation_coroutine == nil) and coroutine.status(self.zoom_animation_coroutine) == "suspended" then
+    coroutine.resume(self.zoom_animation_coroutine)
+  end
 end
 
 function camera:zoom_game(zoom_value)
   self.zoom = self.zoom + zoom_value
 
-  if self.zoom < MIN_ZOOM then
-    self.zoom = MIN_ZOOM
-  elseif self.zoom > MAX_ZOOM then
-    self.zoom = MAX_ZOOM
+  if self.zoom < ZOOM_MIN then
+    self.zoom = ZOOM_MIN
+  elseif self.zoom > ZOOM_MAX then
+    self.zoom = ZOOM_MAX
   end
 
   self:set_canvas_game(self:get_screen_game_size())
 end
 
+-- Gets the following targets thats furthest on x and y axis
+function camera:get_furthest_targets()
+  local target_x, target_y = nil, nil
+
+  for index = 1, table.get_size(self.follow_targets) do
+    local target = self.follow_targets[index]
+    local center_x, center_y = target.box:center()
+    local distance_x, distance_y = math.abs(self.x - center_x), math.abs(self.y - center_y)
+
+    if (target_x == nil or distance_x > math.abs(target_x.box:center_x())) then
+      target_x = target
+    end
+
+    if (target_y == nil or distance_y > math.abs(target_y.box:center_y())) then
+      target_y = target
+    end
+  end
+
+  return target_x, target_y
+end
+
 function camera:set_camera_position(dt)
   self.delta_time = dt
   local number_of_targets = table.get_size(self.follow_targets)
-  local uttermost_x, uttermost_y = 0, 0
   local position_x, position_y = 0, 0
-  local is_inside_outer, is_inside_outer_x, is_inside_outer_y = false, false, false
-  local is_inside_inner, is_inside_inner_x, is_inside_inner_y = false, false, false
 
   for index = 1, number_of_targets do
     local target = self.follow_targets[index]
-    local distance_x, distance_y = math.abs(self.x - target.center_position.x),
-        math.abs(self.y - target.center_position.y)
+    local center_x, center_y = target.box:center()
 
-    uttermost_x = distance_x > math.abs(uttermost_x) and target.center_position.x or uttermost_x
-    uttermost_y = distance_y > math.abs(uttermost_y) and target.center_position.y or uttermost_y
-    position_x = position_x + target.center_position.x
-    position_y = position_y + target.center_position.y
+    position_x = position_x + center_x
+    position_y = position_y + center_y
   end
 
   position_x = position_x / number_of_targets
   position_y = position_y / number_of_targets
 
-  is_inside_outer_x, is_inside_outer_y = self:is_outside_directions(uttermost_x, uttermost_y, 0.08)
-  is_inside_inner_x, is_inside_inner_y = self:is_outside_directions(uttermost_x, uttermost_y, 0.25)
-  is_inside_outer = is_inside_outer_x or is_inside_outer_y
-  is_inside_inner = is_inside_inner_x or is_inside_inner_y
-
-  self.zoom_animation_current_state = ZOOM_ANIMATION_STATE.NONE
-
-  if self.zoom >= MIN_ZOOM and is_inside_outer then
-    self.zoom_animation_current_state = ZOOM_ANIMATION_STATE.OUT
-  elseif self.zoom < MAX_ZOOM and not is_inside_inner then
-    self.zoom_animation_current_state = ZOOM_ANIMATION_STATE.IN
-  end
-
-  if self.zoom_animation_coroutine == nil and not (self.zoom_animation_current_state == ZOOM_ANIMATION_STATE.NONE) then
-    self.zoom_animation_initial_state = self.zoom_animation_current_state
-    self.zoom_animation_coroutine = coroutine.create(function() self:animate_zoom() end)
-  end
-
-  if not (self.zoom_animation_coroutine == nil) and coroutine.status(self.zoom_animation_coroutine) == "suspended" then
-    coroutine.resume(self.zoom_animation_coroutine, dt)
-  end
-
+  self:try_zoom()
   self:look_at(position_x, position_y)
 end
 
-function camera:animate_zoom()
-  local zoom_amount = 0.5
+function camera:animate_zoom(animation_state)
+  local zoom_step = ZOOM_ANIMATION_STEP
+  local zoom_speed = ZOOM_ANIMATION_SPEED / camera:get_screen_game_hud_diff()
 
-  while zoom_amount > 0 do
-    local zoom_speed = 0.0125
-    zoom_amount = zoom_amount - zoom_speed
-    self:zoom_game(self.zoom_animation_initial_state == ZOOM_ANIMATION_STATE.OUT and -zoom_speed or zoom_speed)
+  while zoom_step > 0 do
+    zoom_step = zoom_step - zoom_speed
+    self:zoom_game(animation_state == ZOOM_ANIMATION_STATE.OUT and -zoom_speed or zoom_speed)
     coroutine.yield()
   end
 
   self.zoom_animation_coroutine = nil
-  self.zoom_animation_initial_state = ZOOM_ANIMATION_STATE.NONE
 end
 
 function camera:load()
   --self:toggle_fullscreen()
+  local width, height = camera:get_screen_game_size()
 
-  if self.is_fullscreen then
-    self:set_canvas()
-  end
-
-  self:set_canvas()
+  self:set_canvas_game(width, height)
+  self:set_canvas_hud(width, height)
 end
 
 function camera:update(dt)

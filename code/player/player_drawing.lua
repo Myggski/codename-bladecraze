@@ -11,8 +11,9 @@ local function draw_player(player)
   local origin_x, origin_y = w / 2, h / 2
   love.graphics.draw(
     current_animation.sprite_sheet,
-    quad, player.center_position.x,
-    player.center_position.y,
+    quad,
+    player.box:center_x(),
+    player.box:center_y(),
     0,
     player.direction,
     1,
