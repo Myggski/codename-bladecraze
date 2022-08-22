@@ -1,51 +1,77 @@
-local prototypes = require("code.utilities.prototypes")
+local asset_manager = {
+  images = { dir = "assets/images/", loaded_data = {} },
+  fonts = { dir = "assets/fonts/", loaded_data = {} },
+  audio = { dir = "assets/audio/", loaded_data = {} },
+}
 
-local asset_manager = {}
-local category = prototypes.asset_category
+local am = asset_manager
+local images, audio, fonts = am.images, am.audio, am.fonts
 
-asset_manager.images = category:new { dir = "assets/images/", }
-asset_manager.fonts = category:new { dir = "assets/fonts/", }
-asset_manager.audio = category:new { dir = "assets/audio/", }
+local function get_asset(file_path, asset_table)
+  local is_loaded, asset = "", false, nil
+  is_loaded = table.contains_key(asset_table.loaded_data, file_path)
+  asset = asset_table.loaded_data[file_path]
 
-local images, audio, fonts = asset_manager.images, asset_manager.audio, asset_manager.fonts
+  return is_loaded, asset
+end
 
-function asset_manager:get_image(name)
-  local path = images.dir .. name
-  if table.contains_key(images.loaded_data, path) then
-    print("found existing image")
-    return images.loaded_data[path]
+function asset_manager:get_text_size(font, text)
+  return font:getWidth(text), font:getHeight()
+end
+
+--[[
+  Create a new unique pixel image, or return existing one with same path
+]]
+function asset_manager:get_image(file_name)
+  local file_path = images.dir .. file_name
+  local storage_path = file_name
+  local is_loaded, asset = get_asset(storage_path, images)
+
+  if is_loaded then
+    return asset
   end
 
-  local image = love.graphics.newImage(path)
-  image:setFilter("nearest", "nearest")
-  images.loaded_data[path] = image
+  local image = love.graphics.newPixelImage(file_path)
+  images.loaded_data[storage_path] = image
   return image
 end
 
-function asset_manager:get_audio(name, audio_type)
-  local path = audio.dir .. name
+--[[
+  Create a new unique audio source for a file.
+  unique_id makes it possible for more sources to exist.
+]]
+function asset_manager:get_audio(file_name, audio_type, unique_id)
+  audio_type = audio_type or "static"
+  unique_id = unique_id or ""
 
-  if table.contains_key(audio.loaded_data, path) then
-    return audio.loaded_data[path]
+  local file_path = audio.dir .. file_name
+  local storage_path = file_name .. audio_type .. unique_id
+  local is_loaded, asset = get_asset(storage_path, audio)
+  if is_loaded then
+    return asset
   end
 
-  audio_type = audio_type or "static"
-  audio.loaded_data[path] = love.audio.newSource(path, audio_type)
-  return audio.loaded_data[path]
+  audio.loaded_data[storage_path] = love.audio.newSource(file_path, audio_type)
+  return audio.loaded_data[storage_path]
 end
 
-function asset_manager:get_font(name, font_size, hinting_mode)
-  local path = fonts.dir .. name
-  if table.contains_key(fonts.loaded_data, path) then
-    print("found existing font")
-    return fonts.loaded_data[path]
-  end
-
+--[[
+  Create a new unique font or retrieve existing one with same parameters.
+]]
+function asset_manager:get_font(file_name, font_size, hinting_mode)
   font_size = font_size or 16
   hinting_mode = hinting_mode or "normal"
 
-  local font = love.graphics.newFont(path, font_size, hinting_mode)
-  fonts.loaded_data[path] = font
+  local file_path = fonts.dir .. file_name
+  local storage_path = file_name .. hinting_mode .. font_size
+  local is_loaded, asset = get_asset(storage_path, fonts)
+
+  if is_loaded then
+    return asset
+  end
+
+  local font = love.graphics.newFont(file_path, font_size, hinting_mode)
+  fonts.loaded_data[storage_path] = font
   return font
 end
 
