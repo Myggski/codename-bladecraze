@@ -106,7 +106,7 @@ function button_model:remove()
 end
 
 function button_model:create(x, y, w, h, text, font)
-  local font = asset_manager:get_font("Silver.ttf", 16, "normal")
+  local font = font or asset_manager:get_font("Silver.ttf", 16, "mono")
   self.__index = self
 
   setup_button(font)
