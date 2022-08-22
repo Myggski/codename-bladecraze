@@ -1,10 +1,8 @@
 --[[
   PIXEL COORDINATES = love.mouse.getPosition() returns pixel coordinates
   top-left = (0, 0), bottom-right = screen resolution, e.g. 1920x1080 or 3440x1440 and so on.
-
   VIRTUAL RESOLUTION = Screen resolution / Scale. e.g. 1920x1080 / 6 = 320x180.
   We're dealing with small images, and scaling the canvas up to make the images look larger than it actually is.
-
   WORLD COORDINATES = Is the position of a entity or thing in the game world.
   SCREEN COORDINATES = Pixel coordinates on the screen that is upscaled same as the images.
 ]]
@@ -89,46 +87,6 @@ function camera:get_position() return self.x or 0, self.y or 0 end
 -- Returns the mouse position on the screen
 function camera:mouse_position_screen() return self:screen_coordinates(love.mouse.getPosition()) end
 
-function camera:unfollow(target)
-  local index = table.index_of(self.follow_targets, target)
-
-  if not index == nil then
-    table.remove(self.follow_targets, index)
-  end
-end
-
--- Sets what the camera should look at
-function camera:look_at(world_x, world_y) self.x, self.y = world_x, world_y end
-
-function camera:try_zoom(is_outside, dt)
-  if is_outside and self.zoom > -2 then
-    self:zoom_game(-dt)
->>>>>>> bc69291 (Fixed scaling and moved logic into the camera)
-  end
-end
-
--- Returns camera position in game world
-function camera:get_position() return self.x or 0, self.y or 0 end
-
--- Returns the mouse position on the screen
-function camera:mouse_position_screen() return self:screen_coordinates(love.mouse.getPosition()) end
-
--- Returns the mouse position in the world
-function camera:mouse_position_world()
-  local screen_x, screen_y = self:mouse_position_screen()
-
-  return self:world_coordinates(screen_x * self:get_zoom_aspect_ratio(), screen_y * self:get_zoom_aspect_ratio())
-end
-
--- Turns on or off fullscreen
-function camera:toggle_fullscreen() self.is_fullscreen = love.window.setFullscreen(not self.is_fullscreen, "desktop") end
-
--- Returns camera position in game world
-function camera:get_position() return self.x or 0, self.y or 0 end
-
--- Returns the mouse position on the screen
-function camera:mouse_position_screen() return self:screen_coordinates(love.mouse.getPosition()) end
-
 -- Returns the mouse position in the world
 function camera:mouse_position_world()
   local screen_x, screen_y = self:mouse_position_screen()
@@ -169,7 +127,7 @@ end
 
 -- Preparing to draw the game world
 function camera:start_draw_world()
-  love.graphics.setCanvas(camera.canvas)
+  love.graphics.setCanvas(camera.canvas_game)
   love.graphics.clear(0, 0, 0, 0)
   love.graphics.push()
 
