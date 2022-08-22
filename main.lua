@@ -52,6 +52,18 @@ function love.joystickremoved(joystick)
   game_event_manager:invoke(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick)
 end
 
+function love.keypressed(key, scancode, is_repeat)
+  game_event_manager.invoke(GAME_EVENT_TYPES.KEY_PRESSED, key, scancode, is_repeat)
+
+  if key == "escape" then
+    love.event.quit()
+  end
+end
+
+function love.keyreleased(key, scancode)
+  game_event_manager.invoke(GAME_EVENT_TYPES.KEY_RELEASED, key, scancode)
+end
+
 --Can be stopped by returning true instead
 function love.quit()
   local ready_to_quit = false

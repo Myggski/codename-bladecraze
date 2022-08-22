@@ -52,7 +52,7 @@ function player:handle_shoot()
         with player or themselves
       ]]
       local center_x, center_y = self.box:center()
-      local local number = love.math.random(8, 10)
+      local number = love.math.random(8, 10)
       self.arrow_sound:setPitch(number / 10)
       self.arrow_sound:play()
       instance.client.guid = "projectile" .. self.guid
