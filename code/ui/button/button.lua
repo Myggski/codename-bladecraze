@@ -1,10 +1,8 @@
-local game_event_manager = require("code.engine.game_event.game_event_manager")
-local button_model = require("code.ui.button.model.button_model")
-local button_view = require("code.ui.button.view.button_view")
-local rectangle = require("code.engine.rectangle")
-local font_silver = require("code.engine.font_silver")
-local asset_manager = require("code.engine.asset_manager")
-
+local game_event_manager = require "code.engine.game_event.game_event_manager"
+local button_model = require "code.ui.button.model.button_model"
+local button_view = require "code.ui.button.view.button_view"
+local rectangle = require "code.engine.rectangle"
+local asset_manager = require "code.engine.asset_manager"
 
 local buttons = {}
 local sprite_batch = nil
@@ -64,36 +62,35 @@ local function remove_all()
 end
 
 local function add_events()
-  game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-  game_event_manager:add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
-  game_event_manager:add_listener(GAME_EVENT_TYPES.UPDATE, update)
-  game_event_manager:add_listener(GAME_EVENT_TYPES.DRAW, draw)
-  game_event_manager:add_listener(GAME_EVENT_TYPES.QUIT, remove_all)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, update)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, draw)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.QUIT, remove_all)
 end
 
 local function remove_events()
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.UPDATE, update)
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.DRAW, draw)
-  game_event_manager:remove_listener(GAME_EVENT_TYPES.QUIT, remove_all)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.UPDATE, update)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.DRAW_HUD, draw)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.QUIT, remove_all)
 end
 
 local function setup_button(font)
-
-  if (#buttons == 0) then
-    if (sprite_batch == nil) then
+  if #buttons == 0 then
+    if sprite_batch == nil then
       sprite_batch = love.graphics.newSpriteBatch(asset_manager:get_image("button.png"))
     end
 
-    if (quads == nil) then
+    if quads == nil then
       quads = button_view.create_quads(sprite_batch)
     end
 
     add_events()
   end
 
-  if (text_batch_list[font:getHeight()] == nil) then
+  if text_batch_list[font:getHeight()] == nil then
     text_batch_list[font:getHeight()] = love.graphics.newText(font)
   end
 end

@@ -22,10 +22,13 @@ GAME_EVENT_TYPES = {
   QUIT = "quit",
   MOUSE_PRESSED = "mousepressed",
   MOUSE_RELEASED = "mousereleased",
-  DRAW = "draw",
+  DRAW_WORLD = "drawworld",
+  DRAW_HUD = "drawhud",
   UPDATE = "update",
   JOYSTICK_ADDED = "joystickadded",
   JOYSTICK_REMOVED = "joystickremoved",
+  KEY_PRESSED = "keypressed",
+  KEY_RELEASED = "keyreleased",
 }
 
 ENTITY_EVENT_TYPES = {

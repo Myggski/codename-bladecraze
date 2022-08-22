@@ -1,15 +1,14 @@
-local rectangle = require("code.engine.rectangle")
-local game_event_manager = require("code.engine.game_event.game_event_manager")
-local camera = require("code.engine.camera")
-local projectile = {}
+local rectangle = require "code.engine.rectangle"
+local game_event_manager = require "code.engine.game_event.game_event_manager"
+local camera = require "code.engine.camera"
 
+local projectile = {}
 local projectile_data = {}
+local grid = nil
+
 projectile_data[GAME.PROJECTILE_TYPES.ARROW] = { speed = 100, bounds = { 7, 21 }, quad_data = { 308, 186, 7, 21 } }
 projectile_data[GAME.PROJECTILE_TYPES.BULLET] = { speed = 130, bounds = { 16, 16 }, quad_data = { 288, 320, 16, 16 } }
 projectile_data[GAME.PROJECTILE_TYPES.MAGIC] = { speed = 70, bounds = { 16, 16 }, quad_data = { 288, 240, 16, 16 } }
-
-local grid = nil
-
 
 function projectile:shoot(start_position, direction, ignore_targets_set)
   self.center_position = start_position
@@ -20,12 +19,14 @@ function projectile:shoot(start_position, direction, ignore_targets_set)
 end
 
 function projectile:check_collisions()
-  local clients = grid:find_near({ x = self.center_position.x, y = self.center_position.y }, { w = 32, h = 32 },
-    self.ignore_targets)
+  local clients = grid:find_near(
+    { x = self.center_position.x, y = self.center_position.y },
+    { w = 32, h = 32 },
+    self.ignore_targets
+  )
   self.nearby_clients = table.get_size(clients)
 
-  local overlapping = false
-  for key, value in pairs(clients) do
+  for key, _ in pairs(clients) do
     local x, y, w, h = key.position.x, key.position.y, key.dimensions.w, key.dimensions.h
 
     x = x - w / 2
@@ -45,22 +46,16 @@ function projectile:update(dt)
   self.center_position.x = x
   self.center_position.y = y
 
-  if (self.center_position.x > camera.visual_resolution_x or self.center_position.x < 0) then
-    self:deactivate()
-    return
-  end
-
-  if (self.center_position.y > camera.visual_resolution_y or self.center_position.y < 0) then
-    self:deactivate()
-    return
-  end
-
   self.box.x = self.center_position.x - self.box.w / 2
   self.box.y = self.center_position.y - self.box.h / 2
 
   self.client.position = self.center_position
   grid:update(self.client)
   self:check_collisions()
+
+  if camera:is_outside_camera_view(self.box) then
+    self:deactivate()
+  end
 end
 
 function projectile:draw()
@@ -76,14 +71,14 @@ end
 
 function projectile:activate()
   self.active = true
-  game_event_manager:invoke(ENTITY_EVENT_TYPES.ACTIVATED, self)
+  game_event_manager.invoke(ENTITY_EVENT_TYPES.ACTIVATED, self)
 end
 
 function projectile:deactivate()
   self.active = false
   grid:remove_client(self.client)
   table.insert(self.pool, self)
-  game_event_manager:invoke(ENTITY_EVENT_TYPES.DEACTIVATED, self)
+  game_event_manager.invoke(ENTITY_EVENT_TYPES.DEACTIVATED, self)
 end
 
 function projectile:create(sprite_sheet, entity_grid, type, pool)

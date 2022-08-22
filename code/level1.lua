@@ -1,22 +1,19 @@
-require("code.utilities.set")
+require "code.utilities.set"
 
-local spatial_grid = require("code.engine.spatial_grid")
-local game_event_manager = require("code.engine.game_event.game_event_manager")
-local camera = require("code.engine.camera")
-local player_character = require("code.player.player")
-local button = require("code.ui.button.button")
+local spatial_grid = require "code.engine.spatial_grid"
+local game_event_manager = require "code.engine.game_event.game_event_manager"
+local camera = require "code.engine.camera"
+local player_character = require "code.player.player"
+local button = require "code.ui.button.button"
+local projectile_pool = require "code.projectiles.projectile_pool"
 
 local asset_manager = require("code.engine.asset_manager")
-
 local level1 = {}
-
 local grid = {}
 local players = {}
-local projectile_pool = require("code.projectiles.projectile_pool")
-
 local active_entities = {}
-
 local sprite_sheet_image = nil
+
 local function create_grid()
   local bounds = { x_min = 0, y_min = 0, x_max = GAME.GAME_WIDTH, y_max = GAME.GAME_HEIGHT }
   grid = spatial_grid:create(bounds)
@@ -38,7 +35,9 @@ local function create_players()
       class = classes[i],
       grid = grid
     }
+
     set.add(active_entities, players[i])
+    camera:follow(players[i])
   end
 end
 
@@ -83,10 +82,10 @@ local function draw()
   end
 end
 
-game_event_manager:add_listener(GAME_EVENT_TYPES.UPDATE, update)
-game_event_manager:add_listener(GAME_EVENT_TYPES.DRAW, draw)
-game_event_manager:add_listener(GAME_EVENT_TYPES.LOAD, load)
-game_event_manager:add_listener(ENTITY_EVENT_TYPES.ACTIVATED, entity_activated)
-game_event_manager:add_listener(ENTITY_EVENT_TYPES.DEACTIVATED, entity_deactivated)
+game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, update)
+game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, draw)
+game_event_manager.add_listener(GAME_EVENT_TYPES.LOAD, load)
+game_event_manager.add_listener(ENTITY_EVENT_TYPES.ACTIVATED, entity_activated)
+game_event_manager.add_listener(ENTITY_EVENT_TYPES.DEACTIVATED, entity_deactivated)
 
 return level1
