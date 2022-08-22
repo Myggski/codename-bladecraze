@@ -78,7 +78,6 @@ local function remove_events()
 end
 
 local function setup_button(font)
-
   if #buttons == 0 then
     if sprite_batch == nil then
       sprite_batch = love.graphics.newSpriteBatch(asset_manager:get_image("button.png"))
