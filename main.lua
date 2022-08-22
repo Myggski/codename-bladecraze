@@ -23,7 +23,7 @@ end
 
 function love.update(dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
-  camera:update(dt)
+  camera:update()
 end
 
 function love.draw()

@@ -1,4 +1,4 @@
-local font_silver = require("code.engine.font_silver")
+local font_silver = require "code.engine.font_silver"
 
 --[[
   9-Slice Scaling - Resizing Technique
@@ -133,20 +133,20 @@ local function setup_sprite_batch_quad(active_quads, index, x, y, width_to_add, 
   local position_x, position_y = x + quad_data[index].x, y + quad_data[index].y
 
   -- Check if quad is a scalable quad
-  if (quad_data[index].scale_x) then
+  if quad_data[index].scale_x then
     scale_x = math.max((width_to_add + quad_width) / quad_width, 1)
   end
 
-  if (quad_data[index].scale_y) then
+  if quad_data[index].scale_y then
     scale_y = math.max((height_to_add + quad_height) / quad_height, 1)
   end
 
   -- Check if quad is the last quad on y- and/or x-axis and moves it
-  if (quad_data[index].edge_x) then
+  if quad_data[index].edge_x then
     position_x = position_x + width_to_add
   end
 
-  if (quad_data[index].edge_y) then
+  if quad_data[index].edge_y then
     position_y = position_y + height_to_add
   end
 

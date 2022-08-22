@@ -1,20 +1,18 @@
-require("code.utilities.set")
+require "code.utilities.set"
 
-local spatial_grid = require("code.engine.spatial_grid")
-local game_event_manager = require("code.engine.game_event.game_event_manager")
-local camera = require("code.engine.camera")
-local player_character = require("code.player.player")
-local button = require("code.ui.button.button")
+local spatial_grid = require "code.engine.spatial_grid"
+local game_event_manager = require "code.engine.game_event.game_event_manager"
+local camera = require "code.engine.camera"
+local player_character = require "code.player.player"
+local button = require "code.ui.button.button"
+local projectile_pool = require "code.projectiles.projectile_pool"
 
 local level1 = {}
-
 local grid = {}
 local players = {}
-local projectile_pool = require("code.projectiles.projectile_pool")
-
 local active_entities = {}
-
 local sprite_sheet_image = nil
+
 local function create_grid()
   local bounds = { x_min = 0, y_min = 0, x_max = GAME.GAME_WIDTH, y_max = GAME.GAME_HEIGHT }
   grid = spatial_grid:create(bounds)
@@ -59,7 +57,7 @@ local function load()
 
   local projectile_pool_size = 20
   for _, value in pairs(GAME.PROJECTILE_TYPES) do
-    if (not (value == GAME.PROJECTILE_TYPES.NONE)) then
+    if not (value == GAME.PROJECTILE_TYPES.NONE) then
       projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
     end
   end

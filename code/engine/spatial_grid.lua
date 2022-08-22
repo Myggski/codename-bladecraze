@@ -1,4 +1,4 @@
-require("code.utilities.set")
+require "code.utilities.set"
 
 local spatial_grid = {}
 
@@ -120,7 +120,9 @@ function spatial_grid:remove_client(client)
             local key = hash_key(x, y)
             if set.contains(self.cells, key) then
                 local index = table.index_of(self.cells[key], client)
-                table.remove(self.cells[key], index)
+                if index then
+                    table.remove(self.cells[key], index)
+                end
             end
         end
     end

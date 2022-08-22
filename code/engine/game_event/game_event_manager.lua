@@ -9,7 +9,7 @@ local function remove_listener(game_event_type, callback)
   local event_callback = event_callbacks[game_event_type]
   local index = table.index_of(event_callback, callback)
 
-  if (index) then
+  if index then
     table.remove(event_callback, index)
   end
 end
@@ -17,7 +17,7 @@ end
 local function invoke(game_event_type, ...)
   local event_callback = event_callbacks[game_event_type]
 
-  if (event_callback and #event_callback) then
+  if event_callback and #event_callback then
     for index = 1, #event_callback do
       event_callback[index](...)
     end

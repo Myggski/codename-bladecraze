@@ -1,8 +1,9 @@
-local projectile = require("code.projectiles.projectile")
+local projectile = require "code.projectiles.projectile"
 
 local projectile_pool = {}
 local grid = nil
 local sprite_sheet = nil
+
 function projectile_pool:create(image, type, count, entity_grid)
   grid = entity_grid
   if sprite_sheet == nil then
@@ -17,7 +18,7 @@ function projectile_pool:create(image, type, count, entity_grid)
 end
 
 function projectile_pool:get_projectile(type)
-  if (projectile_pool[type] == nil) then
+  if projectile_pool[type] == nil then
     print("could not get projectile: type not found")
     return
   end

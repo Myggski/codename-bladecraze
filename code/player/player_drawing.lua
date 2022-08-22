@@ -42,7 +42,7 @@ local function draw_stats(player)
     str = str .. key .. ":" .. value .. "\n"
   end
 
-  draw_text(player.box.x, player.box.y + 20, str)
+  -- draw_text(player.box.x, player.box.y + 20, str)
 end
 
 local function update_animation(animation, dt)

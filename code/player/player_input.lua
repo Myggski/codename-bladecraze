@@ -1,8 +1,7 @@
+local game_event_manager = require "code.engine.game_event.game_event_manager"
+local camera = require "code.engine.camera"
 
-local game_event_manager = require("code.engine.game_event.game_event_manager")
-local camera = require("code.engine.camera")
 local player_input = {}
-
 local mouse_pressed = false
 local analog_stick_deadzone = 0.2
 
@@ -60,13 +59,13 @@ local function get_action(joystick, keyboard)
 end
 
 local function get_move_direction(joystick, keyboard)
-  local move_dir = {x = 0, y = 0}
+  local move_dir = { x = 0, y = 0 }
   if joystick then
     local lx, ly = joystick:getGamepadAxis("leftx"), joystick:getGamepadAxis("lefty")
-    if (math.abs(lx) > analog_stick_deadzone) then
+    if math.abs(lx) > analog_stick_deadzone then
       move_dir.x = lx
     end
-    if (math.abs(ly) > analog_stick_deadzone) then
+    if math.abs(ly) > analog_stick_deadzone then
       move_dir.y = ly
     end
   else
@@ -76,13 +75,13 @@ local function get_move_direction(joystick, keyboard)
 end
 
 local function get_aim_direction(joystick, mouse, player_position)
-  local aim_dir = {x = 0, y = 0}
+  local aim_dir = { x = 0, y = 0 }
   if joystick then
     local rx, ry = joystick:getGamepadAxis("rightx"), joystick:getGamepadAxis("righty")
-    if (math.abs(rx) > analog_stick_deadzone) then
+    if math.abs(rx) > analog_stick_deadzone then
       aim_dir.x = rx
     end
-    if (math.abs(ry) > analog_stick_deadzone) then
+    if math.abs(ry) > analog_stick_deadzone then
       aim_dir.y = ry
     end
   else
@@ -95,25 +94,25 @@ end
 
 local joysticks = {}
 local function joystick_added(joystick)
-  if (joystick:isGamepad()) then
+  if joystick:isGamepad() then
     table.insert(joysticks, joystick)
   end
 end
 
 local function joystick_removed(joystick)
   local index = table.index_of(joysticks, joystick)
-  if (index) then
+  if index then
     table.remove(joysticks, index)
   end
 end
 
 function player_input.get_input(index, position)
-  local input = { move_dir = {x = 0, y = 0}, aim_dir = {x = 0, y = 0}, action = PLAYER.ACTIONS.NONE}
+  local input = { move_dir = { x = 0, y = 0 }, aim_dir = { x = 0, y = 0 }, action = PLAYER.ACTIONS.NONE }
   if #joysticks > 1 and index > 1 then
-    if index-1 <= #joysticks then
-      input.move_dir = get_move_direction(joysticks[index-1])
-      input.aim_dir = get_aim_direction(joysticks[index-1])
-      input.action = get_action(joysticks[index-1])
+    if index - 1 <= #joysticks then
+      input.move_dir = get_move_direction(joysticks[index - 1])
+      input.aim_dir = get_aim_direction(joysticks[index - 1])
+      input.action = get_action(joysticks[index - 1])
     end
   else
     if index == 1 then
@@ -129,7 +128,7 @@ function player_input.get_input(index, position)
 
   input.aim_dir = math.normalize2(input.aim_dir)
   input.move_dir = math.normalize2(input.move_dir)
-  
+
   return input
 end
 
