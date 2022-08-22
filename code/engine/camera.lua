@@ -53,7 +53,7 @@ function camera:get_aspect_ratio()
 end
 
 -- Returns scale diff between game and hud
-function camera:get_screen_game_hud_diff() return self.scale / (self.scale + self.zoom) end
+function camera:get_zoom_aspect_ratio() return self.scale / (self.scale + self.zoom) end
 
 -- Returns actual screen pixel coordinates to game virtual coordinates
 function camera:screen_coordinates(pixel_x, pixel_y) return pixel_x / self.scale, pixel_y / self.scale end
@@ -91,10 +91,9 @@ function camera:mouse_position_screen() return self:screen_coordinates(love.mous
 
 -- Returns the mouse position in the world
 function camera:mouse_position_world()
-  local pixel_x, pixel_y = love.mouse.getPosition()
-  local screen_x, screen_y = self:screen_coordinates(pixel_x, pixel_y);
+  local screen_x, screen_y = self:mouse_position_screen()
 
-  return self:world_coordinates(screen_x * self:get_screen_game_hud_diff(), screen_y * self:get_screen_game_hud_diff())
+  return self:world_coordinates(screen_x * self:get_zoom_aspect_ratio(), screen_y * self:get_zoom_aspect_ratio())
 end
 
 -- Turns on or off fullscreen
@@ -122,8 +121,8 @@ end
 function camera:is_outside_camera_view(rectangle)
   local x, y = self:get_position()
   local half_width, half_height = self:get_screen_game_half_size()
-  local is_outside_x = rectangle.x < x - half_width or (rectangle.x + rectangle.w) > x + half_width
-  local is_outside_y = rectangle.y < y - half_height or (rectangle.y + rectangle.h) > y + half_height
+  local is_outside_x = rectangle.x < x - half_width or rectangle.x + rectangle.w > x + half_width
+  local is_outside_y = rectangle.y < y - half_height or rectangle.y + rectangle.h > y + half_height
 
   return is_outside_x or is_outside_y
 end
@@ -256,7 +255,7 @@ end
 -- A animation coroutine for the camera zoom
 function camera:animate_zoom(animation_state)
   local zoom_step = ZOOM_ANIMATION_STEP
-  local zoom_speed = math.round((ZOOM_ANIMATION_SPEED / self:get_screen_game_hud_diff()) * 10000) / 10000 -- Keeps the speed and steps linear
+  local zoom_speed = ZOOM_ANIMATION_SPEED / self:get_zoom_aspect_ratio() -- Keeps the speed and steps linear
 
   while zoom_step > 0 do
     zoom_step = zoom_step - zoom_speed
