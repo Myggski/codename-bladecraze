@@ -2,7 +2,7 @@ local game_event_manager = require "code.engine.game_event.game_event_manager"
 local button_model = require "code.ui.button.model.button_model"
 local button_view = require "code.ui.button.view.button_view"
 local rectangle = require "code.engine.rectangle"
-local asset_manager = require("code.engine.asset_manager")
+local asset_manager = require "code.engine.asset_manager"
 
 local buttons = {}
 local sprite_batch = nil
@@ -79,8 +79,8 @@ end
 
 local function setup_button(font)
 
-  if (#buttons == 0) then
-    if (sprite_batch == nil) then
+  if #buttons == 0 then
+    if sprite_batch == nil then
       sprite_batch = love.graphics.newSpriteBatch(asset_manager:get_image("button.png"))
     end
 
