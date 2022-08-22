@@ -7,6 +7,8 @@ local player_character = require "code.player.player"
 local button = require "code.ui.button.button"
 local projectile_pool = require "code.projectiles.projectile_pool"
 
+local asset_manager = require("code.engine.asset_manager")
+
 local level1 = {}
 local grid = {}
 local players = {}

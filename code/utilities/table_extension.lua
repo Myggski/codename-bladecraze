@@ -15,6 +15,10 @@ function table.get_size(table)
   return count
 end
 
+function table.contains_key(table, key)
+  return not (table[key] == nil)
+end
+
 function table.deepcopy(root_table, child_table)
   child_table = child_table or {}
   if root_table == nil then return nil end

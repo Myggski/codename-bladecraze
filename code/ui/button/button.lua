@@ -2,7 +2,7 @@ local game_event_manager = require "code.engine.game_event.game_event_manager"
 local button_model = require "code.ui.button.model.button_model"
 local button_view = require "code.ui.button.view.button_view"
 local rectangle = require "code.engine.rectangle"
-local font_silver = require "code.engine.font_silver"
+local asset_manager = require("code.engine.asset_manager")
 
 local buttons = {}
 local sprite_batch = nil
@@ -79,14 +79,9 @@ end
 
 local function setup_button(font)
 
-  if #buttons == 0 then
-    if images["assets/button.png"] == nil then
-      images["assets/button.png"] = love.graphics.newPixelImage("assets/button.png")
-    end
-
-    --if they use the same image, we can use the same sprite and sprite_batch
-    if sprite_batch == nil then
-      sprite_batch = love.graphics.newSpriteBatch(images["assets/button.png"])
+  if (#buttons == 0) then
+    if (sprite_batch == nil) then
+      sprite_batch = love.graphics.newSpriteBatch(asset_manager:get_image("button.png"))
     end
 
     if quads == nil then
@@ -111,7 +106,7 @@ function button_model:remove()
 end
 
 function button_model:create(x, y, w, h, text, font)
-  font = font or font_silver.normal
+  local font = asset_manager:get_font("Silver.ttf", 16, "normal")
   self.__index = self
 
   setup_button(font)
