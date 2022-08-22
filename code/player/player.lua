@@ -52,7 +52,7 @@ function player:handle_shoot()
         with player or themselves
       ]]
       local center_x, center_y = self.box:center()
-      local number = love.math.random(8, 10)
+      local local number = love.math.random(8, 10)
       self.arrow_sound:setPitch(number / 10)
       self.arrow_sound:play()
       instance.client.guid = "projectile" .. self.guid
@@ -141,7 +141,11 @@ end
 function player:create(data)
   self.__index = self
 
-  local arrow_sound = asset_manager:get_audio("arrow.wav", "static", character_data[data.class].name)
+  local arrow_sound = asset_manager:get_audio(
+    "arrow.wav",
+    "static",
+    character_data[data.class].name
+  )
   local idle_animation = animations.new_animation(
     data.image,
     character_data[data.class].idle_animation,
@@ -163,13 +167,23 @@ function player:create(data)
     grid = data.grid
   end
 
-  local animations = { current = idle_animation, idle = idle_animation, run = run_animation, hit = hit_animation }
+  local animations = {
+    current = idle_animation,
+    idle = idle_animation,
+    run = run_animation,
+    hit = hit_animation
+  }
+
   local x, y = unpack(data.position)
   local w, h = unpack(data.bounds)
 
   local guid = character_data[data.class].name
   local center_position = { x = x, y = y }
-  local client = grid:new_client({ x = center_position.x, y = center_position.y }, { w = 16, h = 16 }, guid)
+  local client = grid:new_client(
+    { x = center_position.x, y = center_position.y },
+    { w = 16, h = 16 },
+    guid
+  )
   local projectile_type = character_data[data.class].projectile_type
   local action_table = {
     projectile_type == nil and self.handle_melee or self.handle_shoot,

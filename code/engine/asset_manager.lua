@@ -4,11 +4,12 @@ local asset_manager = {
   audio = { dir = "assets/audio/", loaded_data = {} },
 }
 
-local am = asset_manager
-local images, audio, fonts = am.images, am.audio, am.fonts
+local images = asset_manager.images
+local audio = asset_manager.audio
+local fonts = asset_manager.fonts
 
 local function get_asset(file_path, asset_table)
-  local is_loaded, asset = "", false, nil
+  local is_loaded, asset = false, nil
   is_loaded = table.contains_key(asset_table.loaded_data, file_path)
   asset = asset_table.loaded_data[file_path]
 
