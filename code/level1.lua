@@ -52,7 +52,8 @@ end
 
 local function load()
   sprite_sheet_image = asset_manager:get_image("0x72_DungeonTilesetII_v1.4.png")
-  button:create(128, 128, 16, 16)
+  button:create(128, 128, 64, 16, "mono text", asset_manager:get_font("Silver.ttf", 16, "mono"))
+  button:create(192, 128, 64, 16, "normal text", asset_manager:get_font("Silver.ttf", 18, "normal"))
 
   create_grid()
   create_players()

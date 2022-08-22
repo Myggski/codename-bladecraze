@@ -3,7 +3,7 @@ local rectangle = require("code.engine.rectangle")
 local animations = require("code.engine.animations")
 local player_drawing = require("code.player.player_drawing")
 local character_data = require("code.player.character_data")
-
+local asset_manager = require("code.engine.asset_manager")
 local projectile_pool = require("code.projectiles.projectile_pool")
 
 local player = {}
@@ -46,6 +46,10 @@ function player:handle_shoot()
         add cleaner way to prevent arrows from colliding
         with player or themselves
       ]]
+
+      number = love.math.random(8, 10)
+      self.arrow_sound:setPitch(number / 10)
+      self.arrow_sound:play()
       instance.client.guid = "projectile" .. self.guid
       local start_pos = {
         x = self.center_position.x + self.input.aim_dir.x * 16,
@@ -118,6 +122,7 @@ end
 function player:create(data)
   self.__index = self
 
+  local arrow_sound = asset_manager:get_audio("arrow.wav", "static", character_data[data.class].name)
   local idle_animation = animations.new_animation(
     data.image,
     character_data[data.class].idle_animation,
@@ -140,7 +145,6 @@ function player:create(data)
   end
 
   local animations = { current = idle_animation, idle = idle_animation, run = run_animation, hit = hit_animation }
-
   local x, y = unpack(data.position)
   local w, h = unpack(data.bounds)
 
@@ -165,8 +169,9 @@ function player:create(data)
     client = client,
     center_position = center_position,
     guid = guid,
+    arrow_sound = arrow_sound,
     active = true,
-    shoot_cd = 0.1,
+    shoot_cd = 0.5,
     shoot_timer = 0,
     nearby_clients = 0,
     direction = 1,

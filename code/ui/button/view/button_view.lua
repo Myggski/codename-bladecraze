@@ -1,4 +1,4 @@
-local font_silver = require("code.engine.font_silver")
+local asset_manager = require("code.engine.asset_manager")
 
 --[[
   9-Slice Scaling - Resizing Technique
@@ -150,7 +150,6 @@ local function setup_sprite_batch_quad(active_quads, index, x, y, width_to_add, 
     position_y = position_y + height_to_add
   end
 
-
   return active_quads[index], math.round(position_x), math.round(position_y), 0, scale_x, scale_y
 end
 
@@ -175,7 +174,7 @@ end
 ]]
 local function add_text(button)
   local button_center_x, button_center_y = button.rectangle:center()
-  local text_width, text_height = font_silver:get_text_size(button.font, button.text)
+  local text_width, text_height = asset_manager:get_text_size(button.font, button.text)
   local animation_y_offset = button.button_state - 1 -- When the button is being pressed down, the text should follow
   local text_x, text_y = button_center_x - text_width / 2, (button_center_y - text_height / 2) + animation_y_offset
 
