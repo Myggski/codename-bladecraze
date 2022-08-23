@@ -33,12 +33,7 @@ local function add_draw_line(draw_space, dots, color, line_width, duration_secon
 end
 
 local function add_draw_circle(draw_space, x, y, radius, color, mode, line_width, duration_seconds)
-  mode = mode or "line"
-  color = color or COLOR.WHITE
-  line_width = line_width or 1
-  duration_seconds = duration_seconds or 0
-  local circle = {
-    mode = mode,
+  local circle = shape.new { mode = mode,
     color = color,
     line_width = line_width,
     x = x,
@@ -56,11 +51,13 @@ local function add_draw_circle(draw_space, x, y, radius, color, mode, line_width
 end
 
 local function add_draw_ellipse(draw_space, x, y, radius_x, radius_y, segments, color, mode, line_width, duration_seconds)
-  mode = mode or "line"
-  color = color or COLOR.WHITE
-  line_width = line_width or 1
-  duration_seconds = duration_seconds or 0
-  local ellipse = { mode = mode, color = color, line_width = line_width, x = x, y = y, radius_x = radius_x,
+  local ellipse = shape.new {
+    mode = mode,
+    color = color,
+    line_width = line_width,
+    x = x,
+    y = y,
+    radius_x = radius_x,
     radius_y = radius_y,
     segments = segments,
     duration = duration_seconds,
