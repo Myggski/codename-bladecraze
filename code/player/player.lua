@@ -6,14 +6,13 @@ local character_data = require "code.player.character_data"
 local camera = require "code.engine.camera"
 local asset_manager = require "code.engine.asset_manager"
 local projectile_pool = require "code.projectiles.projectile_pool"
-
 local player = {}
 local grid = nil
 
 function player:check_collisions(desired_location)
   local projectile_guid = "projectile" .. self.guid
   local box = table.deepcopy(self.box)
-  local clients = grid:find_near({ x = desired_location.x, y = desired_location.y }, { w = 32, h = 32 },
+  local clients = grid:find_near({ x = desired_location.x, y = desired_location.y }, { w = 2, h = 2 },
     set.create { self.guid, projectile_guid })
 
   if not box then
@@ -28,8 +27,9 @@ function player:check_collisions(desired_location)
   for key, _ in pairs(clients) do
     local x, y, w, h = key.position.x, key.position.y, key.dimensions.w, key.dimensions.h
 
-    x = math.floor(x - w / 2)
-    y = math.floor(y - w / 2)
+    x = x - w / 2
+    y = y - h / 2
+
     if box:overlap(x, y, w, h) then
       overlapping = true
     end
@@ -57,9 +57,10 @@ function player:handle_shoot()
       self.arrow_sound:play()
       instance.client.guid = "projectile" .. self.guid
       local start_pos = {
-        x = center_x + self.input.aim_dir.x * 16,
-        y = center_y + self.input.aim_dir.y * 16
+        x = center_x + self.input.aim_dir.x,
+        y = center_y + self.input.aim_dir.y,
       }
+
       local ignore_targets = set.create({ self.guid })
       instance:shoot(start_pos, self.input.aim_dir, ignore_targets)
       self.shoot_timer = self.shoot_cd
@@ -69,6 +70,7 @@ end
 
 function player:get_moving_direction()
   local x, y = self.box:center_x() - self.previous_position.x, self.box:center_y() - self.previous_position.y
+
   return math.normalize(x, y)
 end
 
@@ -89,8 +91,8 @@ function player:update(dt)
   self.input = player_input.get_input(self.index, center_position)
 
   local new_position = {
-    x = center_position.x + self.input.move_dir.x * 100 * dt,
-    y = center_position.y + self.input.move_dir.y * 100 * dt,
+    x = center_position.x + self.input.move_dir.x * 5 * dt,
+    y = center_position.y + self.input.move_dir.y * 5 * dt,
   }
   local new_rectangle = rectangle:create(
     new_position.x - (self.box.w / 2),
@@ -106,8 +108,8 @@ function player:update(dt)
   if not collided and not is_outside then
     self.previous_position = { x = center_position.x, y = center_position.y }
     self.client.position = new_position
-    self.box.x = new_position.x - self.box.w / 2
-    self.box.y = new_position.y - self.box.h / 2
+    self.box.x = new_rectangle.x
+    self.box.y = new_rectangle.y
     grid:update(self.client)
   end
 
@@ -136,6 +138,8 @@ function player:draw()
   love.graphics.setColor(self.color)
   player_drawing.draw_player(self)
   player_drawing.draw_stats(self)
+  player_drawing.draw_player_bounding_box(self)
+
 end
 
 function player:create(data)
@@ -179,9 +183,10 @@ function player:create(data)
 
   local guid = character_data[data.class].name
   local center_position = { x = x, y = y }
+
   local client = grid:new_client(
     { x = center_position.x, y = center_position.y },
-    { w = 16, h = 16 },
+    { w = w, h = h },
     guid
   )
   local projectile_type = character_data[data.class].projectile_type

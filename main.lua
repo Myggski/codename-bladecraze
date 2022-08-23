@@ -34,6 +34,7 @@ function love.draw()
   camera:start_draw_hud()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD)
   camera:stop_draw_hud()
+
 end
 
 function love.mousepressed(x, y, btn, is_touch)

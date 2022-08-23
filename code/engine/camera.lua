@@ -1,3 +1,4 @@
+local world_grid = require "code.engine.world_grid"
 --[[
   PIXEL COORDINATES = love.mouse.getPosition() returns pixel coordinates
   top-left = (0, 0), bottom-right = screen resolution, e.g. 1920x1080 or 3440x1440 and so on.
@@ -7,11 +8,11 @@
   SCREEN COORDINATES = Pixel coordinates on the screen that is upscaled same as the images.
 ]]
 
-ZOOM_MIN = -3
-ZOOM_MAX = 0
-ZOOM_ANIMATION_STEP = 1
-ZOOM_ANIMATION_SPEED = 0.0625
-ZOOM_ANIMATION_STATE = {
+local ZOOM_MIN = -3
+local ZOOM_MAX = 0
+local ZOOM_ANIMATION_STEP = 1
+local ZOOM_ANIMATION_SPEED = 0.0625
+local ZOOM_ANIMATION_STATE = {
   NONE = 0,
   IN = 1,
   OUT = 2,
@@ -89,9 +90,17 @@ function camera:mouse_position_screen() return self:screen_coordinates(love.mous
 
 -- Returns the mouse position in the world
 function camera:mouse_position_world()
-  local screen_x, screen_y = self:mouse_position_screen()
+  local x, y = self:mouse_position_screen()
+  local half_w, half_h = self:get_screen_game_half_size()
+  local camera_x, camera_y = world_grid:grid_to_world(self.x, self.y)
 
-  return self:world_coordinates(screen_x * self:get_zoom_aspect_ratio(), screen_y * self:get_zoom_aspect_ratio())
+  return (x * self:get_zoom_aspect_ratio()) + camera_x - half_w, (y * self:get_zoom_aspect_ratio()) + camera_y - half_h
+end
+
+function camera:mouse_position_grid()
+  local world_x, world_y = self:mouse_position_world()
+
+  return world_grid:world_to_grid(world_x, world_y)
 end
 
 -- Turns on or off fullscreen
@@ -106,7 +115,7 @@ function camera:is_outside(rectangle, margin_percentage)
   margin_percentage = margin_percentage or 0
 
   local x, y = self:get_position()
-  local _, half_height = camera:get_screen_game_half_size()
+  local _, half_height = world_grid:world_to_grid(camera:get_screen_game_half_size())
   half_height = half_height - half_height * margin_percentage
 
   local is_outside_x = rectangle.x < x - half_height or rectangle.x + rectangle.w > x + half_height
@@ -118,7 +127,7 @@ end
 -- Checks if rectangle is about to leave camera view
 function camera:is_outside_camera_view(rectangle)
   local x, y = self:get_position()
-  local half_width, half_height = self:get_screen_game_half_size()
+  local half_width, half_height = world_grid:world_to_grid(camera:get_screen_game_half_size())
   local is_outside_x = rectangle.x < x - half_width or rectangle.x + rectangle.w > x + half_width
   local is_outside_y = rectangle.y < y - half_height or rectangle.y + rectangle.h > y + half_height
 
@@ -131,7 +140,7 @@ function camera:start_draw_world()
   love.graphics.clear(0, 0, 0, 0)
   love.graphics.push()
 
-  local x, y = self:get_position()
+  local x, y = world_grid:grid_to_world(self:get_position())
   local half_width, half_height = self:get_screen_game_half_size()
   love.graphics.translate(math.round(half_width), math.round(half_height)) -- Center the origin
   love.graphics.translate(math.round(-x), math.round(-y)) -- Sets the camera position
