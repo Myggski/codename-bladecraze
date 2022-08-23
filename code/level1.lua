@@ -7,7 +7,10 @@ local player_character = require "code.player.player"
 local button = require "code.ui.button.button"
 local projectile_pool = require "code.projectiles.projectile_pool"
 
-local asset_manager = require("code.engine.asset_manager")
+local asset_manager = require "code.engine.asset_manager"
+local gizmos = require "code.utilities.gizmos"
+
+
 local level1 = {}
 local grid = {}
 local players = {}
@@ -23,7 +26,7 @@ local function create_players()
   local classes = { "elf", "wizard", "knight", "lizard" }
   players = {}
   for i = 1, 2 do
-    local player_position = { i * 40, 32 }
+    local player_position = { i * 20, 32 }
     local player_bounds = { 16, 28 }
 
     players[i] = player_character:create
@@ -39,6 +42,10 @@ local function create_players()
     set.add(active_entities, players[i])
     camera:follow(players[i])
   end
+  gizmos.add_draw_line("hud", { 0, 0, 50, 50 })
+  gizmos.add_draw_line("world", { 0, 0, 50, 50 }, COLOR.CYAN, 1)
+  gizmos.add_draw_circle("world", 16, 16, 8, COLOR.YELLOW, "line", 5, 1)
+  gizmos.add_draw_ellipse("hud", 16, 16, 8, 16, nil, COLOR.BLUE, nil, nil, 1)
 end
 
 local function entity_activated(entity)

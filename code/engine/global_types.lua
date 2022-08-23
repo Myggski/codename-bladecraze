@@ -24,6 +24,7 @@ GAME_EVENT_TYPES = {
   MOUSE_RELEASED = "mousereleased",
   DRAW_WORLD = "drawworld",
   DRAW_HUD = "drawhud",
+  DRAW_SCREEN = "drawscreen",
   UPDATE = "update",
   JOYSTICK_ADDED = "joystickadded",
   JOYSTICK_REMOVED = "joystickremoved",
@@ -35,4 +36,3 @@ ENTITY_EVENT_TYPES = {
   ACTIVATED = "activated",
   DEACTIVATED = "deactivated"
 }
-
