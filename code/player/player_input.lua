@@ -85,7 +85,7 @@ local function get_aim_direction(joystick, mouse, player_position)
       aim_dir.y = ry
     end
   else
-    local mouse_x, mouse_y = camera:mouse_position_world()
+    local mouse_x, mouse_y = camera:mouse_position_grid()
     aim_dir.x = mouse_x - (player_position.x)
     aim_dir.y = mouse_y - (player_position.y)
   end

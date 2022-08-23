@@ -23,8 +23,8 @@ local function create_players()
   local classes = { "elf", "wizard", "knight", "lizard" }
   players = {}
   for i = 1, 2 do
-    local player_position = { i * 40, 32 }
-    local player_bounds = { 16, 28 }
+    local player_position = { i * 2, 2 }
+    local player_bounds = { 1, 1.75 }
 
     players[i] = player_character:create
     {
@@ -51,7 +51,7 @@ end
 
 local function load()
   sprite_sheet_image = asset_manager:get_image("0x72_DungeonTilesetII_v1.4.png")
-  button:create(128, 128, 64, 16, "mono text", asset_manager:get_font("Silver.ttf", 16, "mono"))
+  button:create(16, 16, 64, 16, "mono text", asset_manager:get_font("Silver.ttf", 16, "mono"))
   button:create(192, 128, 64, 16, "normal text", asset_manager:get_font("Silver.ttf", 18, "normal"))
 
   create_grid()

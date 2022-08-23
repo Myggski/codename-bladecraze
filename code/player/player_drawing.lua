@@ -1,22 +1,22 @@
-local asset_manager = require("code.engine.asset_manager")
+local asset_manager = require "code.engine.asset_manager"
+local camera = require "code.engine.camera"
+local world_grid = require "code.engine.world_grid"
 
 local font = nil
 local function draw_player(player)
   love.graphics.setColor(player.color)
 
   local current_animation = player.animations.current
-
   local sprite_index = math.floor(current_animation.current_time / current_animation.duration *
     #current_animation.quads) + 1
-
   local quad = current_animation.quads[sprite_index]
   local _, _, w, h = quad:getViewport()
   local origin_x, origin_y = w / 2, h / 2
   love.graphics.draw(
     current_animation.sprite_sheet,
     quad,
-    player.box:center_x(),
-    player.box:center_y(),
+    world_grid:convert_to_world(player.box:center_x()),
+    world_grid:convert_to_world(player.box:center_y()),
     0,
     player.direction,
     1,
@@ -26,8 +26,13 @@ local function draw_player(player)
 end
 
 local function draw_player_bounding_box(player)
+  local x, y, w, h = world_grid:convert_to_world(player.box.x),
+      world_grid:convert_to_world(player.box.y),
+      world_grid:convert_to_world(player.box.w),
+      world_grid:convert_to_world(player.box.h)
+
   love.graphics.setColor(1, 0, 0, 1)
-  love.graphics.rectangle("line", player.box.x, player.box.y, player.box.w, player.box.h)
+  love.graphics.rectangle("line", x, y, w, h)
   love.graphics.setColor(1, 1, 1, 1)
 end
 

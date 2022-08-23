@@ -41,7 +41,6 @@ end
     and return the matching cell indices
 ]]
 function spatial_grid:get_cell_index(x, y)
-
     x = math.clamp01(x / self.bounds.x_max)
     y = math.clamp01(y / self.bounds.y_max)
     local xIndex = math.floor(x * GAME.GRID_COL_COUNT) + 1
