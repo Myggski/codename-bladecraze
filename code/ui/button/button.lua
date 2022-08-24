@@ -57,6 +57,18 @@ function Button:_remove_all()
   end
 end
 
+function Button:remove(button)
+  local index = table.index_of(self.buttons, button)
+
+  if index then
+    table.remove(self.buttons, index)
+  end
+
+  if (#self.buttons == 0) then
+    self:_remove_events()
+  end
+end
+
 function Button:_add_events()
   game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, function(...) Button._mousepressed(self, ...) end)
   game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, function(...) Button._mousereleased(self, ...) end)
@@ -73,7 +85,7 @@ function Button:_remove_events()
   game_event_manager.remove_listener(GAME_EVENT_TYPES.QUIT, function(...) Button._remove_all(self) end)
 end
 
-function Button:cache_button_data(font, text_id)
+function Button:_cache_button_data(font, text_id)
   if #self.buttons == 0 then
     self:_add_events()
   end
@@ -91,19 +103,11 @@ function Button:cache_button_data(font, text_id)
   end
 end
 
-function Button:remove(button)
-  table.remove(self.buttons, table.index_of(button));
-
-  if (#self.buttons == 0) then
-    self:_remove_events()
-  end
-end
-
 function Button:create(x, y, w, h, text, font)
-  local font = font or asset_manager:get_font("Silver.ttf", 16, "mono")
+  font = font or asset_manager:get_font("Silver.ttf", 16, "mono")
 
   local text_id = text .. font:getHeight()
-  self:cache_button_data(font, text_id)
+  self:_cache_button_data(font, text_id)
 
   local button = button_model:create(
     rectangle:create(x, y, w, h),
