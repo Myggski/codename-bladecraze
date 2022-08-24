@@ -11,7 +11,7 @@ local grid = nil
 
 function player:check_collisions(desired_location)
   local projectile_guid = "projectile" .. self.guid
-  local box = table.deepcopy(self.box)
+  local box = self.box:clone()
   local clients = grid:find_near({ x = desired_location.x, y = desired_location.y }, { w = 2, h = 2 },
     set.create { self.guid, projectile_guid })
 

@@ -28,18 +28,6 @@ function rectangle:center()
   return self:center_x(), self:center_y()
 end
 
-function rectangle:to_world_width()
-  return world_grid:convert_to_world(self.w)
-end
-
-function rectangle:to_world_height()
-  return world_grid:convert_to_world(self.h)
-end
-
-function rectangle:to_world_rectangle()
-  return self:to_world(), self:to_world_width(), self:to_world_height()
-end
-
 function rectangle:overlap(x, y, w, h)
   return (
       self.x <= x + w and
@@ -47,6 +35,10 @@ function rectangle:overlap(x, y, w, h)
           self.y <= y + h and
           self.y + self.h >= y
       )
+end
+
+function rectangle:clone()
+  return self:create(self.x, self.y, self.w, self.h)
 end
 
 return rectangle
