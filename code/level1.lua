@@ -9,7 +9,7 @@ local projectile_pool = require "code.projectiles.projectile_pool"
 
 local asset_manager = require "code.engine.asset_manager"
 local gizmos = require "code.utilities.gizmos"
-
+local vector2 = require "code.engine.vector2"
 
 local level1 = {}
 local grid = {}
@@ -42,10 +42,16 @@ local function create_players()
     set.add(active_entities, players[i])
     camera:follow(players[i])
   end
-  gizmos.add_draw_line("hud", { 0, 0, 50, 50 })
-  gizmos.add_draw_line("world", { 0, 0, 50, 50 }, COLOR.CYAN, 1)
-  gizmos.add_draw_circle("world", 16, 16, 8, COLOR.YELLOW, "line", 5, 1)
-  gizmos.add_draw_ellipse("hud", 16, 16, 8, 16, nil, COLOR.BLUE, nil, nil, 1)
+  gizmos.add_draw_circle(GIZMO_DATA.create("hud", "fill", COLOR.BLUE),
+    vector2(16, 16), 16, 0)
+  gizmos.add_draw_circle(GIZMO_DATA.create(_, _, COLOR.YELLOW, 1),
+    vector2(16, 16), 8, 0)
+  gizmos.add_draw_rectangle(GIZMO_DATA.create("world", "fill", COLOR.GREEN, 5), vector2(64, 64), vector2(16, 16),
+    vector2.zero, nil,
+    0)
+  gizmos.add_draw_rectangle(_, vector2.zero, vector2(64, 64),
+    vector2.zero, nil,
+    0)
 end
 
 local function entity_activated(entity)
@@ -81,7 +87,7 @@ local function update(dt)
 end
 
 local function draw()
-  grid:draw_debug()
+  --grid:draw_debug()
   for entity, active in pairs(active_entities) do
     if active then
       entity:draw()
