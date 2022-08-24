@@ -1,14 +1,15 @@
 local camera = require "code.engine.camera"
+
 local button_model = {}
 
-function button_model:set_state(state)
-  self.button_state_previous = self.button_state
-  self.button_state = state
+function button_model:_set_state(state)
+  self.animation_state_previous = self.animation_state
+  self.animation_state = state
 end
 
-function button_model:clear_state()
-  self.button_state = self.button_state_previous
-  self.button_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT
+function button_model:_clear_state()
+  self.animation_state = self.animation_state_previous
+  self.animation_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT
 end
 
 function button_model:add_listener(event_type, callback)
@@ -24,16 +25,16 @@ function button_model:remove_listener(event_type, callback)
   end
 end
 
-function button_model:try_button_click(x, y, btn, is_touch, is_pressing)
+function button_model:try_click(x, y, btn, is_pressing)
   local screen_x, screen_y = camera:screen_coordinates(x, y)
   if btn == BUTTON_CLICK_TYPES.LEFT and is_pressing and self.rectangle:is_inside(screen_x, screen_y) then
-    self:set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
+    self:_set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.CLICK]) do
       callback()
     end
   elseif btn == BUTTON_CLICK_TYPES.LEFT and not is_pressing then
-    self:clear_state()
+    self:_clear_state()
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.RELEASE]) do
       callback()
@@ -41,12 +42,12 @@ function button_model:try_button_click(x, y, btn, is_touch, is_pressing)
   end
 end
 
-function button_model:try_button_hover()
+function button_model:try_hover()
   local screen_x, screen_y = camera:mouse_position_screen()
 
   if self.rectangle:is_inside(screen_x, screen_y) then
     if not self.is_mouse_hovering then
-      self:set_state(BUTTON_ANIMATION_STATE_TYPES.HOVER)
+      self:_set_state(BUTTON_ANIMATION_STATE_TYPES.HOVER)
       self.is_mouse_hovering = true
 
       for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.ENTER]) do
@@ -54,13 +55,38 @@ function button_model:try_button_hover()
       end
     end
   elseif self.is_mouse_hovering then
-    self:clear_state()
+    self:_clear_state()
     self.is_mouse_hovering = false
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.LEAVE]) do
       callback()
     end
   end
+end
+
+function button_model:create(rectangle, text, font, sprite_batch, quads)
+  self.__index = self
+
+  local text_id = text .. font:getHeight()
+  local obj = setmetatable({
+    animation_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
+    animation_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
+    font = font,
+    is_mouse_hovering = false,
+    rectangle = rectangle,
+    sprite_batch = sprite_batch,
+    text = text or "",
+    text_id = text_id,
+    quads = quads,
+    callbacks = {
+      click = {},
+      release = {},
+      enter = {},
+      leave = {},
+    }
+  }, self)
+
+  return obj
 end
 
 return button_model

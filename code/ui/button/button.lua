@@ -4,133 +4,118 @@ local button_view = require "code.ui.button.view.button_view"
 local rectangle = require "code.engine.rectangle"
 local asset_manager = require "code.engine.asset_manager"
 
-local buttons = {}
-local sprite_batch = nil
-local quads = nil
-local images = {}
-local text_batch_list = {}
+local Button = {
+  buttons = {},
+  sprite_batch = nil,
+  quads = nil,
+  text_batch_list = {},
+}
 
-local function mousepressed(x, y, btn, is_touch)
-  for index = 1, #buttons do
-    local button = buttons[index]
-    button:try_button_click(x, y, btn, is_touch, true)
+function Button:_mousepressed(x, y, btn, _)
+  for index = 1, #self.buttons do
+    self.buttons[index]:try_click(x, y, btn, true)
   end
 end
 
-local function mousereleased(x, y, btn, is_touch)
-  for index = 1, #buttons do
-    local button = buttons[index]
-    button:try_button_click(x, y, btn, is_touch, false)
+function Button:_mousereleased(x, y, btn, _)
+  for index = 1, #self.buttons do
+    self.buttons[index]:try_click(x, y, btn, false)
   end
 end
 
-local function update(dt)
-  for index = 1, #buttons do
-    local button = buttons[index]
-    button:try_button_hover()
+function Button:_update(dt)
+  for index = 1, #self.buttons do
+    self.buttons[index]:try_hover()
   end
 end
 
-local function draw()
-  if #buttons == 0 then
+function Button:_draw()
+  if #self.buttons == 0 then
     return
   end
 
-  sprite_batch:clear()
+  self.sprite_batch:clear()
 
-  for _, text_batch in pairs(text_batch_list) do
+  for _, text_batch in pairs(self.text_batch_list) do
     text_batch:clear()
   end
 
-  for index = 1, #buttons do
-    local button = buttons[index]
-    button_view.draw(button)
+  for index = 1, #self.buttons do
+    button_view.draw(self.buttons[index], self.text_batch_list[self.buttons[index].text_id])
   end
 
-  love.graphics.draw(sprite_batch)
+  love.graphics.draw(self.sprite_batch)
 
-  for _, text_batch in pairs(text_batch_list) do
+  for _, text_batch in pairs(self.text_batch_list) do
     love.graphics.draw(text_batch)
   end
 end
 
-local function remove_all()
-  for index = #buttons, 1, -1 do
-    local button = buttons[index]
-    button.remove(button)
+function Button:_remove_all()
+  for index = #self.buttons, 1, -1 do
+    self:remove(self.buttons[index])
   end
 end
 
-local function add_events()
-  game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-  game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
-  game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, update)
-  game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, draw)
-  game_event_manager.add_listener(GAME_EVENT_TYPES.QUIT, remove_all)
+function Button:_add_events()
+  game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, function(...) Button._mousepressed(self, ...) end)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, function(...) Button._mousereleased(self, ...) end)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, function(...) Button._update(self, ...) end)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, function(...) Button._draw(self) end)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.QUIT, function(...) Button._remove_all(self) end)
 end
 
-local function remove_events()
-  game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-  game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
-  game_event_manager.remove_listener(GAME_EVENT_TYPES.UPDATE, update)
-  game_event_manager.remove_listener(GAME_EVENT_TYPES.DRAW_HUD, draw)
-  game_event_manager.remove_listener(GAME_EVENT_TYPES.QUIT, remove_all)
+function Button:_remove_events()
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, function(...) Button._mousepressed(self, ...) end)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, function(...) Button._mousereleased(self, ...) end)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.UPDATE, function(...) Button._update(self, ...) end)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.DRAW_HUD, function(...) Button._draw(self) end)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.QUIT, function(...) Button._remove_all(self) end)
 end
 
-local function setup_button(font)
-  if #buttons == 0 then
-    if sprite_batch == nil then
-      sprite_batch = love.graphics.newSpriteBatch(asset_manager:get_image("button.png"))
-    end
-
-    if quads == nil then
-      quads = button_view.create_quads(sprite_batch)
-    end
-
-    add_events()
+function Button:cache_button_data(font, text_id)
+  if #self.buttons == 0 then
+    self:_add_events()
   end
 
-  if text_batch_list[font:getHeight()] == nil then
-    text_batch_list[font:getHeight()] = love.graphics.newText(font)
+  if not (self.sprite_batch) then
+    self.sprite_batch = love.graphics.newSpriteBatch(asset_manager:get_image("button.png"))
   end
-end
 
-function button_model:remove()
-  table.remove(buttons, table.index_of(self));
-  self = nil
+  if not (self.quads) then
+    self.quads = button_view.get_quads(self.sprite_batch)
+  end
 
-  if (#buttons == 0) then
-    remove_events()
+  if not (self.text_batch_list[text_id]) then
+    self.text_batch_list[text_id] = love.graphics.newText(font)
   end
 end
 
-function button_model:create(x, y, w, h, text, font)
+function Button:remove(button)
+  table.remove(self.buttons, table.index_of(button));
+
+  if (#self.buttons == 0) then
+    self:_remove_events()
+  end
+end
+
+function Button:create(x, y, w, h, text, font)
   local font = font or asset_manager:get_font("Silver.ttf", 16, "mono")
-  self.__index = self
 
-  setup_button(font)
+  local text_id = text .. font:getHeight()
+  self:cache_button_data(font, text_id)
 
-  local obj = setmetatable({
-    button_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
-    button_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
-    sprite_batch = sprite_batch,
-    rectangle = rectangle:create(x, y, w, h),
-    is_mouse_hovering = false,
-    quads = quads,
-    text = text or "",
-    font = font,
-    texts = text_batch_list[font:getHeight()],
-    callbacks = {
-      click = {},
-      release = {},
-      enter = {},
-      leave = {},
-    }
-  }, self)
+  local button = button_model:create(
+    rectangle:create(x, y, w, h),
+    text,
+    font,
+    self.sprite_batch,
+    self.quads
+  )
 
-  table.insert(buttons, obj)
+  table.insert(self.buttons, button)
 
-  return obj
+  return button
 end
 
-return button_model
+return Button
