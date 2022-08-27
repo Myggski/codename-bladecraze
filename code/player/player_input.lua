@@ -1,4 +1,5 @@
 local game_event_manager = require "code.engine.game_event.game_event_manager"
+local world_grid = require "code.engine.world_grid"
 local camera = require "code.engine.camera"
 
 local player_input = {}
@@ -85,7 +86,7 @@ local function get_aim_direction(joystick, mouse, player_position)
       aim_dir.y = ry
     end
   else
-    local mouse_x, mouse_y = camera:mouse_position_grid()
+    local mouse_x, mouse_y = player_input.mouse_position_grid()
     aim_dir.x = mouse_x - (player_position.x)
     aim_dir.y = mouse_y - (player_position.y)
   end
@@ -131,6 +132,21 @@ function player_input.get_input(index, position)
 
   return input
 end
+
+-- Returns the mouse position on the screen
+function player_input.mouse_position_screen() return camera:screen_coordinates(love.mouse.getPosition()) end
+
+-- Returns the mouse position in the world
+function player_input.mouse_position_world()
+  local x, y = player_input:mouse_position_screen()
+  local half_w, half_h = camera:get_screen_game_half_size()
+  local camera_x, camera_y = world_grid:grid_to_world(camera:get_position())
+
+  return (x * camera:get_zoom_aspect_ratio()) + camera_x - half_w,
+      (y * camera:get_zoom_aspect_ratio()) + camera_y - half_h
+end
+
+function player_input.mouse_position_grid() return world_grid:world_to_grid(player_input:mouse_position_world()) end
 
 game_event_manager.add_listener(GAME_EVENT_TYPES.JOYSTICK_ADDED, joystick_added)
 game_event_manager.add_listener(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick_removed)

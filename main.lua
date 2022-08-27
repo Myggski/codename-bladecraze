@@ -2,7 +2,7 @@ require "code.engine.global_types"
 require "code.engine.game_data"
 require "code.utilities.love_extension"
 require "code.utilities.table_extension"
-require "code.utilities.extended_math"
+require "code.utilities.math_extension"
 
 --[[
   Due to the level listening to game_events,
@@ -23,7 +23,7 @@ end
 
 function love.update(dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
-  camera:update()
+  game_event_manager.invoke(GAME_EVENT_TYPES.LATE_UPDATE, dt)
 end
 
 function love.draw()
@@ -34,6 +34,8 @@ function love.draw()
   camera:start_draw_hud()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD)
   camera:stop_draw_hud()
+
+  game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_TEXT)
 end
 
 function love.mousepressed(x, y, btn, is_touch)

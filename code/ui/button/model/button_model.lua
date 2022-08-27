@@ -1,4 +1,5 @@
 local camera = require "code.engine.camera"
+local player_input = require "code.player.player_input"
 
 local button_model = {}
 
@@ -26,8 +27,7 @@ function button_model:remove_listener(event_type, callback)
 end
 
 function button_model:try_click(x, y, btn, is_pressing)
-  local screen_x, screen_y = camera:screen_coordinates(x, y)
-  if btn == BUTTON_CLICK_TYPES.LEFT and is_pressing and self.rectangle:is_inside(screen_x, screen_y) then
+  if btn == BUTTON_CLICK_TYPES.LEFT and is_pressing and self.rectangle:is_inside(x, y) then
     self:_set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.CLICK]) do
@@ -43,9 +43,7 @@ function button_model:try_click(x, y, btn, is_pressing)
 end
 
 function button_model:try_hover()
-  local screen_x, screen_y = camera:mouse_position_screen()
-
-  if self.rectangle:is_inside(screen_x, screen_y) then
+  if self.rectangle:is_inside(love.mouse.getPosition()) then
     if not self.is_mouse_hovering then
       self:_set_state(BUTTON_ANIMATION_STATE_TYPES.HOVER)
       self.is_mouse_hovering = true
@@ -65,10 +63,7 @@ function button_model:try_hover()
 end
 
 function button_model:create(rectangle, text, font, sprite_batch, quads)
-  self.__index = self
-
-  local text_id = text .. font:getHeight()
-  local obj = setmetatable({
+  return setmetatable({
     animation_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
     animation_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
     font = font,
@@ -76,7 +71,7 @@ function button_model:create(rectangle, text, font, sprite_batch, quads)
     rectangle = rectangle,
     sprite_batch = sprite_batch,
     text = text or "",
-    text_id = text_id,
+    text_id = text .. font:getHeight(),
     quads = quads,
     callbacks = {
       click = {},
@@ -84,9 +79,7 @@ function button_model:create(rectangle, text, font, sprite_batch, quads)
       enter = {},
       leave = {},
     }
-  }, self)
-
-  return obj
+  }, { __index = self })
 end
 
-return button_model
+return setmetatable(button_model, { __index = button_model, __call = function(table, ...) return table:create(...) end })
