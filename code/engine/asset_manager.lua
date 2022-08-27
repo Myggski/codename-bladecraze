@@ -1,3 +1,5 @@
+local camera = require "code.engine.camera"
+
 local asset_manager = {
   images = { dir = "assets/images/", loaded_data = {} },
   fonts = { dir = "assets/fonts/", loaded_data = {} },
@@ -16,8 +18,12 @@ local function get_asset(file_path, asset_table)
   return is_loaded, asset
 end
 
+--[[
+  Returns the width and height of the text.
+  Subtracts 2 of height because the fonts is not centered for some reason
+]]
 function asset_manager:get_text_size(font, text)
-  return font:getWidth(text), font:getHeight()
+  return font:getWidth(text), font:getHeight() - (2 * camera.scale)
 end
 
 --[[
@@ -71,7 +77,7 @@ function asset_manager:get_font(file_name, font_size, hinting_mode)
     return asset
   end
 
-  local font = love.graphics.newFont(file_path, font_size, hinting_mode)
+  local font = love.graphics.newFont(file_path, font_size * camera.scale, hinting_mode)
   fonts.loaded_data[storage_path] = font
   return font
 end

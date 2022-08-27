@@ -1,3 +1,4 @@
+local camera = require "code.engine.camera"
 --[[
   9-Slice Scaling - Resizing Technique
   https://en.wikipedia.org/wiki/9-slice_scaling
@@ -126,10 +127,12 @@ end
 -  Sets the quads for the ui and sets them up with proper sizes and positions in the sprite batch
 ]]
 local function set_sprite_batch(ui, image_width, image_height, quads)
-  local width_to_add, height_to_add = ui.rectangle.w - image_width, ui.rectangle.h - image_height
+  local x, y = camera:screen_coordinates(ui.rectangle.x, ui.rectangle.y)
+  local w, h = camera:screen_coordinates(ui.rectangle.w, ui.rectangle.h)
+  local width_to_add, height_to_add = w - image_width, h - image_height
 
   for index = 1, #quads do
-    ui.sprite_batch:add(setup_sprite_batch_quad(quads, index, ui.rectangle.x, ui.rectangle.y, width_to_add,
+    ui.sprite_batch:add(setup_sprite_batch_quad(quads, index, x, y, width_to_add,
       height_to_add))
   end
 end

@@ -2,7 +2,7 @@ require "code.utilities.set"
 
 local spatial_grid = require "code.engine.spatial_grid"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
-local camera = require "code.engine.camera"
+local camera_follow = require "code.engine.camera_follow"
 local player_character = require "code.player.player"
 local button = require "code.ui.button.button"
 local projectile_pool = require "code.projectiles.projectile_pool"
@@ -37,7 +37,7 @@ local function create_players()
     }
 
     set.add(active_entities, players[i])
-    camera:follow(players[i])
+    camera_follow:add_target(players[i])
   end
 end
 
@@ -50,9 +50,11 @@ local function entity_deactivated(entity)
 end
 
 local function load()
+  camera_follow:load()
+
   sprite_sheet_image = asset_manager:get_image("0x72_DungeonTilesetII_v1.4.png")
-  button:create(16, 16, 64, 16, "mono text", asset_manager:get_font("Silver.ttf", 16, "mono"))
-  button:create(192, 128, 64, 16, "normal text", asset_manager:get_font("Silver.ttf", 18, "normal"))
+  button(16, 16, 196, 108, "Start")
+  button(16, 136, 196, 108, "Quit")
 
   create_grid()
   create_players()
