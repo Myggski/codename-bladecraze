@@ -28,7 +28,7 @@ local quad_data = { -- Hardcoding scalable quads for simplicity
 }
 
 --[[
--  Creates a new quad for the setmetatable-function
+  Creates a new quad for the setmetatable-function
 ]]
 local function new_quad(x1, y1, x2, y2, edge_x, edge_y)
   local x, y = x1, y1
@@ -46,8 +46,8 @@ local function new_quad(x1, y1, x2, y2, edge_x, edge_y)
 end
 
 --[[
--  Creates and setup all the data for the quads on a button
--  Sets the position and size in the texture, also sets if it's on the edge of the texture
+  Creates and setup all the data for the quads on a button
+  Sets the position and size in the texture, also sets if it's on the edge of the texture
 ]]
 local function setup_quad_data(image_width, image_height)
   -- Gets position of x and y position depending on the current and next column in the grid. Index 4 doesn't exsist so it ends where the image ends)
@@ -65,7 +65,7 @@ local function setup_quad_data(image_width, image_height)
 end
 
 --[[
--  Creates a love2d quad
+  Creates a love2d quad
 ]]
 local function get_graphics_quad(index, sprite_offset_x, sprite_width, sprite_height)
   local quad_width, quad_height = quad_data[index].width, quad_data[index].height
@@ -75,7 +75,8 @@ local function get_graphics_quad(index, sprite_offset_x, sprite_width, sprite_he
 end
 
 --[[
--  Returns all the quads for the ui, for all the animations
+  Returns all the quads for the ui, for all the animations
+  Assuming that the textures animation changes on the x-axis (width)
 ]]
 local function create_quads(sprite_batch, image_width, image_height)
   local sprite_batch_quads = {}
@@ -95,7 +96,7 @@ local function create_quads(sprite_batch, image_width, image_height)
 end
 
 --[[
--  Returns a quad with proper position and scale
+  Returns a quad with proper position and scale
 ]]
 local function setup_sprite_batch_quad(quads, index, x, y, width_to_add, height_to_add)
   local _, __, quad_width, quad_height = quads[index]:getViewport()
@@ -120,11 +121,11 @@ local function setup_sprite_batch_quad(quads, index, x, y, width_to_add, height_
     position_y = position_y + height_to_add
   end
 
-  return quads[index], math.round(position_x), math.round(position_y), 0, scale_x, scale_y
+  return quads[index], position_x, position_y, 0, scale_x, scale_y
 end
 
 --[[
--  Sets the quads for the ui and sets them up with proper sizes and positions in the sprite batch
+  Sets the quads for the ui and sets them up with proper sizes and positions in the sprite batch
 ]]
 local function set_sprite_batch(ui, image_width, image_height, quads)
   local x, y = camera:screen_coordinates(ui.rectangle.x, ui.rectangle.y)

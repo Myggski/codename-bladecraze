@@ -1,6 +1,7 @@
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local button_model = require "code.ui.button.model.button_model"
 local button_view = require "code.ui.button.view.button_view"
+local camera = require "code.engine.camera"
 local rectangle = require "code.engine.rectangle"
 local asset_manager = require "code.engine.asset_manager"
 
@@ -44,10 +45,8 @@ function button:_draw()
     button_view.draw(self._buttons[index], self._text_batch_list[self._buttons[index].text_id])
   end
 
-  love.graphics.draw(self._sprite_batch)
-end
+  love.graphics.draw(self._sprite_batch, 0, 0, 0, camera:get_scale())
 
-function button:_draw_text()
   for _, text_batch in pairs(self._text_batch_list) do
     love.graphics.draw(text_batch)
   end
@@ -76,7 +75,6 @@ function button:_add_events()
   game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, function(...) button._mousereleased(self, ...) end)
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, function(...) button._update(self, ...) end)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, function(...) button._draw(self) end)
-  game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_TEXT, function(...) button._draw_text(self) end)
   game_event_manager.add_listener(GAME_EVENT_TYPES.QUIT, function(...) button._remove_all(self) end)
 end
 
@@ -112,6 +110,11 @@ function button:create(x, y, w, h, text, font)
   text = text or ""
 
   self:_cache_button_data(font, text)
+
+  -- TODO: Fix this so it can be smaller than image_size * scale
+  -- Sets the min width and height to 16px (same size as the image)
+  w = math.max(w, 16 * camera:get_scale())
+  h = math.max(h, 16 * camera:get_scale())
 
   local new_button = button_model(
     rectangle:create(x, y, w, h),
