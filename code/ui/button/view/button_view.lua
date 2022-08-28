@@ -29,19 +29,21 @@ local function _update_sprite_batch(button)
   nine_slice_scaling.set_sprite_batch(
     button,
     texture:getWidth() / table.get_size(BUTTON_ANIMATION_STATE_TYPES),
-    texture:getHeight(), active_quads
+    texture:getHeight(),
+    active_quads
   )
 end
 
 --[[
--  Sets the button text in the center of the button and adds the text to the "text batch" that will be rendered later together
+  Sets the button text in the center of the button and adds the text to the "text batch" that will be rendered later together
+  When the button is being pressed down, the text should follow (animation-y-offset)
 ]]
 local function _add_text(button, text_list)
   local button_center_x, button_center_y = button.rectangle:center()
   local text_width, text_height = asset_manager:get_text_size(button.font, button.text)
-  local animation_y_offset = ((button.animation_state - 1) * camera.scale) -- When the button is being pressed down, the text should follow
-  local text_x, text_y = button_center_x - text_width / 2,
-      (button_center_y - text_height / 2) + animation_y_offset
+  local animation_y_offset = (button.animation_state - 1) * camera:get_scale()
+  local text_x = button_center_x - text_width / 2
+  local text_y = button_center_y - text_height / 2 + animation_y_offset
 
   return text_list:add(button.text, text_x, text_y)
 end

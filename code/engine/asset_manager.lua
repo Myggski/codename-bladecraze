@@ -23,7 +23,7 @@ end
   Subtracts 2 of height because the fonts is not centered for some reason
 ]]
 function asset_manager:get_text_size(font, text)
-  return font:getWidth(text), font:getHeight() - (2 * camera.scale)
+  return font:getWidth(text), font:getHeight() - (2 * camera:get_scale())
 end
 
 --[[
@@ -77,7 +77,7 @@ function asset_manager:get_font(file_name, font_size, hinting_mode)
     return asset
   end
 
-  local font = love.graphics.newFont(file_path, font_size * camera.scale, hinting_mode)
+  local font = love.graphics.newFont(file_path, font_size * camera:get_scale(), hinting_mode)
   fonts.loaded_data[storage_path] = font
   return font
 end

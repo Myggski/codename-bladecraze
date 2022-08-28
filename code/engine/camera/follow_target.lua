@@ -2,8 +2,6 @@ local camera = require "code.engine.camera"
 local world_grid = require "code.engine.world_grid"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 
-local ZOOM_MIN = -3
-local ZOOM_MAX = 0
 local ZOOM_ANIMATION_STEP = 1
 local ZOOM_ANIMATION_SPEED = 0.0625
 local ZOOM_ANIMATION_STATE = {
@@ -12,13 +10,13 @@ local ZOOM_ANIMATION_STATE = {
   OUT = 2,
 }
 
-local camera_follow = {
-  _follow_targets = {},
+local follow_target = {
+  _targets = {},
 }
 
 -- TODO: Change to better name
 -- Checks if it's outside zoom area, if it's outside the camera should zoom out
-function camera_follow._is_outside(rectangle, margin_percentage)
+function follow_target._is_outside(rectangle, margin_percentage)
   margin_percentage = margin_percentage or 0
 
   local x, y = camera:get_position()
@@ -32,22 +30,22 @@ function camera_follow._is_outside(rectangle, margin_percentage)
 end
 
 -- Checks if the camera should zoom in or zoom out
-function camera_follow:_get_zoom_animation_state()
+function follow_target:_get_zoom_animation_state()
   local furthest_target = self:_get_furthest_target()
   local is_inside_outer = self._is_outside(furthest_target.box, 0.05)
   local is_inside_inner = self._is_outside(furthest_target.box, 0.5)
   local animation_state = ZOOM_ANIMATION_STATE.NONE
 
-  if camera.zoom >= ZOOM_MIN and is_inside_outer then
+  if camera:can_zoom_out() and is_inside_outer then
     animation_state = ZOOM_ANIMATION_STATE.OUT
-  elseif camera.zoom < ZOOM_MAX and not is_inside_inner then
+  elseif camera:can_zoom_in() and not is_inside_inner then
     animation_state = ZOOM_ANIMATION_STATE.IN
   end
 
   return animation_state
 end
 
-function camera_follow:_set_camera_zoom()
+function follow_target:_set_camera_zoom()
   local animation_state = self:_get_zoom_animation_state()
 
   -- If there's no coroutine set and animation_state is not NONE, create a coroutine for the animation
@@ -64,25 +62,18 @@ function camera_follow:_set_camera_zoom()
 end
 
 -- Sets the zoom within the zoom bound
-function camera_follow._zoom_game(zoom_value)
-  camera.zoom = camera.zoom + zoom_value
-
-  if camera.zoom < ZOOM_MIN then
-    camera.zoom = ZOOM_MIN
-  elseif camera.zoom > ZOOM_MAX then
-    camera.zoom = ZOOM_MAX
-  end
-
+function follow_target._zoom_game(zoom_value)
+  camera:set_zoom(camera:get_zoom() + zoom_value)
   camera:set_canvas_game(camera:get_screen_game_size())
 end
 
 -- Gets the following targets thats furthest on x and y axis
-function camera_follow:_get_furthest_target()
+function follow_target:_get_furthest_target()
   local furthest_target = nil
   local x, y = camera:get_position()
 
-  for index = 1, table.get_size(self._follow_targets) do
-    local target = self._follow_targets[index]
+  for index = 1, table.get_size(self._targets) do
+    local target = self._targets[index]
     local distance = math.dist(x, y, target.box:center_x(), target.box:center_y())
 
     if furthest_target == nil or
@@ -95,12 +86,12 @@ function camera_follow:_get_furthest_target()
 end
 
 -- Sets the position of where the camera should look
-function camera_follow:_set_camera_position()
-  local number_of_targets = table.get_size(self._follow_targets)
+function follow_target:_set_camera_position()
+  local number_of_targets = table.get_size(self._targets)
   local position_x, position_y = 0, 0
 
   for index = 1, number_of_targets do
-    local target = self._follow_targets[index]
+    local target = self._targets[index]
     local center_x, center_y = target.box:center()
 
     position_x = position_x + center_x
@@ -114,7 +105,7 @@ function camera_follow:_set_camera_position()
 end
 
 -- A animation coroutine for the camera zoom
-function camera_follow:_animate_zoom(animation_state)
+function follow_target:_animate_zoom(animation_state)
   local zoom_step = ZOOM_ANIMATION_STEP
   local zoom_speed = ZOOM_ANIMATION_SPEED / camera:get_zoom_aspect_ratio() -- Keeps the speed and steps linear
 
@@ -128,30 +119,30 @@ function camera_follow:_animate_zoom(animation_state)
 end
 
 -- Adds target to follow
-function camera_follow:add_target(target)
-  table.insert(self._follow_targets, target)
+function follow_target:add_target(target)
+  table.insert(self._targets, target)
   self:_set_camera_position()
 end
 
 -- Removes target to follow
-function camera_follow:remove_target(target)
-  local index = table.index_of(self._follow_targets, target)
+function follow_target:remove_target(target)
+  local index = table.index_of(self._targets, target)
 
   if index then
-    table.remove(self._follow_targets, index)
+    table.remove(self._targets, index)
     self:_set_camera_position()
   end
 end
 
-function camera_follow:load()
+function follow_target:load()
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, function(...) self:_late_update() end)
 end
 
-function camera_follow:_late_update()
-  if #self._follow_targets > 0 then
+function follow_target:_late_update()
+  if #self._targets > 0 then
     self:_set_camera_zoom()
     self:_set_camera_position()
   end
 end
 
-return camera_follow
+return follow_target

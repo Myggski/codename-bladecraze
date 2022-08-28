@@ -8,6 +8,9 @@ local world_grid = require "code.engine.world_grid"
   SCREEN COORDINATES = Pixel coordinates on the screen that is upscaled same as the images.
 ]]
 
+local ZOOM_MIN = -3
+local ZOOM_MAX = 0
+
 local camera = {
   x = 0,
   y = 0,
@@ -37,12 +40,10 @@ end
 -- Returns scale diff between game and hud
 function camera:get_zoom_aspect_ratio() return self.scale / (self.scale + self.zoom) end
 
+function camera:pixel_to_screen(pixel) return pixel / self.scale end
+
 -- Returns actual screen pixel coordinates to game virtual coordinates
 function camera:screen_coordinates(pixel_x, pixel_y) return self:pixel_to_screen(pixel_x), self:pixel_to_screen(pixel_y) end
-
-function camera:pixel_to_screen(pixel)
-  return pixel / self.scale
-end
 
 -- Returns centered screen world coordinates
 function camera:world_coordinates(screen_x, screen_y)
@@ -74,7 +75,7 @@ end
 
 -- Preparing to draw the game world
 function camera:start_draw_world()
-  love.graphics.setCanvas(camera.canvas_game)
+  love.graphics.setCanvas(self.canvas_game)
   love.graphics.clear(0, 0, 0, 0)
   love.graphics.push()
 
@@ -88,19 +89,41 @@ end
 function camera:stop_draw_world()
   love.graphics.pop()
   love.graphics.setCanvas()
-  love.graphics.draw(camera.canvas_game, 0, 0, 0, camera.scale + camera.zoom)
+  love.graphics.draw(self.canvas_game, 0, 0, 0, self.scale + self.zoom)
 end
 
 -- Preparing to draw the game hud
 function camera:start_draw_hud()
-  love.graphics.setCanvas(camera.canvas_hud)
+  love.graphics.setCanvas(self.canvas_hud)
   love.graphics.clear(0, 0, 0, 0)
 end
 
 -- Resets everything after drawing the hud
 function camera:stop_draw_hud()
   love.graphics.setCanvas()
-  love.graphics.draw(camera.canvas_hud, 0, 0, 0, camera.scale)
+  love.graphics.draw(self.canvas_hud)
+end
+
+function camera:get_scale() return self.scale end
+
+function camera:get_zoom() return self.zoom end
+
+function camera:set_zoom(new_zoom)
+  if new_zoom < ZOOM_MIN then
+    new_zoom = ZOOM_MIN
+  elseif new_zoom > ZOOM_MAX then
+    new_zoom = ZOOM_MAX
+  end
+
+  self.zoom = new_zoom
+end
+
+function camera:can_zoom_out()
+  return self.zoom > ZOOM_MIN
+end
+
+function camera:can_zoom_in()
+  return self.zoom < ZOOM_MAX
 end
 
 -- Setting up the canvas for game world
@@ -118,9 +141,10 @@ end
 function camera:load()
   --self:toggle_fullscreen()
   local width, height = camera:get_screen_game_size()
+  local scale = camera:get_scale()
 
   self:set_canvas_game(width, height)
-  self:set_canvas_hud(width, height)
+  self:set_canvas_hud(width * scale, height * scale)
 end
 
 return camera
