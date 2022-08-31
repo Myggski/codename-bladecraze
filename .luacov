@@ -1,0 +1,10 @@
+return {
+  configfile = ".luacov",
+  reportfile = "luacov.report.html",
+  reporter = "html",
+  runreport = true,
+  deletestats = false,
+  tick = true,
+  include = { 'spec' },
+  html = {},
+};
