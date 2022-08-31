@@ -13,6 +13,7 @@ description = {
 dependencies = {
    "busted",
    "luacov",
+   "luacov-html",
 }
 
 build = {
