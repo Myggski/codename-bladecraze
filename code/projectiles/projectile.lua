@@ -77,6 +77,9 @@ end
 
 function projectile:activate()
   self.active = true
+  if self.client == nil then
+    self.client = grid:new_client({ x = self.box:center_x(), y = self.box:center_y() }, { w = 1, h = 1 }, "asdf")
+  end
   game_event_manager.invoke(ENTITY_EVENT_TYPES.ACTIVATED, self)
 end
 
@@ -94,13 +97,13 @@ function projectile:create(sprite_sheet, entity_grid, type, pool)
   local center_position = { x = -9999, y = -9999 }
   local x, y, w, h = unpack(projectile_data[type].quad_data)
   local quad = love.graphics.newQuad(x, y, w, h, sprite_sheet:getDimensions())
-  local client = grid:new_client(center_position, { w = 1, h = 1 }, "asdf")
+  --local client = grid:new_client(center_position, { w = 1, h = 1 }, "asdf")
 
   local obj = setmetatable({
     type = type,
     pool = pool,
     ignore_targets = {},
-    client = client,
+    client = nil,
     angle = math.rad(90),
     active = false,
     move_dir = { x = 1, y = 1 },

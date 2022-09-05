@@ -140,7 +140,7 @@ function player:draw()
   love.graphics.setColor(self.color)
   player_drawing.draw_player(self)
   player_drawing.draw_stats(self)
-  player_drawing.draw_player_bounding_box(self)
+  --player_drawing.draw_player_bounding_box(self)
 end
 
 function player:create(data)

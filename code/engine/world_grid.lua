@@ -16,8 +16,12 @@ function world_grid:world_to_grid(world_x, world_y)
   return self:convert_to_grid(world_x), self:convert_to_grid(world_y)
 end
 
-function world_grid:grid_to_world(grid_x, grid_y)
-  return self:convert_to_world(grid_x), self:convert_to_world(grid_y)
+function world_grid:grid_to_world(...)
+  local args = { ... }
+  for key, value in ipairs(args) do
+    args[key] = self:convert_to_world(value)
+  end
+  return unpack(args)
 end
 
 return world_grid
