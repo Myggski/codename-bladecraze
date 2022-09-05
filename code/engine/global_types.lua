@@ -24,6 +24,7 @@ GAME_EVENT_TYPES = {
   MOUSE_RELEASED = "mousereleased",
   DRAW_WORLD = "drawworld",
   DRAW_HUD = "drawhud",
+  DRAW_SCREEN = "drawscreen",
   UPDATE = "update",
   LATE_UPDATE = "lateupdate",
   JOYSTICK_ADDED = "joystickadded",

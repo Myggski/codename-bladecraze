@@ -6,6 +6,8 @@ local character_data = require "code.player.character_data"
 local camera = require "code.engine.camera"
 local asset_manager = require "code.engine.asset_manager"
 local projectile_pool = require "code.projectiles.projectile_pool"
+local gizmos = require "code.utilities.gizmos"
+
 local player = {}
 local grid = nil
 
@@ -139,7 +141,6 @@ function player:draw()
   player_drawing.draw_player(self)
   player_drawing.draw_stats(self)
   player_drawing.draw_player_bounding_box(self)
-
 end
 
 function player:create(data)
@@ -209,7 +210,7 @@ function player:create(data)
     guid = guid,
     arrow_sound = arrow_sound,
     active = true,
-    shoot_cd = 0.5,
+    shoot_cd = 0.1,
     shoot_timer = 0,
     nearby_clients = 0,
     direction = 1,
