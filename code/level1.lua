@@ -10,12 +10,15 @@ local projectile_pool = require "code.projectiles.projectile_pool"
 local asset_manager = require "code.engine.asset_manager"
 local gizmos = require "code.utilities.gizmos"
 local vector2 = require "code.engine.vector2"
+local world_grid = require "code.engine.world_grid"
 
 local level1 = {}
 local grid = {}
 local players = {}
 local active_entities = {}
 local sprite_sheet_image = nil
+
+local time_since_start = 0
 
 local function create_grid()
   local bounds = { x_min = 0, y_min = 0, x_max = GAME.GAME_WIDTH, y_max = GAME.GAME_HEIGHT }
@@ -42,16 +45,17 @@ local function create_players()
     set.add(active_entities, players[i])
     follow_target:add_target(players[i])
   end
-  gizmos.add_draw_circle(GIZMO_DATA.create("hud", "fill", COLOR.BLUE),
-    vector2(16, 16), 16, 0)
-  gizmos.add_draw_circle(GIZMO_DATA.create(_, _, COLOR.YELLOW, 1),
-    vector2(16, 16), 8, 0)
-  gizmos.add_draw_rectangle(GIZMO_DATA.create("world", "fill", COLOR.GREEN, 5), vector2(64, 64), vector2(16, 16),
-    vector2.zero, nil,
-    0)
-  gizmos.add_draw_rectangle(_, vector2.zero, vector2(64, 64),
-    vector2.zero, nil,
-    0)
+
+  -- gizmos.add_draw_circle(GIZMO_DATA.create("hud", "fill", COLOR.BLUE),
+  --   vector2(16, 16), 16, 0)
+  -- gizmos.add_draw_circle(GIZMO_DATA.create(_, _, COLOR.YELLOW, 1),
+  --   vector2(16, 16), 8, 0)
+  -- gizmos.add_draw_rectangle(GIZMO_DATA.create("world", "fill", COLOR.GREEN, 5), vector2(64, 64), vector2(16, 16),
+  --   vector2.zero, nil,
+  --   0)
+  -- gizmos.add_draw_rectangle(_, vector2.zero, vector2(64, 64),
+  --   vector2.zero, nil,
+  --   0)
 end
 
 local function entity_activated(entity)
@@ -81,15 +85,22 @@ local function load()
 end
 
 local function update(dt)
+
   for entity, active in pairs(active_entities) do
     if active then
       entity:update(dt)
     end
   end
+  time_since_start = time_since_start + dt
+  local colors = { COLOR.MAGENTA, COLOR.RED }
+  local index = math.floor((time_since_start / 0.5 % 2) + 1)
+  local width = (index % 2 + 1) * 5
+  gizmos.add_draw_line(GIZMO_DATA.create(_, _, colors[index], width),
+    { world_grid:grid_to_world(1, 1, 2, 0, 6, 1, 2, 2, 1, 1) }, 0.01)
 end
 
 local function draw()
-  --grid:draw_debug()
+  grid:draw_debug()
   for entity, active in pairs(active_entities) do
     if active then
       entity:draw()

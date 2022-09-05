@@ -19,7 +19,7 @@ DRAW_SPACE = {
 
 GIZMO_DATA = {
   create = function(draw_space, mode, color, line_width)
-    draw_space = draw_space or "hud"
+    draw_space = draw_space or "world"
     mode = mode or "line"
     color = color or COLOR.WHITE
     line_width = line_width or 1
@@ -33,11 +33,13 @@ GIZMO_DATA = {
   __index = GIZMO_DATA,
 }
 
-local function add_draw_line(gizmo_data, dots, duration_seconds)
-  gizmo_data = gizmo_data or GIZMO_DATA.create()
-  local line = { dots = dots, gizmo_data = gizmo_data, duration = duration_seconds,
-    creation_time = os.clock(), gizmo_type = GIZMO_TYPE.LINE }
+local function add_draw_line(gizmo_data, line_dots, duration_seconds)
+  if not (type(gizmo_data) == "table") then
+    gizmo_data = GIZMO_DATA.create()
+  end
 
+  local line = { line_dots = line_dots, gizmo_data = gizmo_data, duration = duration_seconds,
+    creation_time = os.clock(), gizmo_type = GIZMO_TYPE.LINE }
 
   if gizmo_data.draw_space == "hud" then
     table.insert(gizmos.hud_shapes, line)
@@ -46,11 +48,13 @@ local function add_draw_line(gizmo_data, dots, duration_seconds)
   end
 end
 
-local function add_draw_circle(gizmo_data, v2_position, radius, duration_seconds)
-  gizmo_data = gizmo_data or GIZMO_DATA.create()
+local function add_draw_circle(gizmo_data, position, radius, duration_seconds)
+  if not (type(gizmo_data) == "table") then
+    gizmo_data = GIZMO_DATA.create()
+  end
   local circle = {
     gizmo_data = gizmo_data,
-    position = v2_position,
+    position = position,
     radius = radius,
     duration = duration_seconds,
     creation_time = os.clock(),
@@ -63,12 +67,14 @@ local function add_draw_circle(gizmo_data, v2_position, radius, duration_seconds
   end
 end
 
-local function add_draw_ellipse(gizmo_data, v2_position, v2_radius, segments, duration_seconds)
-  gizmo_data = gizmo_data or GIZMO_DATA.create()
+local function add_draw_ellipse(gizmo_data, position, radiuses, segments, duration_seconds)
+  if not (type(gizmo_data) == "table") then
+    gizmo_data = GIZMO_DATA.create()
+  end
   local ellipse = {
     gizmo_data = gizmo_data,
-    position = v2_position,
-    v2_radius = v2_radius,
+    position = position,
+    radiuses = radiuses,
     segments = segments,
     duration = duration_seconds,
     creation_time = os.clock(),
@@ -81,13 +87,15 @@ local function add_draw_ellipse(gizmo_data, v2_position, v2_radius, segments, du
   end
 end
 
-local function add_draw_rectangle(gizmo_data, position_vector, v2_size, v2_radius, segments, duration_seconds)
-  gizmo_data = gizmo_data or GIZMO_DATA.create()
+local function add_draw_rectangle(gizmo_data, position, size, radiuses, segments, duration_seconds)
+  if not (type(gizmo_data) == "table") then
+    gizmo_data = GIZMO_DATA.create()
+  end
   local rectangle = {
     gizmo_data = gizmo_data,
-    position = position_vector,
-    v2_size = v2_size,
-    v2_radius = v2_radius,
+    position = position,
+    size = size,
+    radiuses = radiuses,
     segments = segments,
     duration = duration_seconds,
     creation_time = os.clock(),
@@ -106,16 +114,16 @@ local function draw_shape(shape)
   love.graphics.setColor(data.color)
 
   if shape.gizmo_type == GIZMO_TYPE.LINE then
-    love.graphics.line(shape.dots)
+    love.graphics.line(shape.line_dots)
   elseif shape.gizmo_type == GIZMO_TYPE.CIRCLE then
     love.graphics.circle(data.mode, shape.position.x, shape.position.y, shape.radius)
   elseif shape.gizmo_type == GIZMO_TYPE.ELLIPSE then
-    love.graphics.ellipse(data.mode, shape.position.x, shape.position.y, shape.v2_radius.x, shape.v2_radius.y,
+    love.graphics.ellipse(data.mode, shape.position.x, shape.position.y, shape.radiuses.x, shape.radiuses.y,
       shape.segments)
   elseif shape.gizmo_type == GIZMO_TYPE.RECTANGLE then
-    love.graphics.rectangle(data.mode, shape.position.x, shape.position.y, shape.v2_size.x, shape.v2_size.x,
-      shape.v2_radius.x,
-      shape.v2_radius.y,
+    love.graphics.rectangle(data.mode, shape.position.x, shape.position.y, shape.size.x, shape.size.x,
+      shape.radiuses.x,
+      shape.radiuses.y,
       shape.segments)
   end
   love.graphics.setLineWidth(1)

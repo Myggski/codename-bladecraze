@@ -7,10 +7,7 @@ local camera = require "code.engine.camera"
 local asset_manager = require "code.engine.asset_manager"
 local projectile_pool = require "code.projectiles.projectile_pool"
 local gizmos = require "code.utilities.gizmos"
-<<<<<<< HEAD
-=======
-
->>>>>>> 8745fe1c6549409e15855b2ab69b9bdc0844c139
+local world_grid = require "code.engine.world_grid"
 
 local player = {}
 local grid = nil
@@ -144,7 +141,7 @@ function player:draw()
   love.graphics.setColor(self.color)
   player_drawing.draw_player(self)
   player_drawing.draw_stats(self)
-  player_drawing.draw_player_bounding_box(self)
+  --player_drawing.draw_player_bounding_box(self)
 end
 
 function player:create(data)
