@@ -2,7 +2,12 @@
   "Lua.diagnostics.globals": [
     "love",
     "GAME",
-    "ENTITY_EVENT_TYPES"
+    "ENTITY_EVENT_TYPES",
+    "describe",
+    "insulate",
+    "mock",
+    "it",
+    "before_each"
   ],
   "editor.tabSize": 2
 }
