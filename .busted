@@ -1,9 +1,9 @@
 return {
   _all = {
-    coverage = true
+    ["coverage"] = true
   },
   default = {
-    verbose = false,
-    ROOT = { "spec" },
+    ["verbose"] = false,
+    ["ROOT"] = { "spec" },
   },
 };
