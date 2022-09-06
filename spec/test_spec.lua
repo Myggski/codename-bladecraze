@@ -1,5 +1,0 @@
-insulate('Dummytest', function()
-  it('Should be true all the time', function()
-    assert.is_same(true, true)
-  end)
-end)
