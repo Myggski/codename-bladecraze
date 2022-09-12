@@ -1,11 +1,9 @@
-reportfile = 'spec/luacov.report.html'
-statsfile = 'spec/luacov.stats.out'
+reportfile = "spec/luacov.report.out"
+includeuntestedfiles = true
 deletestats = true
+include = {
+  "code/"
+}
 exclude = {
-  "luacov$",
-  "luacov/reporter$",
-  "luacov/defaults$",
-  "luacov/runner$",
-  "luacov/stats$",
-  "luacov/tick$",
+  "^.+/init$"
 }

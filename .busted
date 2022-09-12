@@ -1,9 +1,0 @@
-return {
-  _all = {
-    ["coverage"] = true
-  },
-  default = {
-    ["verbose"] = false,
-    ["ROOT"] = { "spec" },
-  },
-};
