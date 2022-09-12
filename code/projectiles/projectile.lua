@@ -2,6 +2,7 @@ local rectangle = require "code.engine.rectangle"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local world_grid = require "code.engine.world_grid"
 local camera = require "code.engine.camera"
+local vector2 = require "code.engine.vector2"
 
 local projectile = {}
 local projectile_data = {}
@@ -22,14 +23,14 @@ end
 
 function projectile:check_collisions()
   local clients = grid:find_near(
-    { x = self.box:center_x(), y = self.box:center_y() },
-    { w = 2, h = 2 },
+    vector2(self.box:center_x(), self.box:center_y()),
+    vector2(2, 2),
     self.ignore_targets
   )
   self.nearby_clients = table.get_size(clients)
 
   for key, _ in pairs(clients) do
-    local x, y, w, h = key.position.x, key.position.y, key.dimensions.w, key.dimensions.h
+    local x, y, w, h = key.position.x, key.position.y, key.dimensions.x, key.dimensions.y
 
     x = x - w / 2
     y = y - h / 2
@@ -78,7 +79,7 @@ end
 function projectile:activate()
   self.active = true
   if self.client == nil then
-    self.client = grid:new_client({ x = self.box:center_x(), y = self.box:center_y() }, { w = 1, h = 1 }, "asdf")
+    self.client = grid:new_client(vector2(self.box:center_x(), self.box:center_y()), vector2(1, 1), "asdf")
   end
   game_event_manager.invoke(ENTITY_EVENT_TYPES.ACTIVATED, self)
 end
@@ -94,10 +95,9 @@ function projectile:create(sprite_sheet, entity_grid, type, pool)
   self.__index = self
 
   grid = entity_grid
-  local center_position = { x = -9999, y = -9999 }
+  local center_position = vector2(-9999, -9999)
   local x, y, w, h = unpack(projectile_data[type].quad_data)
   local quad = love.graphics.newQuad(x, y, w, h, sprite_sheet:getDimensions())
-  --local client = grid:new_client(center_position, { w = 1, h = 1 }, "asdf")
 
   local obj = setmetatable({
     type = type,
@@ -106,7 +106,7 @@ function projectile:create(sprite_sheet, entity_grid, type, pool)
     client = nil,
     angle = math.rad(90),
     active = false,
-    move_dir = { x = 1, y = 1 },
+    move_dir = vector2(1, 1),
     speed = projectile_data[type].speed,
     quad = quad,
     box = rectangle:create(center_position.x - (w / 2), center_position.y - (h / 2), projectile_data[type].bounds[1],

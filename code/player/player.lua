@@ -6,16 +6,15 @@ local character_data = require "code.player.character_data"
 local camera = require "code.engine.camera"
 local asset_manager = require "code.engine.asset_manager"
 local projectile_pool = require "code.projectiles.projectile_pool"
-local gizmos = require "code.utilities.gizmos"
 local world_grid = require "code.engine.world_grid"
-
+local vector2 = require "code.engine.vector2"
 local player = {}
 local grid = nil
 
 function player:check_collisions(desired_location)
   local projectile_guid = "projectile" .. self.guid
   local box = self.box:clone()
-  local clients = grid:find_near({ x = desired_location.x, y = desired_location.y }, { w = 2, h = 2 },
+  local clients = grid:find_near(vector2(desired_location.x, desired_location.y), vector2(2, 2),
     set.create { self.guid, projectile_guid })
 
   if not box then
@@ -28,7 +27,7 @@ function player:check_collisions(desired_location)
 
   local overlapping = false
   for key, _ in pairs(clients) do
-    local x, y, w, h = key.position.x, key.position.y, key.dimensions.w, key.dimensions.h
+    local x, y, w, h = key.position.x, key.position.y, key.dimensions.x, key.dimensions.y
 
     x = x - w / 2
     y = y - h / 2
@@ -59,10 +58,11 @@ function player:handle_shoot()
       self.arrow_sound:setPitch(number / 10)
       self.arrow_sound:play()
       instance.client.guid = "projectile" .. self.guid
-      local start_pos = {
-        x = center_x + self.input.aim_dir.x,
-        y = center_y + self.input.aim_dir.y,
-      }
+      local start_pos = vector2(
+        center_x + self.input.aim_dir.x,
+        center_y + self.input.aim_dir.y
+      )
+
 
       local ignore_targets = set.create({ self.guid })
       instance:shoot(start_pos, self.input.aim_dir, ignore_targets)
@@ -90,13 +90,13 @@ function player:handle_ultimate()
 end
 
 function player:update(dt)
-  local center_position = { x = self.box:center_x(), y = self.box:center_y() }
+  local center_position = vector2(self.box:center_x(), self.box:center_y())
   self.input = player_input.get_input(self.index, center_position)
 
-  local new_position = {
-    x = center_position.x + self.input.move_dir.x * 5 * dt,
-    y = center_position.y + self.input.move_dir.y * 5 * dt,
-  }
+  local new_position = vector2(
+    center_position.x + self.input.move_dir.x * 5 * dt,
+    center_position.y + self.input.move_dir.y * 5 * dt
+  )
   local new_rectangle = rectangle:create(
     new_position.x - (self.box.w / 2),
     new_position.y - (self.box.h / 2),
@@ -184,19 +184,20 @@ function player:create(data)
   local w, h = unpack(data.bounds)
 
   local guid = character_data[data.class].name
-  local center_position = { x = x, y = y }
+  local center_position = vector2(x, y)
 
   local client = grid:new_client(
-    { x = center_position.x, y = center_position.y },
-    { w = w, h = h },
-    guid
-  )
+    vector2(center_position.x, center_position.y),
+    vector2(w, h),
+    guid)
+
   local projectile_type = character_data[data.class].projectile_type
   local action_table = {
     projectile_type == nil and self.handle_melee or self.handle_shoot,
     self.handle_special,
     self.handle_ultimate
   }
+
   local obj = {
     action_table = action_table,
     projectile_type = projectile_type,
@@ -207,7 +208,7 @@ function player:create(data)
     class = data.class,
     name = character_data[data.class].name,
     client = client,
-    previous_position = { x = 0, y = 0 },
+    previous_position = vector2.zero,
     guid = guid,
     arrow_sound = arrow_sound,
     active = true,
@@ -215,7 +216,7 @@ function player:create(data)
     shoot_timer = 0,
     nearby_clients = 0,
     direction = 1,
-    color = { 1, 1, 1, 1 },
+    color = COLOR.WHITE,
     input = {},
   }
 

@@ -62,7 +62,7 @@ end
 ]]
 function spatial_grid:insert(client)
     local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(client.position.x, client.position.y,
-        client.dimensions.w, client.dimensions.h)
+        client.dimensions.x, client.dimensions.y)
 
     client.indices = { min_x_index, min_y_index, max_x_index, max_y_index }
     for x = min_x_index, max_x_index do
@@ -83,7 +83,7 @@ end
 ]]
 function spatial_grid:find_near(position, bounds, exclude_guids)
     local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(position.x, position.y,
-        bounds.w, bounds.h)
+        bounds.x, bounds.y)
 
     local clients_set = {}
 

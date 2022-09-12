@@ -18,7 +18,21 @@ local players = {}
 local active_entities = {}
 local sprite_sheet_image = nil
 
-local time_since_start = 0
+--[[
+  some example usage of gizmos, will be deleted :)
+]]
+local function debug_example()
+  gizmos.add_draw_line(_,
+    { world_grid:grid_to_world(1, 1, 2, 0, 6, 1, 2, 2, 1, 1) },
+    -1)
+  gizmos.add_draw_rectangle(
+    gizmos.create_draw_data(gizmos.DRAW_SPACE.HUD, gizmos.DRAW_MODE.FILL, COLOR.YELLOW),
+    vector2.zero,
+    vector2(16, 16),
+    _,
+    _,
+    5)
+end
 
 local function create_grid()
   local bounds = { x_min = 0, y_min = 0, x_max = GAME.GAME_WIDTH, y_max = GAME.GAME_HEIGHT }
@@ -45,17 +59,6 @@ local function create_players()
     set.add(active_entities, players[i])
     follow_target:add_target(players[i])
   end
-
-  -- gizmos.add_draw_circle(GIZMO_DATA.create("hud", "fill", COLOR.BLUE),
-  --   vector2(16, 16), 16, 0)
-  -- gizmos.add_draw_circle(GIZMO_DATA.create(_, _, COLOR.YELLOW, 1),
-  --   vector2(16, 16), 8, 0)
-  -- gizmos.add_draw_rectangle(GIZMO_DATA.create("world", "fill", COLOR.GREEN, 5), vector2(64, 64), vector2(16, 16),
-  --   vector2.zero, nil,
-  --   0)
-  -- gizmos.add_draw_rectangle(_, vector2.zero, vector2(64, 64),
-  --   vector2.zero, nil,
-  --   0)
 end
 
 local function entity_activated(entity)
@@ -82,25 +85,19 @@ local function load()
       projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
     end
   end
+
+  debug_example()
 end
 
 local function update(dt)
-
   for entity, active in pairs(active_entities) do
     if active then
       entity:update(dt)
     end
   end
-  time_since_start = time_since_start + dt
-  local colors = { COLOR.MAGENTA, COLOR.RED }
-  local index = math.floor((time_since_start / 0.5 % 2) + 1)
-  local width = (index % 2 + 1) * 5
-  gizmos.add_draw_line(GIZMO_DATA.create(_, _, colors[index], width),
-    { world_grid:grid_to_world(1, 1, 2, 0, 6, 1, 2, 2, 1, 1) }, 0.01)
 end
 
 local function draw()
-  grid:draw_debug()
   for entity, active in pairs(active_entities) do
     if active then
       entity:draw()
