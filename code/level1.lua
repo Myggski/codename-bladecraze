@@ -27,7 +27,7 @@ local function debug_example()
     -1)
   gizmos.add_draw_rectangle(
     gizmos.create_draw_data(gizmos.DRAW_SPACE.HUD, gizmos.DRAW_MODE.FILL, COLOR.YELLOW),
-    vector2.zero,
+    vector2.zero(),
     vector2(16, 16),
     _,
     _,

@@ -141,7 +141,6 @@ function player:draw()
   love.graphics.setColor(self.color)
   player_drawing.draw_player(self)
   player_drawing.draw_stats(self)
-  --player_drawing.draw_player_bounding_box(self)
 end
 
 function player:create(data)
@@ -208,7 +207,7 @@ function player:create(data)
     class = data.class,
     name = character_data[data.class].name,
     client = client,
-    previous_position = vector2.zero,
+    previous_position = vector2.zero(),
     guid = guid,
     arrow_sound = arrow_sound,
     active = true,

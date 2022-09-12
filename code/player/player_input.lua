@@ -62,7 +62,7 @@ local function get_action(joystick, keyboard)
 end
 
 local function get_move_direction(joystick, keyboard)
-  local move_dir = vector2(0, 0)
+  local move_dir = vector2.zero()
   if joystick then
     local lx, ly = joystick:getGamepadAxis("leftx"), joystick:getGamepadAxis("lefty")
     if math.abs(lx) > analog_stick_deadzone then
@@ -78,7 +78,7 @@ local function get_move_direction(joystick, keyboard)
 end
 
 local function get_aim_direction(joystick, mouse, player_position)
-  local aim_dir = vector2(0, 0)
+  local aim_dir = vector2.zero()
   if joystick then
     local rx, ry = joystick:getGamepadAxis("rightx"), joystick:getGamepadAxis("righty")
     if math.abs(rx) > analog_stick_deadzone then
@@ -110,7 +110,7 @@ local function joystick_removed(joystick)
 end
 
 function player_input.get_input(index, position)
-  local input = { move_dir = vector2(0, 0), aim_dir = vector2(0, 0), action = PLAYER.ACTIONS.NONE }
+  local input = { move_dir = vector2.zero(), aim_dir = vector2.zero(), action = PLAYER.ACTIONS.NONE }
   if #joysticks > 1 and index > 1 then
     if index - 1 <= #joysticks then
       input.move_dir = get_move_direction(joysticks[index - 1])
