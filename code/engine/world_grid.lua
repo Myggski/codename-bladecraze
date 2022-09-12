@@ -13,18 +13,41 @@ function world_grid:convert_to_grid(world)
 end
 
 function world_grid:world_to_grid(...)
-  local args = { ... }
-  for key, value in ipairs(args) do
+  local was_table = true
+  local args = ...
+
+  if not (type(...) == "table") then
+    args = { ... }
+    was_table = false
+  end
+
+  for key, value in pairs(args) do
     args[key] = self:convert_to_grid(value)
+  end
+
+  if was_table then
+    return args
   end
   return unpack(args)
 end
 
 function world_grid:grid_to_world(...)
-  local args = { ... }
-  for key, value in ipairs(args) do
+  local was_table = true
+  local args = ...
+
+  if not (type(...) == "table") then
+    args = { ... }
+    was_table = false
+  end
+
+  for key, value in pairs(args) do
     args[key] = self:convert_to_world(value)
   end
+
+  if was_table then
+    return args
+  end
+
   return unpack(args)
 end
 
