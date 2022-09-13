@@ -4,7 +4,7 @@ packages="lua5.1 luarocks"
 
 for package in $packages;
 do
-    sudo apt-get install -y $package
+    sudo apt-get install -y "$package"
 done
 
 # Installing love stand-alone for busted
