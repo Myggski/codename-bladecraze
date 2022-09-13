@@ -1,10 +1,9 @@
 local vector2 = {}
 vector2.__index = vector2
 
-
 --[[
   resource: https://github.com/vrld/hump/blob/master/vector.lua,
-  changes: made zero,one etc functions instead of local variables
+  changes: made zero, one etc functions instead of local variables
   as attempts to use them on multiple objects would override
 ]]
 

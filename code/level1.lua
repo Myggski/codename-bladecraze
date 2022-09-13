@@ -6,7 +6,6 @@ local follow_target = require "code.engine.camera.follow_target"
 local player_character = require "code.player.player"
 local button = require "code.ui.button"
 local projectile_pool = require "code.projectiles.projectile_pool"
-
 local asset_manager = require "code.engine.asset_manager"
 local gizmos = require "code.utilities.gizmos"
 local vector2 = require "code.engine.vector2"
@@ -25,10 +24,13 @@ local function debug_example()
   gizmos.add_draw_line(_,
     { world_grid:grid_to_world(1, 1, 2, 0, 6, 1, 2, 2, 1, 1) },
     -1)
+  local a, b = vector2.one(), vector2.one()
+  local c = a + b
+  print(a.x, b.x, c.x)
   gizmos.add_draw_rectangle(
     gizmos.create_draw_data(gizmos.DRAW_SPACE.HUD, gizmos.DRAW_MODE.FILL, COLOR.YELLOW),
     vector2.zero(),
-    vector2(16, 16),
+    vector2.zero() + vector2(16, 16),
     _,
     _,
     5)

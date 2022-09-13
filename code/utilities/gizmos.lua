@@ -127,7 +127,7 @@ local function add_draw_rectangle(gizmo_data, position, size, radiuses, segments
     gizmo_data = gizmos.create_draw_data()
   end
 
-  radiuses = radiuses or { x = 0, y = 0 }
+  radiuses = radiuses or vector2.zero()
   local rectangle = {
     gizmo_data = gizmo_data,
     position = position,

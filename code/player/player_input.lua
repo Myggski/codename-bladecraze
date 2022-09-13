@@ -3,7 +3,6 @@ local world_grid = require "code.engine.world_grid"
 local camera = require "code.engine.camera"
 local vector2 = require "code.engine.vector2"
 
-
 local player_input = {}
 local mouse_pressed = false
 local analog_stick_deadzone = 0.2
