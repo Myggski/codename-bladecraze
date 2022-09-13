@@ -2,6 +2,8 @@ require "spec.love_setup"
 
 insulate("camera", function()
   local camera = require "code.engine.camera.camera"
+  local default_scale = camera.scale
+  local default_zoom = camera.zoom
 
   before_each(function()
     stub(love.graphics, "getWidth").returns(1280)
@@ -9,7 +11,8 @@ insulate("camera", function()
   end)
 
   after_each(function()
-    camera.zoom = 0
+    camera.scale = default_scale
+    camera.zoom = default_zoom
   end)
 
   describe("get_screen_game_size", function()
@@ -61,6 +64,65 @@ insulate("camera", function()
           assert.spy(get_screen_game_size_spy).was.called()
           assert.is_true(w == 160)
           assert.is_true(h == 90)
+        end)
+      end)
+    end)
+  end)
+
+  describe("get_zoom_aspect_ratio", function()
+    describe("when scale has default value", function()
+      describe("and zoom is set to 0", function()
+        it("should return 1", function()
+          assert.is_true(camera:get_zoom_aspect_ratio() == 1)
+        end)
+      end)
+
+      describe("and zoom is set to -1", function()
+        it("should return 1.25", function()
+          camera:set_zoom(-1)
+
+          assert.is_true(camera:get_zoom_aspect_ratio() == 1.25)
+        end)
+      end)
+    end)
+
+    describe("when scale is set to 6", function()
+      before_each(function()
+        camera.scale = 6
+      end)
+
+      describe("and zoom is set to 0", function()
+        it("should return 1", function()
+          assert.is_true(camera:get_zoom_aspect_ratio() == 1)
+        end)
+      end)
+
+      describe("and zoom is set to -1", function()
+        it("should return 1.2", function()
+          camera:set_zoom(-1)
+
+          assert.is_true(camera:get_zoom_aspect_ratio() == 1.2)
+        end)
+      end)
+    end)
+
+    -- Is this OK behavior?
+    describe("when scale is set to 0", function()
+      before_each(function()
+        camera.scale = 0
+      end)
+
+      describe("and zoom is set to 0", function()
+        it("should return -nan", function()
+          assert.is_true(tostring(camera:get_zoom_aspect_ratio()) == "-nan")
+        end)
+      end)
+
+      describe("and zoom is set to -1", function()
+        it("should return -0", function()
+          camera:set_zoom(-1)
+
+          assert.is_true(camera:get_zoom_aspect_ratio() == -0)
         end)
       end)
     end)
