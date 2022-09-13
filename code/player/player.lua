@@ -53,17 +53,12 @@ function player:handle_shoot()
         add cleaner way to prevent arrows from colliding
         with player or themselves
       ]]
-      local center_x, center_y = self.box:center()
+      local center = vector2(self.box:center())
       local number = love.math.random(8, 10)
       self.arrow_sound:setPitch(number / 10)
       self.arrow_sound:play()
       instance.client.guid = "projectile" .. self.guid
-      local start_pos = vector2(
-        center_x + self.input.aim_dir.x,
-        center_y + self.input.aim_dir.y
-      )
-
-
+      local start_pos = center + self.input.aim_dir
       local ignore_targets = set.create({ self.guid })
       instance:shoot(start_pos, self.input.aim_dir, ignore_targets)
       self.shoot_timer = self.shoot_cd
@@ -145,7 +140,6 @@ end
 
 function player:create(data)
   self.__index = self
-
   local arrow_sound = asset_manager:get_audio(
     "arrow.wav",
     "static",
