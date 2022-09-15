@@ -2,4 +2,6 @@ package.preload.love = package.loadlib('/usr/lib/x86_64-linux-gnu/liblove-11.4.s
 require 'love'
 require 'love.filesystem'
 require 'love.graphics'
+
+love.window = {}
 love.filesystem.init(arg[-1])

@@ -40,28 +40,28 @@ end
 -- Returns scale diff between game and hud
 function camera:get_zoom_aspect_ratio() return self.scale / (self.scale + self.zoom) end
 
-function camera:pixel_to_screen(pixel) return pixel / self.scale end
+function camera:pixel_to_screen(pixel) return (pixel or 0) / self.scale end
 
 -- Returns actual screen pixel coordinates to game virtual coordinates
 function camera:screen_coordinates(pixel_x, pixel_y) return self:pixel_to_screen(pixel_x), self:pixel_to_screen(pixel_y) end
 
+-- Returns camera position in game world
+function camera:get_position() return self.x or 0, self.y or 0 end
+
 -- Returns centered screen world coordinates
 function camera:world_coordinates(screen_x, screen_y)
   local x, y = self:get_position()
-  local width, height = self:get_screen_game_size()
-  local centered_x, centered_y = (screen_x - width / 2), (screen_y - height / 2)
+  local half_width, half_height = self:get_screen_game_half_size()
+  local centered_x, centered_y = screen_x - half_width, screen_y - half_height
 
   return centered_x + x, centered_y + y
 end
-
--- Returns camera position in game world
-function camera:get_position() return self.x or 0, self.y or 0 end
 
 -- Turns on or off fullscreen
 function camera:toggle_fullscreen() self.is_fullscreen = love.window.setFullscreen(not self.is_fullscreen, "desktop") end
 
 -- Sets what the camera should look at
-function camera:look_at(world_x, world_y) self.x, self.y = world_x, world_y end
+function camera:look_at(world_x, world_y) self.x, self.y = world_x or 0, world_y or 0 end
 
 -- Checks if rectangle is about to leave camera view
 function camera:is_outside_camera_view(rectangle)
@@ -118,13 +118,9 @@ function camera:set_zoom(new_zoom)
   self.zoom = new_zoom
 end
 
-function camera:can_zoom_out()
-  return self.zoom > ZOOM_MIN
-end
+function camera:can_zoom_out() return self.zoom > ZOOM_MIN end
 
-function camera:can_zoom_in()
-  return self.zoom < ZOOM_MAX
-end
+function camera:can_zoom_in() return self.zoom < ZOOM_MAX end
 
 -- Setting up the canvas for game world
 function camera:set_canvas_game(width, height)
