@@ -8,8 +8,8 @@ local world_grid = require "code.engine.world_grid"
   SCREEN COORDINATES = Pixel coordinates on the screen that is upscaled same as the images.
 ]]
 
-local ZOOM_MIN = -3
-local ZOOM_MAX = 0
+local ZOOM_MAX = -3
+local ZOOM_MIN = 0
 
 local camera = {
   x = 0,
@@ -104,23 +104,23 @@ function camera:stop_draw_hud()
   love.graphics.draw(self.canvas_hud)
 end
 
-function camera:get_scale() return self.scale end
+function camera:get_scale() return self.scale or 0 end
 
-function camera:get_zoom() return self.zoom end
+function camera:get_zoom() return self.zoom or 0 end
 
 function camera:set_zoom(new_zoom)
-  if new_zoom < ZOOM_MIN then
-    new_zoom = ZOOM_MIN
-  elseif new_zoom > ZOOM_MAX then
+  if new_zoom < ZOOM_MAX then
     new_zoom = ZOOM_MAX
+  elseif new_zoom > ZOOM_MIN then
+    new_zoom = ZOOM_MIN
   end
 
   self.zoom = new_zoom
 end
 
-function camera:can_zoom_out() return self.zoom > ZOOM_MIN end
+function camera:can_zoom_out() return self.zoom > ZOOM_MAX end
 
-function camera:can_zoom_in() return self.zoom < ZOOM_MAX end
+function camera:can_zoom_in() return self.zoom < ZOOM_MIN end
 
 -- Setting up the canvas for game world
 function camera:set_canvas_game(width, height)
