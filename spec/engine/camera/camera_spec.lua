@@ -156,7 +156,6 @@ insulate("camera", function()
       end)
     end)
 
-
     describe("and pixel parameter is a string", function()
       it("should cause error", function()
         assert.has_error(function() camera:pixel_to_screen("") end)
