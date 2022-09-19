@@ -1,4 +1,4 @@
-local entity = require "code.engine.entity"
+local entity = require "code.engine.data.entity.entity"
 
 local entity_manager = {
   _entities = {},
