@@ -1,3 +1,5 @@
+local gizmos = require "code.utilities.debug.gizmos"
+
 local get_execution_time = function(func, ...)
   local start = love.timer.getTime()
   func(...)
@@ -5,13 +7,18 @@ local get_execution_time = function(func, ...)
 end
 
 local print_execution_time = function(func_name, func, ...)
-  print(string.format("%s executed in %e seconds", func_name, get_execution_time(func, ...)))
+  print(string.format("%s executed in %fms", func_name, get_execution_time(func, ...) * 1000))
+end
+
+local print_execution_time_seconds = function(func_name, func, ...)
+  print(string.format("%s executed in %es", func_name, get_execution_time(func, ...)))
 end
 
 local debug = {
-  gizmos = require "code.utilities.debug.gizmos",
+  gizmos = gizmos,
   get_execution_time = get_execution_time,
   print_execution_time = print_execution_time,
+  print_execution_time_seconds = print_execution_time_seconds,
 }
 
 return debug
