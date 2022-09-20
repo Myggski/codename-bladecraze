@@ -20,16 +20,11 @@ local game_event_manager = require "code.engine.game_event.game_event_manager"
 function love.load()
   camera:load()
   game_event_manager.invoke(GAME_EVENT_TYPES.LOAD)
-  local e1 = entity_manager:create();
-  local e2 = entity_manager:create();
-  local position_component = component()
-  local pc = component({ x = 4, y = 4 })
 
-  e1.add_component(e1, position_component, { x = 0, y = 0 })
-  e1.add_component(e2, position_component, { x = 4, y = 4 })
+  local entity = entity_manager:create()
+  local position_component = component({ x = 32, y = 8 }) -- Default value
 
-  print(e1[position_component], e1[position_component].x, e1[position_component].y)
-  print(e2[position_component], e2[position_component].x, e2[position_component].y)
+  entity[position_component] = position_component({ x = 12, y = 15 })
 end
 
 function love.update(dt)

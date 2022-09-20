@@ -1,23 +1,13 @@
-local entity_meta = {
-  __index = function(entity, key)
-    if type(key) == "table" and entity.has_component(entity, key) then
-      return entity.components[key].value
-    end
-  end,
-  __newindex = function(entity, key, value)
-    if type(key) == "table" then -- TODO: Do better check to see if the key is a component
-      entity.add_component(entity, key, value)
+local function add_component(entity, key, value)
+  if key and key.is_type and not key.is_component then
+    if value == nil and entity:has_component(key) then
+      entity:remove_component(key)
+    elseif type(value) == "table" and value.is_component then
+      entity.components[key] = value
     else
-      rawset(entity, key, value)
+      entity[key] = key(value)
     end
-  end,
-}
-
-local function add_component(entity, component, value)
-  value = value or component.value
-
-  component.value = value
-  entity.components[component] = component
+  end
 end
 
 local function remove_component(entity, component)
@@ -27,6 +17,18 @@ end
 local function has_component(entity, component)
   return not (entity.components[component] == nil)
 end
+
+local entity_meta = {
+  __index = function(entity, key)
+    print(entity, key, type(key), entity.has_component(entity, key))
+    if type(key) == "table" and entity.has_component(entity, key) then
+      return entity.components[key].value
+    end
+  end,
+  __newindex = function(entity, key, value)
+    add_component(entity, key, value)
+  end
+}
 
 local create = function(id)
   assert(not (id == nil), "Error, an id expected, got: " .. id)

@@ -24,9 +24,6 @@ local function debug_example()
   gizmos.add_draw_line(_,
     { world_grid:grid_to_world(1, 1, 2, 0, 6, 1, 2, 2, 1, 1) },
     -1)
-  local a, b = vector2.one(), vector2.one()
-  local c = a + b
-  print(a.x, b.x, c.x)
   gizmos.add_draw_rectangle(
     gizmos.create_draw_data(gizmos.DRAW_SPACE.HUD, gizmos.DRAW_MODE.FILL, COLOR.YELLOW),
     vector2.zero(),
