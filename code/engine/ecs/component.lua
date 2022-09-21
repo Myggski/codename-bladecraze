@@ -17,7 +17,6 @@ local function create_component_type(default_value)
 
   function component_type.create(value)
     local component = setmetatable(create_component(value), component_type)
-    print(component.value)
     component.is_component = true
 
     return component

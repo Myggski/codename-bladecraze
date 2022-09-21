@@ -3,8 +3,7 @@ require "code.engine.game_data"
 require "code.utilities.love_extension"
 require "code.utilities.table_extension"
 require "code.utilities.math_extension"
-local entity_manager = require "code.engine.data.entity.entity_manager"
-local component = require "code.engine.data.component.component"
+local ecs = require "code.engine.ecs"
 --[[
   Due to the level listening to game_events,
   only a require is needed to load it.
@@ -21,10 +20,11 @@ function love.load()
   camera:load()
   game_event_manager.invoke(GAME_EVENT_TYPES.LOAD)
 
-  local entity = entity_manager:create()
-  local position_component = component({ x = 32, y = 8 }) -- Default value
+  local level_one = ecs.world()
 
-  entity[position_component] = position_component({ x = 12, y = 15 })
+  local entity = level_one:entity()
+  local position_component = ecs.component({ x = 32, y = 8 })
+  entity[position_component] = position_component()
 end
 
 function love.update(dt)

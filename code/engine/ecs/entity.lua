@@ -20,7 +20,6 @@ end
 
 local entity_meta = {
   __index = function(entity, key)
-    print(entity, key, type(key), entity.has_component(entity, key))
     if type(key) == "table" and entity.has_component(entity, key) then
       return entity.components[key].value
     end
@@ -30,8 +29,10 @@ local entity_meta = {
   end
 }
 
-local create = function(id)
+local create = function(id, is_alive_callback, destroy_callback)
   assert(not (id == nil), "Error, an id expected, got: " .. id)
+  assert(type(destroy_callback) == "function", "Error, entity needs a destroy_callback function set")
+  assert(type(is_alive_callback) == "function", "Error, entity needs a is_alive_callback function set")
 
   return setmetatable({
     _id = id,
@@ -39,6 +40,8 @@ local create = function(id)
     add_component = add_component,
     remove_component = remove_component,
     has_component = has_component,
+    destroy = destroy_callback,
+    is_alive = is_alive_callback,
   }, entity_meta)
 end
 
