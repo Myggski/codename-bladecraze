@@ -10,7 +10,7 @@ local function create_component_type(default_value)
 
   local component_type = {
     _id = COMPONENT_ID,
-    is_type = true,
+    is_component_type = true,
     value = default_value or {},
   }
   component_type.__index = component_type

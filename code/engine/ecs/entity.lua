@@ -1,5 +1,5 @@
 local function add_component(entity, key, value)
-  if key and key.is_type and not key.is_component then
+  if key and key.is_component_type and not key.is_component then
     if value == nil and entity:has_component(key) then
       entity:remove_component(key)
     elseif type(value) == "table" and value.is_component then
