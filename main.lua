@@ -24,7 +24,12 @@ function love.load()
 
   local entity = level_one:entity()
   local position_component = ecs.component({ x = 32, y = 8 })
+  local size_component = ecs.component({ w = 1, h = 2 })
+
   entity[position_component] = position_component()
+  entity[size_component] = size_component()
+
+  print(entity:has_components(position_component, size_component))
 end
 
 function love.update(dt)

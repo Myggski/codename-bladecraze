@@ -1,6 +1,6 @@
 local function add_component(entity, key, value)
   if key and key.is_component_type and not key.is_component then
-    if value == nil and entity:has_component(key) then
+    if value == nil and entity:has_components(key) then
       entity:remove_component(key)
     elseif type(value) == "table" and value.is_component then
       entity.components[key] = value
@@ -14,13 +14,33 @@ local function remove_component(entity, component)
   entity.components[component] = nil
 end
 
-local function has_component(entity, component)
-  return not (entity.components[component] == nil)
+local function has_components(entity, ...)
+  local components = { ... }
+
+  for _, component in pairs(components) do
+    if entity.components[component] == nil then
+      return false
+    end
+  end
+
+  return true
+end
+
+local function has_any_components(entity, ...)
+  local components = { ... }
+
+  for _, component in pairs(components) do
+    if entity.components[component] then
+      return true
+    end
+  end
+
+  return false
 end
 
 local entity_meta = {
   __index = function(entity, key)
-    if type(key) == "table" and entity.has_component(entity, key) then
+    if type(key) == "table" and entity.has_components(entity, key) then
       return entity.components[key].value
     end
   end,
@@ -39,7 +59,7 @@ local create = function(id, is_alive_callback, destroy_callback)
     components = {},
     add_component = add_component,
     remove_component = remove_component,
-    has_component = has_component,
+    has_components = has_components,
     destroy = destroy_callback,
     is_alive = is_alive_callback,
   }, entity_meta)

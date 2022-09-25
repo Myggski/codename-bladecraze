@@ -24,6 +24,18 @@ function world:destroy_entity(e)
   e = nil
 end
 
+function world:get(query)
+  if query.is_query_builder then
+    query = query.Build()
+  end
+
+  for _, entity in pairs(self._entities) do
+    if not entity:has_components(query.none) then
+      
+    end
+  end
+end
+
 local function create_world()
   return setmetatable({
     _entities = {},
