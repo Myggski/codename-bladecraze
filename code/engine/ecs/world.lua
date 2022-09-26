@@ -1,21 +1,21 @@
 local entity = require "code.engine.ecs.entity"
-local world = {}
+local world_type = {}
 local world_meta = {
-  __index = world,
+  __index = world_type,
 }
 
-function world:entity()
+function world_type:entity()
   self._last_entity_id = self._last_entity_id + 1
   self._entities[self._last_entity_id] = entity(self._last_entity_id, self.is_entity_alive, self.destroy_entity)
 
   return self._entities[self._last_entity_id]
 end
 
-function world:is_entity_alive(e)
+function world_type:is_entity_alive(e)
   return not (self._entities[e] == nil)
 end
 
-function world:destroy_entity(e)
+function world_type:destroy_entity(e)
   if not (self.is_entity_alive(e)) then
     return
   end
@@ -24,7 +24,19 @@ function world:destroy_entity(e)
   e = nil
 end
 
-function world:get(query)
+function world_type:destroy()
+  for _, entity in pairs(self._entities) do
+    entity:destroy()
+  end
+
+  for _, system in pairs(self._systems) do
+    system:destroy()
+  end
+
+  self._systems = nil
+end
+
+function world_type:get(query)
   if query.is_query_builder then
     query = query.build()
   end
@@ -45,11 +57,25 @@ function world:get(query)
 end
 
 local function create_world()
-  return setmetatable({
+  local world = setmetatable({
     _entities = {},
     _systems = {},
     _last_entity_id = 0,
   }, world_meta)
+
+  function world:add_system(system_type)
+    if self._systems[system_type] == nil then
+      self._systems[system_type] = system_type(self)
+    end
+  end
+
+  function world:update(dt)
+    for _, system in pairs(self._systems) do
+      system:update(dt)
+    end
+  end
+
+  return world
 end
 
 return setmetatable({ create = create_world, }, { __call = function(_, _) return create_world() end })

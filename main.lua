@@ -16,12 +16,13 @@ require "code.level1"
 
 local camera = require "code.engine.camera"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
+local level_one
 
 function love.load()
   camera:load()
   game_event_manager.invoke(GAME_EVENT_TYPES.LOAD)
 
-  local level_one = ecs.world()
+  level_one = ecs.world()
 
   local entityOne = level_one:entity()
   local entityTwo = level_one:entity()
@@ -40,13 +41,19 @@ function love.load()
 
   local query = ecs.entity_query.all(position_component).none(size_component)
 
-  print(table.get_size(level_one:get(query)))
+  local some_system = ecs.system(query, function(self, dt)
+    for _, entity in pairs(self:entities()) do
+      print(entity[position_component].x, entity[position_component].y)
+    end
+  end)
 
+  level_one:add_system(some_system)
 end
 
 function love.update(dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.LATE_UPDATE, dt)
+  level_one:update(dt)
 end
 
 function love.draw()
