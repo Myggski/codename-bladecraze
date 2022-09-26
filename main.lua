@@ -4,6 +4,7 @@ require "code.utilities.love_extension"
 require "code.utilities.table_extension"
 require "code.utilities.math_extension"
 local ecs = require "code.engine.ecs"
+
 --[[
   Due to the level listening to game_events,
   only a require is needed to load it.
@@ -22,14 +23,25 @@ function love.load()
 
   local level_one = ecs.world()
 
-  local entity = level_one:entity()
+  local entityOne = level_one:entity()
+  local entityTwo = level_one:entity()
+  local entityThree = level_one:entity()
   local position_component = ecs.component({ x = 32, y = 8 })
   local size_component = ecs.component({ w = 1, h = 2 })
+  local acceleration_component = ecs.component(100)
 
-  entity[position_component] = position_component()
-  entity[size_component] = size_component()
+  entityOne[position_component] = position_component()
+  entityTwo[position_component] = position_component({ x = 0, y = 0 })
+  entityThree[position_component] = position_component({ x = 0, y = 0 })
 
-  print(entity:has_components(position_component, size_component))
+  entityTwo[acceleration_component] = acceleration_component()
+
+  entityThree[size_component] = size_component({ w = 2, h = 3 })
+
+  local query = ecs.entity_query.all(position_component).none(size_component)
+
+  print(table.get_size(level_one:get(query)))
+
 end
 
 function love.update(dt)

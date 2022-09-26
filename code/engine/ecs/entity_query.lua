@@ -1,9 +1,10 @@
 local entity_query = {}
+entity_query.__index = entity_query
 
 local function seperate_query_type(list)
   local components, filters = {}, {}
 
-  for item in list do
+  for _, item in pairs(list) do
     if item.is_component_type and not item.is_component then
       table.insert(components, item)
     elseif item.is_filter then
@@ -17,9 +18,9 @@ end
 function entity_query.create(all, any, none)
   local all_filters, any_filters, none_filters
 
-  all, all_filters = seperate_query_type(all)
-  any, any_filters = seperate_query_type(any)
-  none, none_filters = seperate_query_type(any)
+  all, all_filters = seperate_query_type(all or {})
+  any, any_filters = seperate_query_type(any or {})
+  none, none_filters = seperate_query_type(none or {})
 
   return setmetatable({
     is_query = true,
@@ -78,23 +79,52 @@ function entity_query.none(...)
   return query_builder().none(...)
 end
 
+-- TODO: Optimize this by check archetypes instead of every entity and cache what archetypes are ok and not for the query
+-- TODO: Do some sort of archetype_changed event to make this match redo the check for the archetype
 function entity_query:match(entity)
-  if self._none_components then
-
-    if self._none_components and entity:has_components(self._none_components) then
-      return false
-    end
-
-    if self._any_component and not entity:has_any_components(self._any_components) then
-      return false
-    end
-
-    if self._all_components and not entity:has_components(self._all_components) then
-      return false
-    end
-
-    return true
+  if #self._none_components > 0 and entity:has_any_components(self._none_components) then
+    return false
   end
+
+  if #self._none_filters > 0 then
+    for _, filter in pairs(self._none_filters) do
+      if filter(entity) then
+        return false
+      end
+    end
+  end
+
+  if #self._any_components > 0 and not entity:has_any_components(self._any_components) then
+    return false
+  end
+
+  if #self._any_filters > 0 then
+    local has_any_filters = false
+
+    for _, filter in pairs(self._any_filters) do
+      if filter(entity) then
+        has_any_filters = true
+      end
+    end
+
+    if not (has_any_filters == nil) then
+      return false
+    end
+  end
+
+  if #self._all_components > 0 and not entity:has_components(self._all_components) then
+    return false
+  end
+
+  if #self._all_filters > 0 then
+    for _, filter in pairs(self._all_filters) do
+      if not filter(entity) then
+        return false
+      end
+    end
+  end
+
+  return true
 end
 
 function entity_query.filter(filter_fn)
@@ -113,8 +143,7 @@ function entity_query.filter(filter_fn)
   end
 end
 
-setmetatable(entity_query, {
-  __index = entity_query,
+return setmetatable(entity_query, {
   __call = function(eq, all, any, none)
     return eq.create(all, any, none)
   end,

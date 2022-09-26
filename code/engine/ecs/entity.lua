@@ -14,9 +14,7 @@ local function remove_component(entity, component)
   entity.components[component] = nil
 end
 
-local function has_components(entity, ...)
-  local components = { ... }
-
+local function has_components(entity, components)
   for _, component in pairs(components) do
     if entity.components[component] == nil then
       return false
@@ -26,9 +24,7 @@ local function has_components(entity, ...)
   return true
 end
 
-local function has_any_components(entity, ...)
-  local components = { ... }
-
+local function has_any_components(entity, components)
   for _, component in pairs(components) do
     if entity.components[component] then
       return true
@@ -60,6 +56,7 @@ local create = function(id, is_alive_callback, destroy_callback)
     add_component = add_component,
     remove_component = remove_component,
     has_components = has_components,
+    has_any_components = has_any_components,
     destroy = destroy_callback,
     is_alive = is_alive_callback,
   }, entity_meta)

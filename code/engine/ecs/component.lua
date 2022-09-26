@@ -2,7 +2,7 @@ local component_type_meta = { __call = function(ct, ...) return ct.create(...) e
 local COMPONENT_ID = 0
 
 local function create_component(value)
-  return value and { value = value } or {}
+  return { value = value }
 end
 
 local function create_component_type(default_value)
@@ -16,6 +16,10 @@ local function create_component_type(default_value)
   component_type.__index = component_type
 
   function component_type.create(value)
+    if not value and type(default_value) == "table" then
+      value = table.deep_clone(default_value)
+    end
+
     local component = setmetatable(create_component(value), component_type)
     component.is_component = true
 

@@ -26,14 +26,22 @@ end
 
 function world:get(query)
   if query.is_query_builder then
-    query = query.Build()
+    query = query.build()
   end
 
+  if not query.is_query then
+    return self._entities
+  end
+
+  local entities = {}
+
   for _, entity in pairs(self._entities) do
-    if not entity:has_components(query.none) then
-      
+    if query:match(entity) then
+      table.insert(entities, entity)
     end
   end
+
+  return entities
 end
 
 local function create_world()

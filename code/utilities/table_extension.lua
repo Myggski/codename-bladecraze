@@ -18,3 +18,21 @@ end
 function table.contains_key(table, key)
   return not (table[key] == nil)
 end
+
+function table.deep_clone(root_table, child_table)
+  child_table = child_table or {}
+  if root_table == nil then return nil end
+  if child_table[root_table] then return child_table[root_table] end
+
+  local clone_table = {}
+  child_table[root_table] = clone_table
+  setmetatable(clone_table, table.deep_clone(getmetatable(root_table), child_table))
+
+  for key, value in next, root_table, nil do
+    key = type(key) == "table" and table.deep_clone(root_table, child_table) or key
+    value = type(value) == "table" and table.deep_clone(root_table, child_table) or value
+    clone_table[key] = value
+  end
+
+  return clone_table
+end
