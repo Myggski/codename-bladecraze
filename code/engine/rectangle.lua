@@ -3,13 +3,12 @@ local world_grid = require "code.engine.world_grid"
 local rectangle = {}
 
 function rectangle:create(x, y, w, h)
-  self.__index = self
   return setmetatable({
     x = x,
     y = y,
     w = w,
     h = h,
-  }, self)
+  }, { __index = self })
 end
 
 function rectangle:is_inside(x, y)
@@ -41,4 +40,4 @@ function rectangle:clone()
   return self:create(self.x, self.y, self.w, self.h)
 end
 
-return rectangle
+return setmetatable(rectangle, { __call = function(t, ...) return t:create(...) end })

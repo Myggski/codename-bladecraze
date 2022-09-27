@@ -44,13 +44,13 @@ local gizmos = {
   line_dots: table {x1,y1,x2,y2...xn,yn},
   duration_seconds: float (negative value for permanent shape)
 ]]
-local function add_draw_line(gizmo_data, line_dots, duration_seconds)
+local function draw_line(gizmo_data, line_dots, duration_seconds)
   if not (type(gizmo_data) == "table") then
     gizmo_data = gizmos.create_draw_data()
   end
 
   local line = { line_dots = line_dots, gizmo_data = gizmo_data, duration = duration_seconds,
-    creation_time = os.clock(), gizmo_type = GIZMO_TYPE.LINE }
+    creation_time = love.timer.getTime(), gizmo_type = GIZMO_TYPE.LINE }
 
   if gizmo_data.draw_space == DRAW_SPACE.HUD then
     table.insert(gizmos.hud_shapes, line)
@@ -66,7 +66,7 @@ end
   radius: float,
   duration_seconds: float (negative value for permanent shape)
 ]]
-local function add_draw_circle(gizmo_data, position, radius, duration_seconds)
+local function draw_circle(gizmo_data, position, radius, duration_seconds)
   if not (type(gizmo_data) == "table") then
     gizmo_data = gizmos.create_draw_data()
   end
@@ -75,7 +75,7 @@ local function add_draw_circle(gizmo_data, position, radius, duration_seconds)
     position = position,
     radius = radius,
     duration = duration_seconds,
-    creation_time = os.clock(),
+    creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.CIRCLE
   }
   if gizmo_data.draw_space == DRAW_SPACE.HUD then
@@ -93,7 +93,7 @@ end
   segments: nil or integer,
   duration_seconds: float (negative value for permanent shape)
 ]]
-local function add_draw_ellipse(gizmo_data, position, radiuses, segments, duration_seconds)
+local function draw_ellipse(gizmo_data, position, radiuses, segments, duration_seconds)
   if not (type(gizmo_data) == "table") then
     gizmo_data = gizmos.create_draw_data()
   end
@@ -104,7 +104,7 @@ local function add_draw_ellipse(gizmo_data, position, radiuses, segments, durati
     radiuses = radiuses,
     segments = segments,
     duration = duration_seconds,
-    creation_time = os.clock(),
+    creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.ELLIPSE
   }
   if gizmo_data.draw_space == DRAW_SPACE.HUD then
@@ -122,7 +122,7 @@ end
   segments: nil or integer,
   duration_seconds: float (negative value for permanent shape)
 ]]
-local function add_draw_rectangle(gizmo_data, position, size, radiuses, segments, duration_seconds)
+local function draw_rectangle(gizmo_data, position, size, radiuses, segments, duration_seconds)
   if not (type(gizmo_data) == "table") then
     gizmo_data = gizmos.create_draw_data()
   end
@@ -135,7 +135,7 @@ local function add_draw_rectangle(gizmo_data, position, size, radiuses, segments
     radiuses = radiuses,
     segments = segments,
     duration = duration_seconds,
-    creation_time = os.clock(),
+    creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.RECTANGLE
   }
   if gizmo_data.draw_space == DRAW_SPACE.HUD then
@@ -201,7 +201,7 @@ local function remove_expired_objects(object_table, current_time)
 end
 
 local function update(_)
-  local current_time = os.clock()
+  local current_time = love.timer.getTime()
   remove_expired_objects(gizmos.hud_shapes, current_time)
   remove_expired_objects(gizmos.world_shapes, current_time)
 end
@@ -211,11 +211,11 @@ game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, draw_hud)
 game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, draw_world)
 
 return {
-  add_draw_line = add_draw_line,
-  add_draw_ellipse = add_draw_ellipse,
-  add_draw_circle = add_draw_circle,
-  add_draw_rectangle = add_draw_rectangle,
   DRAW_SPACE = DRAW_SPACE,
   DRAW_MODE = DRAW_MODE,
   create_draw_data = gizmos.create_draw_data,
+  draw_line = draw_line,
+  draw_ellipse = draw_ellipse,
+  draw_circle = draw_circle,
+  draw_rectangle = draw_rectangle,
 }

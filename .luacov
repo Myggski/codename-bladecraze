@@ -1,0 +1,9 @@
+reportfile = "spec/luacov.report.out"
+includeuntestedfiles = true
+deletestats = true
+include = {
+  "code/"
+}
+exclude = {
+  "^.+/init$"
+}
