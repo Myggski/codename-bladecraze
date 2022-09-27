@@ -70,6 +70,8 @@ local create = function(id, is_alive_callback, destroy_callback)
     is_alive = is_alive_callback,
   }, entity_meta)
 
+  function entity:get_id() return self._id end
+
   return entity
 end
 

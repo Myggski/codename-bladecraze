@@ -86,16 +86,21 @@ function entity_query:match(entity)
     return false
   end
 
+  if #self._any_components > 0 and not entity:has_any_components(self._any_components) then
+    return false
+  end
+
+  if #self._all_components > 0 and not entity:has_components(self._all_components) then
+    return false
+  end
+
+  -- Make sure to have all the required components before the filters
   if #self._none_filters > 0 then
     for _, filter in pairs(self._none_filters) do
       if filter(entity) then
         return false
       end
     end
-  end
-
-  if #self._any_components > 0 and not entity:has_any_components(self._any_components) then
-    return false
   end
 
   if #self._any_filters > 0 then
@@ -107,13 +112,9 @@ function entity_query:match(entity)
       end
     end
 
-    if not (has_any_filters == nil) then
+    if not has_any_filters then
       return false
     end
-  end
-
-  if #self._all_components > 0 and not entity:has_components(self._all_components) then
-    return false
   end
 
   if #self._all_filters > 0 then
@@ -130,16 +131,15 @@ end
 function entity_query.filter(filter_fn)
   return function(config)
     local filter = { is_filter = true }
+    filter.__index = filter
 
-    local function check(entity)
+    function filter.call(entity)
       return filter_fn(entity, config)
     end
 
-    return setmetatable(filter,
-      {
-        __index = filter,
-        __call = function(_, entity) return check(entity) end
-      })
+    setmetatable(filter, { __call = function(f, entity) return f.call(entity) end })
+
+    return filter
   end
 end
 

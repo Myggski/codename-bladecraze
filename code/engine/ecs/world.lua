@@ -5,8 +5,17 @@ local world_meta = {
 }
 
 function world_type:entity()
-  self._last_entity_id = self._last_entity_id + 1
-  self._entities[self._last_entity_id] = entity(self._last_entity_id, self.is_entity_alive, self.destroy_entity)
+  local entity_id = 0
+
+  if #self._destroyed_entity_ids > 0 then
+    entity_id = self._destroyed_entity_ids[1]
+    table.remove(self._destroyed_entity_ids, 1)
+  else
+    entity_id = self._last_entity_id + 1
+    self._last_entity_id = entity_id
+  end
+
+  self._entities[self._last_entity_id] = entity(entity_id, self.is_entity_alive, self.destroy_entity)
 
   return self._entities[self._last_entity_id]
 end
@@ -21,6 +30,7 @@ function world_type:destroy_entity(e)
   end
 
   self._entities[e] = nil
+  table.insert(self._destroyed_entity_ids, e:get_id())
   e = nil
 end
 
@@ -59,6 +69,7 @@ end
 local function create_world()
   local world = setmetatable({
     _entities = {},
+    _destroyed_entity_ids = {},
     _systems = {},
     _last_entity_id = 0,
   }, world_meta)
