@@ -144,7 +144,5 @@ function entity_query.filter(filter_fn)
 end
 
 return setmetatable(entity_query, {
-  __call = function(eq, all, any, none)
-    return eq.create(all, any, none)
-  end,
+  __call = function(eq, all, any, none) return eq.create(all, any, none) end,
 })

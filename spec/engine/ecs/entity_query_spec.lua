@@ -1,6 +1,6 @@
 insulate("entity_query", function()
   require "spec.love_setup"
-  local empty_func = function() end
+
   local component = require "code.engine.ecs.component"
   local entity = require "code.engine.ecs.entity"
   local entity_query = require "code.engine.ecs.entity_query"
@@ -8,6 +8,8 @@ insulate("entity_query", function()
   local health_component = component(0)
   local name_component = component("")
   local position_component = component({})
+
+  local empty_func = function() end
 
   local first_entity = entity.create(1, empty_func, empty_func)
   local second_entity = entity.create(2, empty_func, empty_func)

@@ -3,7 +3,7 @@ local function add_component(entity, key, value)
     if value == nil and entity:has_component(key) then
       entity:remove_component(key)
     elseif type(value) == "table" and value.is_component then
-      entity.components[key] = value
+      entity._components[key] = value
     else
       entity[key] = key(value)
     end
@@ -11,17 +11,15 @@ local function add_component(entity, key, value)
 end
 
 local function remove_component(entity, component)
-  entity.components[component] = nil
+  entity._components[component] = nil
 end
 
 local function has_component(entity, component)
-  return not (entity.components[component] == nil)
+  return not (entity._components[component] == nil)
 end
 
-local function has_components(entity, components)
-  if components.is_component_type then
-    components = { components }
-  end
+local function has_components(entity, ...)
+  local components = (...).is_component_type and { ... } or ...
 
   for _, component in pairs(components) do
     if not entity:has_component(component) then
@@ -32,7 +30,9 @@ local function has_components(entity, components)
   return true
 end
 
-local function has_any_components(entity, components)
+local function has_any_components(entity, ...)
+  local components = (...).is_component_type and { ... } or ...
+
   for _, component in pairs(components) do
     if entity:has_component(component) then
       return true
@@ -42,10 +42,12 @@ local function has_any_components(entity, components)
   return false
 end
 
+local function get_id(entity) return entity._id end
+
 local entity_meta = {
   __index = function(entity, key)
     if type(key) == "table" and entity:has_components(key) then
-      return entity.components[key].value
+      return entity._components[key].value
     end
   end,
   __newindex = function(entity, key, value)
@@ -55,12 +57,13 @@ local entity_meta = {
 
 local create = function(id, is_alive_callback, destroy_callback)
   assert(not (id == nil), "Error, an id expected, got: " .. id)
-  assert(type(destroy_callback) == "function", "Error, entity needs a destroy_callback function set")
-  assert(type(is_alive_callback) == "function", "Error, entity needs a is_alive_callback function set")
+  assert(not (destroy_callback == nil), "Error, entity needs a destroy_callback function set")
+  assert(not (is_alive_callback == nil), "Error, entity needs a is_alive_callback function set")
 
-  local entity = setmetatable({
+  local entity = {
     _id = id,
-    components = {},
+    _components = {},
+    get_id = get_id,
     add_component = add_component,
     remove_component = remove_component,
     has_component = has_component,
@@ -68,11 +71,9 @@ local create = function(id, is_alive_callback, destroy_callback)
     has_any_components = has_any_components,
     destroy = destroy_callback,
     is_alive = is_alive_callback,
-  }, entity_meta)
+  }
 
-  function entity:get_id() return self._id end
-
-  return entity
+  return setmetatable(entity, entity_meta)
 end
 
 return setmetatable({ create = create }, { __call = function(_, ...) return create(...) end })
