@@ -31,7 +31,11 @@ function world_type:destroy_entity(e)
 
   self._entities[e] = nil
   table.insert(self._destroyed_entity_ids, e:get_id())
-  e = nil
+
+  setmetatable(e, nil)
+  for k in pairs(e) do
+    e[k] = nil
+  end
 end
 
 function world_type:destroy()
@@ -43,7 +47,7 @@ function world_type:destroy()
     system:destroy()
   end
 
-  self._systems = nil
+  self._systems = {}
 end
 
 function world_type:get(query)
@@ -77,6 +81,12 @@ local function create_world()
   function world:add_system(system_type)
     if self._systems[system_type] == nil then
       self._systems[system_type] = system_type(self)
+    end
+  end
+
+  function world:remove_system(system_type)
+    if not (self._systems[system_type] == nil) then
+      self._systems[system_type] = nil
     end
   end
 
