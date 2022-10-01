@@ -7,7 +7,7 @@ local player_character = require "code.player.player"
 local button = require "code.ui.button"
 local projectile_pool = require "code.projectiles.projectile_pool"
 local asset_manager = require "code.engine.asset_manager"
-local gizmos = require "code.utilities.gizmos"
+local gizmos = require "code.utilities.debug.gizmos"
 local vector2 = require "code.engine.vector2"
 local world_grid = require "code.engine.world_grid"
 
@@ -21,10 +21,10 @@ local sprite_sheet_image = nil
   some example usage of gizmos, will be deleted :)
 ]]
 local function debug_example()
-  gizmos.add_draw_line(_,
+  gizmos.draw_line(_,
     { world_grid:grid_to_world(1, 1, 2, 0, 6, 1, 2, 2, 1, 1) },
     -1)
-  gizmos.add_draw_rectangle(
+  gizmos.draw_rectangle(
     gizmos.create_draw_data(gizmos.DRAW_SPACE.HUD, gizmos.DRAW_MODE.FILL, COLOR.YELLOW),
     vector2.zero(),
     vector2.zero() + vector2(16, 16),

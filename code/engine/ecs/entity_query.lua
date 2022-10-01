@@ -30,6 +30,7 @@ function entity_query.create(all, any, none)
     _any_filters = any_filters,
     _none_components = none,
     _none_filters = none_filters,
+    _archetype_cache = {},
   }, entity_query)
 end
 
@@ -79,22 +80,34 @@ function entity_query.none(...)
   return query_builder().none(...)
 end
 
--- TODO: Optimize this by check archetypes instead of every entity and cache what archetypes are ok and not for the query
--- TODO: Do some sort of archetype_changed event to make this match redo the check for the archetype
+function entity_query:has_valid_archetype(archetype)
+  local archetype_cache = self._archetype_cache
+  local cache_result = archetype_cache[archetype]
+
+  if not (cache_result == nil) then
+    return cache_result
+  end
+
+  local archetype_validity = true
+
+  if #self._none_components > 0 and archetype:has_any(self._none_components) then
+    archetype_validity = false
+  end
+
+  if #self._any_components > 0 and not archetype:has_any(self._any_components) then
+    archetype_validity = false
+  end
+
+  if #self._all_components > 0 and not archetype:has_all(self._all_components) then
+    archetype_validity = false
+  end
+
+  archetype_cache[archetype] = archetype_validity
+
+  return archetype_validity
+end
+
 function entity_query:match(entity)
-  if #self._none_components > 0 and entity:has_any_components(self._none_components) then
-    return false
-  end
-
-  if #self._any_components > 0 and not entity:has_any_components(self._any_components) then
-    return false
-  end
-
-  if #self._all_components > 0 and not entity:has_components(self._all_components) then
-    return false
-  end
-
-  -- Make sure to have all the required components before the filters
   if #self._none_filters > 0 then
     for _, filter in pairs(self._none_filters) do
       if filter(entity) then

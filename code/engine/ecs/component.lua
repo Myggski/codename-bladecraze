@@ -30,6 +30,10 @@ local function create_component_type(default_value)
     return component_type
   end
 
+  function component_type:get_id()
+    return self._id
+  end
+
   function component_type:is(ct)
     return component_type == ct
   end

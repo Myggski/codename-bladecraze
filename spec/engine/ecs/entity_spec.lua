@@ -36,8 +36,8 @@ insulate("entity", function()
       first_entity:add_component(health_component, 100)
       second_entity[health_component] = 80
 
-      assert.are.same(first_entity._components[health_component].value, 100)
-      assert.are.same(second_entity._components[health_component].value, 80)
+      assert.are.same(first_entity._component_values[health_component].value, 100)
+      assert.are.same(second_entity._component_values[health_component].value, 80)
     end)
   end)
 
@@ -46,14 +46,14 @@ insulate("entity", function()
       first_entity:add_component(health_component, 100)
       second_entity[health_component] = 80
 
-      assert.are.same(first_entity._components[health_component].value, 100)
-      assert.are.same(second_entity._components[health_component].value, 80)
+      assert.are.same(first_entity._component_values[health_component].value, 100)
+      assert.are.same(second_entity._component_values[health_component].value, 80)
 
       first_entity:remove_component(health_component)
       second_entity[health_component] = nil
 
-      assert.is_truthy(first_entity._components[health_component] == nil)
-      assert.is_truthy(second_entity._components[health_component] == nil)
+      assert.is_truthy(first_entity._component_values[health_component] == nil)
+      assert.is_truthy(second_entity._component_values[health_component] == nil)
     end)
   end)
 

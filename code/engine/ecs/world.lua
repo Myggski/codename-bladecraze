@@ -4,7 +4,8 @@ local world_meta = {
   __index = world_type,
 }
 
-function world_type:entity()
+-- Returns a unique id for entities
+function world_type:get_entity_id()
   local entity_id = 0
 
   if #self._destroyed_entity_ids > 0 then
@@ -15,21 +16,36 @@ function world_type:entity()
     self._last_entity_id = entity_id
   end
 
-  self._entities[self._last_entity_id] = entity(entity_id, self.is_entity_alive, self.destroy_entity)
-
-  return self._entities[self._last_entity_id]
+  return entity_id
 end
 
+-- Creates an entity and adds it into the world
+function world_type:entity(...)
+  local id = self:get_entity_id()
+  local new_entity = entity(
+    id,
+    self.is_entity_alive,
+    self.destroy_entity,
+    ...
+  )
+
+  self._entities[new_entity.archetype] = { [id] = new_entity }
+
+  return new_entity
+end
+
+-- Checks if the entity is alive
 function world_type:is_entity_alive(e)
-  return not (self._entities[e] == nil)
+  return not (self._entities[e.archetype][e] == nil)
 end
 
+-- Removes the entity from the world
 function world_type:destroy_entity(e)
   if not (self.is_entity_alive(e)) then
     return
   end
 
-  self._entities[e] = nil
+  self._entities[e.archetype][e] = nil
   table.insert(self._destroyed_entity_ids, e:get_id())
 
   setmetatable(e, nil)
@@ -38,6 +54,7 @@ function world_type:destroy_entity(e)
   end
 end
 
+-- Destroys the entire world
 function world_type:destroy()
   for _, entity in pairs(self._entities) do
     entity:destroy()
@@ -50,26 +67,38 @@ function world_type:destroy()
   self._systems = {}
 end
 
+-- Get the entities in the world
 function world_type:get(query)
   if query.is_query_builder then
     query = query.build()
   end
 
+  local all_entities = {}
+
   if not query.is_query then
-    return self._entities
+    for _, entities in self._entities do
+      for _, entity in entities do
+        table.insert(all_entities, entity)
+      end
+    end
+
+    return all_entities
   end
 
-  local entities = {}
-
-  for _, entity in pairs(self._entities) do
-    if query:match(entity) then
-      table.insert(entities, entity)
+  for archetype, entities in pairs(self._entities) do
+    if query:has_valid_archetype(archetype) then
+      for _, entity in pairs(entities) do
+        if query:match(entity) then
+          table.insert(all_entities, entity)
+        end
+      end
     end
   end
 
-  return entities
+  return all_entities
 end
 
+-- Generating the world
 local function create_world()
   local world = setmetatable({
     _entities = {},
