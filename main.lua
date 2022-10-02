@@ -3,7 +3,10 @@ require "code.engine.game_data"
 require "code.utilities.love_extension"
 require "code.utilities.table_extension"
 require "code.utilities.math_extension"
+local rectangle = require "code.engine.rectangle"
+local world_grid = require "code.engine.world_grid"
 local ecs = require "code.engine.ecs"
+local debug = require "code.utilities.debug"
 
 --[[
   Due to the level listening to game_events,
@@ -22,20 +25,36 @@ function love.load()
   camera:load()
   game_event_manager.invoke(GAME_EVENT_TYPES.LOAD)
 
+  math.randomseed(os.clock() * 100000000000)
   level_one = ecs.world()
 
   local position_component = ecs.component({ x = 32, y = 8 })
   local size_component = ecs.component({ w = 1, h = 2 })
-  local acceleration_component = ecs.component(100)
+  local acceleration_component = ecs.component({ x = 0, y = 0 })
 
-  level_one:entity(position_component({ x = 16, y = 16 }))
+  local draw_datas = {}
+
+  for i = 1, 4000 do
+    local x, y, a_x, a_y = math.random(-640 / 5, 640 / 5), math.random(-360 / 5, 360 / 5), math.random(-10, 10),
+        math.random(-10, 10)
+    local entity = level_one:entity(position_component({ x = x, y = y }), acceleration_component({ x = a_x, y = a_y }))
+
+    local color = { math.random(0, 1), math.random(0, 1), math.random(0, 1) }
+    local draw_data = debug.gizmos.create_draw_data(debug.gizmos.DRAW_SPACE.WORLD, debug.gizmos.DRAW_MODE.FILL, color, 1)
+    draw_datas[entity] = draw_data
+  end
 
   local query = ecs.entity_query.all(position_component).none(size_component)
 
   local some_system = ecs.system(query, function(self, dt)
-    local ent_list = self:entities()
-    for _, entity in pairs(ent_list) do
-      print(entity[position_component].x, entity[position_component].y)
+    for _, entity in self:list() do
+      local pos = entity[position_component]
+      local acc = entity[acceleration_component]
+
+      entity[position_component] = { x = pos.x + acc.x * dt, y = pos.y + acc.y * dt }
+
+      debug.gizmos.draw_rectangle(draw_datas[entity], entity[position_component], { x = 1, y = 1 }, { x = 0, y = 0 }, nil
+        , dt)
     end
   end)
 
@@ -46,6 +65,8 @@ function love.update(dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.LATE_UPDATE, dt)
   level_one:update(dt)
+
+  print(love.timer.getFPS())
 end
 
 function love.draw()

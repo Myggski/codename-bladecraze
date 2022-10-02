@@ -29,14 +29,18 @@ function world_type:entity(...)
     ...
   )
 
-  self._entities[new_entity.archetype] = { [id] = new_entity }
+  if not self._entities[new_entity.archetype] then
+    self._entities[new_entity.archetype] = { [id] = new_entity }
+  else
+    self._entities[new_entity.archetype][id] = new_entity
+  end
 
   return new_entity
 end
 
 -- Checks if the entity is alive
 function world_type:is_entity_alive(e)
-  return not (self._entities[e.archetype][e] == nil)
+  return not (self._entities[e.archetype][e:get_id()] == nil)
 end
 
 -- Removes the entity from the world
@@ -45,7 +49,7 @@ function world_type:destroy_entity(e)
     return
   end
 
-  self._entities[e.archetype][e] = nil
+  self._entities[e.archetype][e:get_id()] = nil
   table.insert(self._destroyed_entity_ids, e:get_id())
 
   setmetatable(e, nil)
@@ -67,35 +71,19 @@ function world_type:destroy()
   self._systems = {}
 end
 
--- Get the entities in the world
-function world_type:get(query)
-  if query.is_query_builder then
-    query = query.build()
-  end
-
-  local all_entities = {}
-
-  if not query.is_query then
-    for _, entities in self._entities do
-      for _, entity in entities do
-        table.insert(all_entities, entity)
-      end
-    end
-
-    return all_entities
-  end
+function world_type:for_each_entity(query, action)
+  local index = 1
 
   for archetype, entities in pairs(self._entities) do
     if query:has_valid_archetype(archetype) then
       for _, entity in pairs(entities) do
         if query:match(entity) then
-          table.insert(all_entities, entity)
+          action(entity, index)
+          index = index + 1
         end
       end
     end
   end
-
-  return all_entities
 end
 
 -- Generating the world
@@ -122,6 +110,23 @@ local function create_world()
   function world:update(dt)
     for _, system in pairs(self._systems) do
       system:update(dt)
+    end
+
+    -- Update the archetype list if needed
+    -- TODO: Optimize this with events or in some other way
+    -- It doesn'have to be checked in every update
+    for archetype, entities in pairs(self._entities) do
+      for _, entity in pairs(entities) do
+        if not (entity.archetype == archetype) then
+          self._entities[archetype][entity:get_id()] = nil
+
+          if self._entities[entity.archetype] then
+            self._entities[entity.archetype][entity:get_id()] = entity
+          else
+            self._entities[entity.archetype] = { [entity:get_id()] = entity }
+          end
+        end
+      end
     end
   end
 

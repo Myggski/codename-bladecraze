@@ -34,8 +34,23 @@ local function create_system_type(query, update_fn)
       _world = world,
     }, system_type)
 
-    function system:entities(query)
-      return self._world:get(query or system_type.query)
+    function system:list(query)
+      query = query or system_type.query
+
+      if query.is_query_builder then
+        query = query.build()
+      end
+
+      local entities_coroutine = coroutine.create(function()
+        self._world:for_each_entity(query or system_type.query, function(value, count)
+          coroutine.yield(value, count)
+        end)
+      end)
+
+      return function()
+        local _, item, index = coroutine.resume(entities_coroutine)
+        return index, item
+      end
     end
 
     return system

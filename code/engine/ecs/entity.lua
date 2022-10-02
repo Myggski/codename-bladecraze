@@ -16,9 +16,9 @@ local function add_component(entity, component_type, component_value)
       end
     else
       local new_archetype = entity.archetype:with(component_type)
+      entity[component_type] = component_type(component_value)
 
       if not (entity.archetype == new_archetype) then
-        entity[component_type] = component_type(component_value)
         entity.archetype = new_archetype
       end
     end
@@ -51,7 +51,7 @@ local function get_id(entity) return entity._id end
 
 local entity_meta = {
   __index = function(entity, key)
-    if type(key) == "table" and entity:has_components(key) then
+    if type(key) == "table" and entity:has_component(key) then
       return entity._component_values[key].value
     end
   end,
@@ -78,6 +78,8 @@ local create = function(id, is_alive_callback, destroy_callback, ...)
     destroy = destroy_callback,
     is_alive = is_alive_callback,
   }
+
+  entity.__index = entity
 
   for _, component in pairs({ ... }) do
     if component.is_component then
