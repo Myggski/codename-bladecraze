@@ -6,7 +6,7 @@ local input_query = entity_query.all(components.input, components.acceleration, 
 local input_system = system(input_query, function(self, dt)
   local input, acceleration, speed = nil, nil, nil
 
-  for _, entity in self:list() do
+  for _, entity in self:iterator() do
     input = entity[components.input]
     acceleration = entity[components.acceleration]
     speed = entity[components.speed]

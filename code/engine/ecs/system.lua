@@ -34,7 +34,7 @@ local function create_system_type(query, update_fn)
       _world = world,
     }, system_type)
 
-    function system:list(query)
+    function system:iterator(query)
       query = query or system_type.query
 
       if query.is_query_builder then
