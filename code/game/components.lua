@@ -19,7 +19,7 @@ local input_component = component({
   controller = "keyboard" or "gamepad",
   movement_direction = { x = 0, y = 0 },
   aim_direction = { x = 0, y = 0 },
-  action = nil
+  action = PLAYER.ACTIONS.NONE,
 })
 
 _G.components = {

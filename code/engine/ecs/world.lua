@@ -24,8 +24,7 @@ function world_type:entity(...)
   local id = self:get_entity_id()
   local new_entity = entity(
     id,
-    self.is_entity_alive,
-    self.destroy_entity,
+    self:destroy_entity(),
     ...
   )
 
@@ -38,23 +37,20 @@ function world_type:entity(...)
   return new_entity
 end
 
--- Checks if the entity is alive
-function world_type:is_entity_alive(e)
-  return not (self._entities[e.archetype][e:get_id()] == nil)
-end
-
 -- Removes the entity from the world
-function world_type:destroy_entity(e)
-  if not (self.is_entity_alive(e)) then
-    return
-  end
+function world_type:destroy_entity()
+  local self_world = self
 
-  self._entities[e.archetype][e:get_id()] = nil
-  table.insert(self._destroyed_entity_ids, e:get_id())
+  return function(e)
+    if not (e:is_alive()) then
+      return
+    end
 
-  setmetatable(e, nil)
-  for k in pairs(e) do
-    e[k] = nil
+    table.insert(self_world._destroyed_entity_ids, e:get_id())
+    table.insert(self_world._destroyed_entities, e)
+
+    self_world._entities[e.archetype][e:get_id()] = nil
+    e._id = -1
   end
 end
 
@@ -71,13 +67,15 @@ function world_type:destroy()
   self._systems = {}
 end
 
+-- This method should be called inside a coroutine in order to work as intended
+-- Check system.lua and entities_coroutine to see the setup
 function world_type:for_each_entity(query, action)
   local index = 1
 
   for archetype, entities in pairs(self._entities) do
-    if query:has_valid_archetype(archetype) then
+    if query:is_valid_archetype(archetype) then
       for _, entity in pairs(entities) do
-        if query:match(entity) then
+        if query:is_entity_valid(entity) then
           action(entity, index)
           index = index + 1
         end
@@ -91,22 +89,26 @@ local function create_world()
   local world = setmetatable({
     _entities = {},
     _destroyed_entity_ids = {},
+    _destroyed_entities = {},
     _systems = {},
     _last_entity_id = 0,
   }, world_meta)
 
+  -- Adds a system to the world
   function world:add_system(system_type)
     if self._systems[system_type] == nil then
       self._systems[system_type] = system_type(self)
     end
   end
 
+  -- Removes a system from the world
   function world:remove_system(system_type)
     if not (self._systems[system_type] == nil) then
       self._systems[system_type] = nil
     end
   end
 
+  -- This is called every tick
   function world:update(dt)
     for _, system in pairs(self._systems) do
       system:update(dt)
@@ -127,6 +129,12 @@ local function create_world()
           end
         end
       end
+    end
+
+    -- Evaporate the dead completely from this world
+    for index = 1, #self._destroyed_entities do
+      setmetatable(self._destroyed_entities[index], nil)
+      self._destroyed_entities[index] = nil
     end
   end
 

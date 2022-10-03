@@ -1,11 +1,12 @@
 local CACHE_WITH = {}
 local CACHE_WITHOUT = {}
-local archetypes = {}
-local version = 0
+local archetypes = {} -- All the archetypes
+local version = 0 -- Archetype version, changes whenever a new type of archetype is added
 
 local archetype = {}
 archetype.__index = archetype
 
+-- Gets already existing archetype or creates a new one
 function archetype.setup(...)
   local component_types = (...).is_component_type and { ... } or ...
   local component_ids = {}
@@ -34,7 +35,8 @@ function archetype.setup(...)
   return archetypes[archetype_id]
 end
 
-function archetype:with(component_type)
+-- Adds a component to a archetype
+function archetype:add(component_type)
   if self._components[component_type] then
     return self
   end
@@ -63,7 +65,8 @@ function archetype:with(component_type)
   return current_archetype
 end
 
-function archetype:without(component_type)
+-- Removes a component to a archetype
+function archetype:remove(component_type)
   if self._components[component_type] == nil then
     return self
   end
@@ -93,14 +96,17 @@ function archetype:without(component_type)
   return current_archetype
 end
 
+-- Get the archetype version
 function archetype.get_version()
   return version
 end
 
+-- Checks if the archetype has a specific component
 function archetype:has(component_type)
   return self._components[component_type] == true
 end
 
+-- Checks if the archetype has all of the listed componets
 function archetype:has_all(...)
   local components = (...).is_component_type and { ... } or ...
 
@@ -113,6 +119,7 @@ function archetype:has_all(...)
   return true
 end
 
+-- Checks if the archetype has any of the listed components
 function archetype:has_any(...)
   local components = (...).is_component_type and { ... } or ...
 
@@ -125,6 +132,7 @@ function archetype:has_any(...)
   return false
 end
 
+-- An empty archetype, to start with
 archetype.EMPTY = archetype.setup({})
 
 return archetype

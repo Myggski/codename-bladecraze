@@ -7,7 +7,7 @@ local movement_query = entity_query.all(components.position, components.accelera
 local movement_system = system(movement_query, function(self, dt)
   local position, acceleration = nil, nil
 
-  for _, entity in self:iterator() do
+  for _, entity in self:entity_iterator() do
     position = entity[components.position]
     acceleration = entity[components.acceleration]
 

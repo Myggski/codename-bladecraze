@@ -2,9 +2,12 @@ local system_type_meta = { __call = function(st, ...) return st.create(...) end 
 local SYSTEM_ID = 0
 local destroyed_systems_ids = {}
 
+-- Creates a system type
+-- Examples of system_types = input_system, movement_system and so on
 local function create_system_type(query, update_fn)
   local system_id = 0
 
+  -- Reuses ids of destroyed systems
   if #destroyed_systems_ids > 0 then
     system_id = destroyed_systems_ids[1]
     table.remove(destroyed_systems_ids, 1)
@@ -26,15 +29,16 @@ local function create_system_type(query, update_fn)
     query = query,
     update = update_fn
   }
-
   system_type.__index = system_type
 
+  -- Creates a system, to get access of the entites in the world that it has been added to
+  -- This function is only called when it gets added to the world
   function system_type.create(world)
     local system = setmetatable({
       _world = world,
     }, system_type)
 
-    function system:iterator(query)
+    function system:entity_iterator(query)
       query = query or system_type.query
 
       if query.is_query_builder then
@@ -56,10 +60,12 @@ local function create_system_type(query, update_fn)
     return system
   end
 
+  -- Get system type
   function system_type:get_type()
     return system_type
   end
 
+  -- Destroys the system and everything that's in it
   function system_type:destroy()
     table.insert(destroyed_systems_ids, self._id)
     self._world:remove_system(self:get_type())

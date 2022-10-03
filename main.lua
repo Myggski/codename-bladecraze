@@ -9,7 +9,7 @@ local ecs = require "code.engine.ecs"
 local input_system = require "code.game.systems.input_system"
 local input_acceleration_system = require "code.game.systems.input_acceleration_system"
 local movement_system = require "code.game.systems.movement_system"
-local debug = require "code.utilities.debug"
+local debug_draw_entities = require "code.game.systems.debug_draw_entities"
 
 --[[
   Due to the level listening to game_events,
@@ -39,17 +39,29 @@ function love.load()
     components.input()
   )
 
+  --[[for i = 1, 1000 do
+    level_one:entity(
+      components.position({ x = 16, y = 32 }),
+      components.size({ x = 1, y = 1 }),
+      components.acceleration(),
+      components.speed(600)
+    )
+  end]]
+
+  print(player_one:is_alive())
+  player_one:destroy()
+  print(player_one:is_alive())
+
   level_one:add_system(input_system)
   level_one:add_system(input_acceleration_system)
   level_one:add_system(movement_system)
+  level_one:add_system(debug_draw_entities)
 end
 
 function love.update(dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.LATE_UPDATE, dt)
   level_one:update(dt)
-
-  debug.gizmos.draw_rectangle(_, player_one[components.position], { x = 1, y = 1 }, { x = 0, y = 0 }, nil, dt)
 end
 
 function love.draw()

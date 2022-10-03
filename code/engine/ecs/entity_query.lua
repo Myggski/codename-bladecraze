@@ -1,6 +1,7 @@
 local entity_query = {}
 entity_query.__index = entity_query
 
+-- Seperates the query-list from components and filters
 local function seperate_query_type(list)
   local components, filters = {}, {}
 
@@ -15,6 +16,7 @@ local function seperate_query_type(list)
   return components, filters
 end
 
+-- Creates an query
 function entity_query.create(all, any, none)
   local all_filters, any_filters, none_filters
 
@@ -34,6 +36,8 @@ function entity_query.create(all, any, none)
   }, entity_query)
 end
 
+-- Uses the build pattern to combine queries
+-- Example: local my_query = entity_query().all(position).any(sprite, animation).none(input)
 local function query_builder()
   local builder = {
     is_query_builder = true
@@ -58,10 +62,12 @@ local function query_builder()
     return builder
   end
 
+  -- Builds the combined query
   function builder.build()
     if query == nil then
       query = entity_query.create(builder._all, builder._any, builder._none)
     end
+
     return query
   end
 
@@ -80,7 +86,9 @@ function entity_query.none(...)
   return query_builder().none(...)
 end
 
-function entity_query:has_valid_archetype(archetype)
+-- Checks if the archetype has all the neccessary components
+-- It caches the archetype so it doesn't have to check every frame
+function entity_query:is_valid_archetype(archetype)
   local archetype_cache = self._archetype_cache
   local cache_result = archetype_cache[archetype]
 
@@ -107,40 +115,38 @@ function entity_query:has_valid_archetype(archetype)
   return archetype_validity
 end
 
-function entity_query:match(entity)
-  if #self._none_filters > 0 then
-    for _, filter in pairs(self._none_filters) do
-      if filter(entity) then
-        return false
-      end
-    end
-  end
-
-  if #self._any_filters > 0 then
-    local has_any_filters = false
-
-    for _, filter in pairs(self._any_filters) do
-      if filter(entity) then
-        has_any_filters = true
-      end
-    end
-
-    if not has_any_filters then
+-- Check filters (if any) if the entity is valid
+-- This does not cache because the validity can change every frame
+function entity_query:is_entity_valid(entity)
+  for index = 1, #self._none_filters do
+    if (self._none_filters[index])(entity) then
       return false
     end
   end
 
-  if #self._all_filters > 0 then
-    for _, filter in pairs(self._all_filters) do
-      if not filter(entity) then
-        return false
-      end
+  local has_any_filters = not (#self._any_filters > 0)
+
+  for index = 1, #self._any_filters do
+    if (self._any_filters[index])(entity) then
+      has_any_filters = true
+    end
+  end
+
+  if not has_any_filters then
+    return false
+  end
+
+  for index = 1, #self._all_filters do
+    if not (self._all_filters[index])(entity) then
+      return false
     end
   end
 
   return true
 end
 
+-- Creates a filter to narrow entites down to specific value
+-- Example: To select entities with specific health, position, size and so on
 function entity_query.filter(filter_fn)
   return function(config)
     local filter = { is_filter = true }
