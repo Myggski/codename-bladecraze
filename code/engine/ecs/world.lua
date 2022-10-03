@@ -5,7 +5,7 @@ local world_meta = {
 }
 
 -- Returns a unique id for entities
-function world_type:get_entity_id()
+function world_type:generate_entity_id()
   local entity_id = 0
 
   if #self._destroyed_entity_ids > 0 then
@@ -21,10 +21,10 @@ end
 
 -- Creates an entity and adds it into the world
 function world_type:entity(...)
-  local id = self:get_entity_id()
+  local id = self:generate_entity_id()
   local new_entity = entity(
     id,
-    self:destroy_entity(),
+    self:destroy_entity_callback(),
     ...
   )
 
@@ -38,7 +38,7 @@ function world_type:entity(...)
 end
 
 -- Removes the entity from the world
-function world_type:destroy_entity()
+function world_type:destroy_entity_callback()
   local self_world = self
 
   return function(e)
@@ -56,8 +56,10 @@ end
 
 -- Destroys the entire world
 function world_type:destroy()
-  for _, entity in pairs(self._entities) do
-    entity:destroy()
+  for _, entities in pairs(self._entities) do
+    for _, entity in pairs(entities) do
+      entity:destroy()
+    end
   end
 
   for _, system in pairs(self._systems) do
@@ -65,23 +67,6 @@ function world_type:destroy()
   end
 
   self._systems = {}
-end
-
--- This method should be called inside a coroutine in order to work as intended
--- Check system.lua and entities_coroutine to see the setup
-function world_type:for_each_entity(query, action)
-  local index = 1
-
-  for archetype, entities in pairs(self._entities) do
-    if query:is_valid_archetype(archetype) then
-      for _, entity in pairs(entities) do
-        if query:is_entity_valid(entity) then
-          action(entity, index)
-          index = index + 1
-        end
-      end
-    end
-  end
 end
 
 -- Generating the world
@@ -96,15 +81,30 @@ local function create_world()
 
   -- Adds a system to the world
   function world:add_system(system_type)
-    if self._systems[system_type] == nil then
+    if self._systems[system_type] == nil and system_type.is_system_type then
       self._systems[system_type] = system_type(self)
     end
   end
 
   -- Removes a system from the world
   function world:remove_system(system_type)
-    if not (self._systems[system_type] == nil) then
-      self._systems[system_type] = nil
+    self._systems[system_type] = nil
+  end
+
+  -- This method should be called inside a coroutine in order to work as intended
+  -- Check system.lua and entities_coroutine to see the setup
+  function world_type:for_each_entity(query, action)
+    local index = 1
+
+    for archetype, entities in pairs(self._entities) do
+      if query:is_valid_archetype(archetype) then
+        for _, entity in pairs(entities) do
+          if query:is_entity_valid(entity) then
+            action(entity, index)
+            index = index + 1
+          end
+        end
+      end
     end
   end
 
@@ -133,7 +133,6 @@ local function create_world()
 
     -- Evaporate the dead completely from this world
     for index = 1, #self._destroyed_entities do
-      setmetatable(self._destroyed_entities[index], nil)
       self._destroyed_entities[index] = nil
     end
   end

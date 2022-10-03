@@ -48,10 +48,6 @@ function love.load()
     )
   end]]
 
-  print(player_one:is_alive())
-  player_one:destroy()
-  print(player_one:is_alive())
-
   level_one:add_system(input_system)
   level_one:add_system(input_acceleration_system)
   level_one:add_system(movement_system)

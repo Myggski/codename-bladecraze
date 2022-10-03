@@ -4,7 +4,6 @@ insulate("entity", function()
   local entity = require "code.engine.ecs.entity"
   local component = require "code.engine.ecs.component"
 
-  local is_alive_callback = function() end
   local destroy_callback = function() end
 
   local first_entity
@@ -15,8 +14,8 @@ insulate("entity", function()
   local acceleration_component
 
   before_each(function()
-    first_entity = entity(1, is_alive_callback, destroy_callback)
-    second_entity = entity(2, is_alive_callback, destroy_callback)
+    first_entity = entity(1, destroy_callback)
+    second_entity = entity(2, destroy_callback)
 
     health_component = component()
     position_component = component()
@@ -131,27 +130,34 @@ insulate("entity", function()
 
 
   describe("is_alive", function()
-    it("should call is_alive_callback", function()
-      local is_alive_spy = spy.new(function() end)
-      local destroy_spy = spy.new(function() end)
-      local e = entity(3, is_alive_spy, destroy_spy)
+    describe("when id is larger than -1", function()
+      it("should return true", function()
+        local entity_zero = entity(1, destroy_callback)
+        local entity_one = entity(1, destroy_callback)
+        local entity_two = entity(2, destroy_callback)
 
-      e:is_alive()
+        assert.is_truthy(entity_zero:is_alive())
+        assert.is_truthy(entity_one:is_alive())
+        assert.is_truthy(entity_two:is_alive())
+      end)
+    end)
 
-      assert.stub(is_alive_spy).was.called()
-      assert.stub(destroy_spy).was_not_called()
+    describe("when id is -1", function()
+      it("should return false", function()
+        local e = entity(-1, destroy_callback)
+
+        assert.is_falsy(e:is_alive())
+      end)
     end)
   end)
 
   describe("destroy", function()
     it("should call destroy_callback", function()
-      local is_alive_spy = spy.new(function() end)
       local destroy_spy = spy.new(function() end)
-      local e = entity(3, is_alive_spy, destroy_spy)
+      local e = entity(3, destroy_spy)
 
       e:destroy()
 
-      assert.stub(is_alive_spy).was_not_called()
       assert.stub(destroy_spy).was.called()
     end)
   end)
