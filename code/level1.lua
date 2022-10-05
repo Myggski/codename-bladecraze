@@ -7,9 +7,10 @@ local player_character = require "code.player.player"
 local button = require "code.ui.button"
 local projectile_pool = require "code.projectiles.projectile_pool"
 local asset_manager = require "code.engine.asset_manager"
-local gizmos = require "code.utilities.gizmos"
+local debug = require "code.utilities.debug"
 local vector2 = require "code.engine.vector2"
 local world_grid = require "code.engine.world_grid"
+local func_manager = require "code.engine.function_manager"
 
 local level1 = {}
 local grid = {}
@@ -21,19 +22,10 @@ local sprite_sheet_image = nil
   some example usage of gizmos, will be deleted :)
 ]]
 local function debug_example()
-  gizmos.add_draw_line(_,
-    { world_grid:grid_to_world(1, 1, 2, 0, 6, 1, 2, 2, 1, 1) },
-    -1)
-  local a, b = vector2.one(), vector2.one()
-  local c = a + b
-  print(a.x, b.x, c.x)
-  gizmos.add_draw_rectangle(
-    gizmos.create_draw_data(gizmos.DRAW_SPACE.HUD, gizmos.DRAW_MODE.FILL, COLOR.YELLOW),
+  debug.gizmos.draw_rectangle(
     vector2.zero(),
-    vector2.zero() + vector2(16, 16),
-    _,
-    _,
-    5)
+    vector2(16, 16), _, _, _,
+    COLOR.RED, _, 10, "HUD")
 end
 
 local function create_grid()
@@ -88,10 +80,17 @@ local function load()
     end
   end
 
+  -- execute_after_seconds(2, function() print("hi i wait 2 seconds") end)
+  -- local dummy_func = function()
+  --   print("dummy called")
+  --   execute_after_seconds(5, function() print("this is called after 5 seconds") end)
+  -- end
+  -- dummy_func()
   debug_example()
 end
 
 local function update(dt)
+  debug.gizmos.draw_rectangle(vector2.zero(), vector2(16, 16))
   for entity, active in pairs(active_entities) do
     if active then
       entity:update(dt)
