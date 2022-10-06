@@ -39,15 +39,6 @@ function love.load()
     components.input()
   )
 
-  --[[for i = 1, 1000 do
-    level_one:entity(
-      components.position({ x = 16, y = 32 }),
-      components.size({ x = 1, y = 1 }),
-      components.acceleration(),
-      components.speed(600)
-    )
-  end]]
-
   level_one:add_system(input_system)
   level_one:add_system(input_acceleration_system)
   level_one:add_system(movement_system)
