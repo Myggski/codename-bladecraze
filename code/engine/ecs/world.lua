@@ -1,4 +1,5 @@
 local entity = require "code.engine.ecs.entity"
+
 local world_type = {}
 local world_meta = {
   __index = world_type,
@@ -76,12 +77,14 @@ local function create_world()
     _destroyed_entity_ids = {},
     _destroyed_entities = {},
     _systems = {},
+    _system_keys = {}, -- To make sure that the sytems are called in correct order
     _last_entity_id = 0,
   }, world_meta)
 
   -- Adds a system to the world
   function world:add_system(system_type)
     if self._systems[system_type] == nil and system_type.is_system_type then
+      table.insert(self._system_keys, system_type)
       self._systems[system_type] = system_type(self)
     end
   end
@@ -89,6 +92,7 @@ local function create_world()
   -- Removes a system from the world
   function world:remove_system(system_type)
     self._systems[system_type] = nil
+    table.remove(self._system_keys, table.index_of(self._system_keys, system_type))
   end
 
   -- This method should be called inside a coroutine in order to work as intended
@@ -108,10 +112,14 @@ local function create_world()
     end
   end
 
-  -- This is called every tick
+  --[[ 
+    This is called every tick
+    It saves the system keys in seperate table to make sure that the systems run same sequal every time
+    This also makes the loop more stable, with pairs the call-time jumps up sometimes for some reason
+  ]]
   function world:update(dt)
-    for _, system in pairs(self._systems) do
-      system:update(dt)
+    for index = 1, #self._system_keys do
+      self._systems[self._system_keys[index]]:update(dt)
     end
 
     -- Update the archetype list if needed
