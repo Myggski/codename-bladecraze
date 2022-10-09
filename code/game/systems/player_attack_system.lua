@@ -10,15 +10,7 @@ local input_system = system(input_query, function(self)
     input = entity[components.input]
 
     if input.action == PLAYER.ACTIONS.BASIC then
-      -- Do basic
-    end
-
-    if input.action == PLAYER.ACTIONS.SPECIAL then
-      -- Do special
-    end
-
-    if input.action == PLAYER.ACTIONS.ULTIMATE then
-      -- Do ulti
+      -- Try to drop bomb
     end
   end
 end)

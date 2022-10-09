@@ -12,12 +12,15 @@ local input_system = system(input_query, function(self)
     position = entity[components.position]
     size = entity[components.size]
 
+    if not input.enabled then
+      return
+    end
+
     center_position.x = position.x + size.x / 2
     center_position.y = position.y + size.y / 2
     pi = player_input.get_input(input.player, center_position)
 
     input.movement_direction = pi.move_dir
-    input.aim_direction = pi.aim_dir
     input.action = pi.action
   end
 end)
