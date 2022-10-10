@@ -1,11 +1,11 @@
-require "spec.love_setup"
-local rectangle = require "code.engine.rectangle"
-local world_grid = require "code.engine.world_grid"
-
-local ZOOM_MAX = -3
-local ZOOM_MIN = 0
-
 insulate("camera", function()
+  require "spec.love_setup"
+  local rectangle = require "code.engine.rectangle"
+  local world_grid = require "code.engine.world_grid"
+
+  local ZOOM_MAX = -3
+  local ZOOM_MIN = 0
+
   local camera = require "code.engine.camera.camera"
   local default_scale = camera.scale
   local default_zoom = camera.zoom
