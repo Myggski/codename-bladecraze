@@ -69,6 +69,8 @@ local function load()
       projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
     end
   end
+
+  func_manager.execute_after_seconds(debug.gizmos.draw_rectangle, 6, vector2.zero(), vector2(16, 16), _, _, _, 5)
 end
 
 local function update(dt)

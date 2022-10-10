@@ -125,6 +125,7 @@ end
   }
 ]]
 local function draw_rectangle(position, size, draw_mode, color, line_width, duration, draw_space)
+
   color = color or COLOR.WHITE
   draw_mode = draw_mode or DRAW_MODE.LINE
   line_width = line_width or 1

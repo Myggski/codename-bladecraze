@@ -18,3 +18,7 @@ end
 function table.contains_key(table, key)
   return not (table[key] == nil)
 end
+
+function table.pack2(...) return { n = select('#', ...), ... } end
+
+function table.unpack2(t) return unpack(t, 1, t.n) end
