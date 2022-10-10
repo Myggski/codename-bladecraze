@@ -2,7 +2,7 @@ local entity_query = {}
 entity_query.__index = entity_query
 
 -- Seperates the query-list from components and filters
-local function seperate_query_type(list)
+local function separate_query_type(list)
   local components, filters = {}, {}
 
   for _, item in pairs(list) do
@@ -20,9 +20,9 @@ end
 function entity_query.create(all, any, none)
   local all_filters, any_filters, none_filters
 
-  all, all_filters = seperate_query_type(all or {})
-  any, any_filters = seperate_query_type(any or {})
-  none, none_filters = seperate_query_type(none or {})
+  all, all_filters = separate_query_type(all or {})
+  any, any_filters = separate_query_type(any or {})
+  none, none_filters = separate_query_type(none or {})
 
   return setmetatable({
     is_query = true,
