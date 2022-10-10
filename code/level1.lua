@@ -18,16 +18,6 @@ local players = {}
 local active_entities = {}
 local sprite_sheet_image = nil
 
---[[
-  some example usage of gizmos, will be deleted :)
-]]
-local function debug_example()
-  debug.gizmos.draw_rectangle(
-    vector2.zero(),
-    vector2(16, 16), _, _, _,
-    COLOR.RED, _, 10, "HUD")
-end
-
 local function create_grid()
   local bounds = { x_min = 0, y_min = 0, x_max = GAME.GAME_WIDTH, y_max = GAME.GAME_HEIGHT }
   grid = spatial_grid:create(bounds)
@@ -79,18 +69,9 @@ local function load()
       projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
     end
   end
-
-  -- execute_after_seconds(2, function() print("hi i wait 2 seconds") end)
-  -- local dummy_func = function()
-  --   print("dummy called")
-  --   execute_after_seconds(5, function() print("this is called after 5 seconds") end)
-  -- end
-  -- dummy_func()
-  debug_example()
 end
 
 local function update(dt)
-  debug.gizmos.draw_rectangle(vector2.zero(), vector2(16, 16))
   for entity, active in pairs(active_entities) do
     if active then
       entity:update(dt)
