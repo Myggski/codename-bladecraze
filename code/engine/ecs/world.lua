@@ -43,7 +43,7 @@ function world_type:destroy_entity_callback()
   local self_world = self
 
   return function(e)
-    if not (e:is_alive()) then
+    if not e:is_alive() then
       return
     end
 
@@ -83,7 +83,7 @@ local function create_world()
 
   -- Adds a system to the world
   function world:add_system(system_type)
-    if self._systems[system_type] == nil and system_type.is_system_type then
+    if not self._systems[system_type] and system_type.is_system_type then
       table.insert(self._system_keys, system_type)
       self._systems[system_type] = system_type(self)
     end

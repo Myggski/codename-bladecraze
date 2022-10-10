@@ -21,7 +21,7 @@ local function create_component_type(default_value)
   -- Example of type: player_position = position_component()
   function component_type.create(value)
     -- Deep clones the default value if its a table
-    if not value and type(default_value) == "table" then
+    if value == nil and type(default_value) == "table" then
       value = table.deep_clone(default_value)
     end
 

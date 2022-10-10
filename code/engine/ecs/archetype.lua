@@ -13,11 +13,13 @@ function archetype.setup(...)
   local components = {}
 
   for _, component in pairs(component_types) do
-    if (component.is_component_type and not component.is_component) then
-      if components[component] == nil then
-        components[component] = true
-        table.insert(component_ids, component:get_id())
-      end
+    if not component.is_component_type or component.is_component then
+      return
+    end
+
+    if components[component] == nil then
+      components[component] = true
+      table.insert(component_ids, component:get_id())
     end
   end
 

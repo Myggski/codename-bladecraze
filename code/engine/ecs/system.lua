@@ -18,7 +18,7 @@ local function create_system_type(query, update_fn)
 
   SYSTEM_ID = SYSTEM_ID + 1
 
-  if type(query) == "function" and update_fn == nil then
+  if type(query) == "function" and not update_fn then
     update_fn = query
     query = nil
   end

@@ -3,26 +3,28 @@ local archetype = require "code.engine.ecs.archetype"
 -- Adds a component to an entity
 -- This makes the entity change or create a new archetype
 local function add_component(entity, component_type, component_value)
-  if component_type and component_type.is_component_type and not component_type.is_component then
-    if component_value == nil and entity:has_component(component_type) then
-      entity:remove_component(component_type)
-    elseif type(component_value) == "table" and component_value.is_component then
-      entity._component_values[component_type] = component_value
+  if not (component_type and component_type.is_component_type and not component_type.is_component) then
+    return
+  end
 
-      if not entity:has_component(component_type) then
-        local new_archetype = entity.archetype:add(component_type)
+  if component_value == nil and entity:has_component(component_type) then
+    entity:remove_component(component_type)
+  elseif type(component_value) == "table" and component_value.is_component then
+    entity._component_values[component_type] = component_value
 
-        if not (entity.archetype == new_archetype) then
-          entity.archetype = new_archetype
-        end
-      end
-    else
+    if not entity:has_component(component_type) then
       local new_archetype = entity.archetype:add(component_type)
-      entity[component_type] = component_type(component_value)
 
       if not (entity.archetype == new_archetype) then
         entity.archetype = new_archetype
       end
+    end
+  else
+    local new_archetype = entity.archetype:add(component_type)
+    entity[component_type] = component_type(component_value)
+
+    if not (entity.archetype == new_archetype) then
+      entity.archetype = new_archetype
     end
   end
 end
