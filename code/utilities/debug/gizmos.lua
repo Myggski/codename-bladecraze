@@ -15,157 +15,198 @@ local GIZMO_TYPE = {
   CIRCLE = 2,
   ELLIPSE = 3,
   RECTANGLE = 4,
+  ROUNDED_RECTANGLE = 5,
 }
 
---[[
-  Create_draw_data initializes to default drawing values if any parameter is nil 
-]]
 local gizmos = {
   hud_shapes = {},
   world_shapes = {},
-  create_draw_data = function(draw_space, mode, color, line_width)
-    draw_space = draw_space or DRAW_SPACE.WORLD
-    mode = mode or DRAW_MODE.LINE
-    color = color or COLOR.WHITE
-    line_width = line_width or 1
-    return setmetatable({
-      draw_space = draw_space,
-      mode = mode,
-      color = color,
-      line_width = line_width
-    }, gizmos)
-  end,
-  __index = gizmos,
 }
 
 --[[
-  Draw a line with n dots:
-  gizmo_data: table (use gizmos.create_draw_data()),
-  line_dots: table {x1,y1,x2,y2...xn,yn},
-  duration_seconds: float (negative value for permanent shape)
+  line_dots: table {x1,y1...xn,yn},
+  optional: {
+    color: table {rgba},
+    line_width: number,
+    duration: number (seconds),
+    draw_space: string ("world" or "hud")
+  }
 ]]
-local function draw_line(gizmo_data, line_dots, duration_seconds)
-  if not (type(gizmo_data) == "table") then
-    gizmo_data = gizmos.create_draw_data()
-  end
-
-  local line = { line_dots = line_dots, gizmo_data = gizmo_data, duration = duration_seconds,
-    creation_time = love.timer.getTime(), gizmo_type = GIZMO_TYPE.LINE }
-
-  if gizmo_data.draw_space == DRAW_SPACE.HUD then
-    table.insert(gizmos.hud_shapes, line)
-  else
-    table.insert(gizmos.world_shapes, line)
-  end
+local function draw_line(line_dots, color, line_width, duration, draw_space)
+  color = color or COLOR.WHITE
+  line_width = line_width or 1
+  duration = duration or 0
+  draw_space = draw_space or DRAW_SPACE.WORLD
+  local line = {
+    line_dots = line_dots,
+    duration = duration,
+    creation_time = love.timer.getTime(),
+    color = color,
+    line_width = line_width,
+    gizmo_type = GIZMO_TYPE.LINE
+  }
+  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  table.insert(shape_table, line)
 end
 
 --[[
-  Draw a circle:
-  gizmo_data: table (use gizmos.create_draw_data()),
-  position: vector2,
-  radius: float,
-  duration_seconds: float (negative value for permanent shape)
+  position: table {x,y},
+  radius: number,
+  optional:{
+    draw_mode: string ("line" or "fill"),
+    color: table {rgba},
+    line_width: number,
+    duration: number (seconds),
+    draw_space: string ("world" or "hud")
+  }
 ]]
-local function draw_circle(gizmo_data, position, radius, duration_seconds)
-  if not (type(gizmo_data) == "table") then
-    gizmo_data = gizmos.create_draw_data()
-  end
+local function draw_circle(position, radius, draw_mode, color, line_width, duration, draw_space)
+  color = color or COLOR.WHITE
+  draw_mode = draw_mode or DRAW_MODE.LINE
+  line_width = line_width or 1
+  duration = duration or 0
+  draw_space = draw_space or DRAW_SPACE.WORLD
   local circle = {
-    gizmo_data = gizmo_data,
+    color = color,
     position = position,
     radius = radius,
-    duration = duration_seconds,
+    line_width = line_width,
+    duration = duration,
+    draw_mode = draw_mode,
     creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.CIRCLE
   }
-  if gizmo_data.draw_space == DRAW_SPACE.HUD then
-    table.insert(gizmos.hud_shapes, circle)
-  else
-    table.insert(gizmos.world_shapes, circle)
-  end
+  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  table.insert(shape_table, circle)
 end
 
 --[[
-  Draw an ellipse:
-  gizmo_data: table (use gizmos.create_draw_data()),
-  position: vector2,
-  radiuses: vector2,
-  segments: nil or integer,
-  duration_seconds: float (negative value for permanent shape)
+  position: table {x,y},
+  radiuses: table {x,y},
+  optional:{
+    segments: number,
+    draw_mode: string ("line" or "fill"),
+    color: table {rgba},
+    line_width: number,
+    duration: number (seconds),
+    draw_space: string ("world" or "hud")
+  }
 ]]
-local function draw_ellipse(gizmo_data, position, radiuses, segments, duration_seconds)
-  if not (type(gizmo_data) == "table") then
-    gizmo_data = gizmos.create_draw_data()
-  end
-
+local function draw_ellipse(position, radiuses, segments, draw_mode, color, line_width, duration, draw_space)
+  color = color or COLOR.WHITE
+  draw_mode = draw_mode or DRAW_MODE.LINE
+  line_width = line_width or 1
+  duration = duration or 0
+  draw_space = draw_space or DRAW_SPACE.WORLD
   local ellipse = {
-    gizmo_data = gizmo_data,
+    color = color,
+    line_width = line_width,
+    draw_mode = draw_mode,
     position = position,
     radiuses = radiuses,
     segments = segments,
-    duration = duration_seconds,
+    duration = duration,
     creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.ELLIPSE
   }
-  if gizmo_data.draw_space == DRAW_SPACE.HUD then
-    table.insert(gizmos.hud_shapes, ellipse)
-  else
-    table.insert(gizmos.world_shapes, ellipse)
-  end
+  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  table.insert(shape_table, ellipse)
 end
 
 --[[
-  Draw a rectangle:
-  gizmo_data: table (use gizmos.create_draw_data()),
-  position: vector2,
-  radiuses: vector2 (rounds corners),
-  segments: nil or integer,
-  duration_seconds: float (negative value for permanent shape)
+  position: table {x,y},
+  size: table {x,y},
+  optional:{
+    draw_mode: string ("line" or "fill"),
+    color: table {rgba},
+    line_width: number,
+    duration: number (seconds),
+    draw_space: string ("world" or "hud")
+  }
 ]]
-local function draw_rectangle(gizmo_data, position, size, radiuses, segments, duration_seconds)
-  if not (type(gizmo_data) == "table") then
-    gizmo_data = gizmos.create_draw_data()
-  end
+local function draw_rectangle(position, size, draw_mode, color, line_width, duration, draw_space)
 
-  radiuses = radiuses or vector2.zero()
+  color = color or COLOR.WHITE
+  draw_mode = draw_mode or DRAW_MODE.LINE
+  line_width = line_width or 1
+  duration = duration or 0
+  draw_space = draw_space or DRAW_SPACE.WORLD
   local rectangle = {
-    gizmo_data = gizmo_data,
+    color = color,
+    line_width = line_width,
+    draw_mode = draw_mode,
+    position = position,
+    size = size,
+    duration = duration,
+    creation_time = love.timer.getTime(),
+    gizmo_type = GIZMO_TYPE.RECTANGLE
+  }
+  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  table.insert(shape_table, rectangle)
+end
+
+--[[
+  position: table {x,y},
+  size: table {x,y},
+  radiuses: table {x,y},
+  optional:{
+    segments: number (or nil for auto),
+    draw_mode: string ("line" or "fill"),
+    color: table {rgba},
+    line_width: number,
+    duration: number (seconds),
+    draw_space: string ("world" or "hud")
+  }
+]]
+local function draw_rounded_rectangle(position, size, radiuses, segments, draw_mode, color, line_width, duration,
+                                      draw_space)
+  radiuses = radiuses or vector2.zero()
+  color = color or COLOR.WHITE
+  draw_mode = draw_mode or DRAW_MODE.LINE
+  line_width = line_width or 1
+  duration = duration or 0
+  draw_space = draw_space or DRAW_SPACE.WORLD
+  local squircle = {
+    color = color,
+    line_width = line_width,
+    draw_mode = draw_mode,
     position = position,
     size = size,
     radiuses = radiuses,
     segments = segments,
-    duration = duration_seconds,
+    duration = duration,
     creation_time = love.timer.getTime(),
-    gizmo_type = GIZMO_TYPE.RECTANGLE
+    gizmo_type = GIZMO_TYPE.ROUNDED_RECTANGLE
   }
-  if gizmo_data.draw_space == DRAW_SPACE.HUD then
-    table.insert(gizmos.hud_shapes, rectangle)
-  else
-    table.insert(gizmos.world_shapes, rectangle)
-  end
+  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  table.insert(shape_table, squircle)
 end
 
 local function draw_shape(shape)
-  local data = shape.gizmo_data
-  love.graphics.setLineWidth(data.line_width)
-  love.graphics.setColor(data.color)
-
+  love.graphics.setLineWidth(shape.line_width)
+  love.graphics.setColor(shape.color)
   if shape.gizmo_type == GIZMO_TYPE.LINE then
     love.graphics.line(shape.line_dots)
   elseif shape.gizmo_type == GIZMO_TYPE.CIRCLE then
-    love.graphics.circle(data.mode,
+    love.graphics.circle(shape.draw_mode,
       shape.position.x,
       shape.position.y,
       shape.radius)
   elseif shape.gizmo_type == GIZMO_TYPE.ELLIPSE then
-    love.graphics.ellipse(data.mode,
+    love.graphics.ellipse(shape.draw_mode,
       shape.position.x,
       shape.position.y,
       shape.radiuses.x,
       shape.radiuses.y,
       shape.segments)
-  elseif shape.gizmo_type == GIZMO_TYPE.RECTANGLE then
-    love.graphics.rectangle(data.mode,
+  elseif shape.gizmo_type == GIZMO_TYPE.RECTANGLE or shape.gizmo_type == GIZMO_TYPE.ROUNDED_RECTANGLE then
+    love.graphics.rectangle(shape.draw_mode,
+      shape.position.x,
+      shape.position.y,
+      shape.size.x,
+      shape.size.x)
+  elseif shape.gizmo_type == GIZMO_TYPE.ROUNDED_RECTANGLE then
+    love.graphics.rectangle(shape.draw_mode,
       shape.position.x,
       shape.position.y,
       shape.size.x,
@@ -177,18 +218,19 @@ local function draw_shape(shape)
   love.graphics.setLineWidth(1)
 end
 
-local function draw_world()
-  for _, value in ipairs(gizmos.world_shapes) do
-    draw_shape(value)
+local function draw_shapes(shape_table)
+  for i = 1, #shape_table do
+    draw_shape(shape_table[i])
   end
   love.graphics.setColor(COLOR.WHITE)
 end
 
+local function draw_world()
+  draw_shapes(gizmos.world_shapes)
+end
+
 local function draw_hud()
-  for _, value in ipairs(gizmos.hud_shapes) do
-    draw_shape(value)
-  end
-  love.graphics.setColor(COLOR.WHITE)
+  draw_shapes(gizmos.hud_shapes)
 end
 
 local function remove_expired_objects(object_table, current_time)
@@ -213,9 +255,9 @@ game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, draw_world)
 return {
   DRAW_SPACE = DRAW_SPACE,
   DRAW_MODE = DRAW_MODE,
-  create_draw_data = gizmos.create_draw_data,
   draw_line = draw_line,
   draw_ellipse = draw_ellipse,
   draw_circle = draw_circle,
   draw_rectangle = draw_rectangle,
+  draw_rounded_rectangle = draw_rounded_rectangle,
 }

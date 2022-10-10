@@ -18,6 +18,9 @@ end
 function table.contains_key(table, key)
   return not (table[key] == nil)
 end
+function table.pack_all(...) return { n = select('#', ...), ... } end
+
+function table.unpack_all(t) return unpack(t, 1, t.n) end
 
 function table.deep_clone(root_table, child_table)
   child_table = child_table or {}

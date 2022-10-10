@@ -7,31 +7,17 @@ local player_character = require "code.player.player"
 local button = require "code.ui.button"
 local projectile_pool = require "code.projectiles.projectile_pool"
 local asset_manager = require "code.engine.asset_manager"
-local gizmos = require "code.utilities.debug.gizmos"
+local debug = require "code.utilities.debug"
+
 local vector2 = require "code.engine.vector2"
 local world_grid = require "code.engine.world_grid"
+local func_manager = require "code.engine.function_manager"
 
 local level1 = {}
 local grid = {}
 local players = {}
 local active_entities = {}
 local sprite_sheet_image = nil
-
---[[
-  some example usage of gizmos, will be deleted :)
-]]
-local function debug_example()
-  gizmos.draw_line(_,
-    { world_grid:grid_to_world(1, 1, 2, 0, 6, 1, 2, 2, 1, 1) },
-    -1)
-  gizmos.draw_rectangle(
-    gizmos.create_draw_data(gizmos.DRAW_SPACE.HUD, gizmos.DRAW_MODE.FILL, COLOR.YELLOW),
-    vector2.zero(),
-    vector2.zero() + vector2(16, 16),
-    _,
-    _,
-    5)
-end
 
 local function create_grid()
   local bounds = { x_min = 0, y_min = 0, x_max = GAME.GAME_WIDTH, y_max = GAME.GAME_HEIGHT }
@@ -85,7 +71,7 @@ local function load()
     end
   end
 
-  debug_example()
+  func_manager.execute_after_seconds(debug.gizmos.draw_rectangle, 6, vector2.zero(), vector2(16, 16), _, _, _, 5)
 end
 
 local function update(dt)
