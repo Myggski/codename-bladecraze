@@ -1,3 +1,9 @@
+ANIMATION_STATE_TYPES = {
+  IDLE = "idle",
+  WALKING = "walking",
+  DEAD = "dead",
+}
+
 BUTTON_CLICK_TYPES = {
   LEFT = 1,
   RIGHT = 2,

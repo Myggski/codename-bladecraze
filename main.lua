@@ -3,6 +3,14 @@ require "code.engine.game_data"
 require "code.utilities.love_extension"
 require "code.utilities.table_extension"
 require "code.utilities.math_extension"
+require "code.game.components"
+
+local ecs = require "code.engine.ecs"
+local input_system = require "code.game.systems.input_system"
+local input_acceleration_system = require "code.game.systems.input_acceleration_system"
+local movement_system = require "code.game.systems.movement_system"
+local set_animation_state_system = require "code.game.systems.set_animation_state_system"
+local debug_draw_entities = require "code.game.systems.debug_draw_entities"
 
 --[[
   Due to the level listening to game_events,
@@ -15,15 +23,34 @@ require "code.level1"
 
 local camera = require "code.engine.camera"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
+local level_one
+local player_one
 
 function love.load()
   camera:load()
   game_event_manager.invoke(GAME_EVENT_TYPES.LOAD)
+
+  level_one = ecs.world()
+
+  player_one = level_one:entity(
+    components.position({ x = 16, y = 32 }),
+    components.size({ x = 1, y = 1 }),
+    components.acceleration(),
+    components.speed(600),
+    components.input()
+  )
+
+  level_one:add_system(input_system)
+  level_one:add_system(input_acceleration_system)
+  level_one:add_system(movement_system)
+  level_one:add_system(set_animation_state_system)
+  level_one:add_system(debug_draw_entities)
 end
 
 function love.update(dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.LATE_UPDATE, dt)
+  level_one:update(dt)
 end
 
 function love.draw()
