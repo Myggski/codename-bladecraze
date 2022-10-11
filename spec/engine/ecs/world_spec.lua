@@ -18,8 +18,8 @@ insulate("world", function()
     it("should create an entity and group it to a the right archetype", function()
       local new_entity = level_one:entity()
 
-      assert.is_not_equal(level_one._entities[new_entity.archetype][new_entity:get_id()], nil)
-      assert.is_equal(level_one._entities[new_entity.archetype][new_entity:get_id()], new_entity)
+      assert.is_not_equal(level_one._entity_data[new_entity.archetype][new_entity:get_id()], nil)
+      assert.is_equal(level_one._entity_data[new_entity.archetype][new_entity:get_id()], new_entity)
     end)
 
     it("should reuse an id of a destroyed entity when created", function()
@@ -41,15 +41,15 @@ insulate("world", function()
       local entity_archetype = new_entity.archetype
       level_one:add_system(system())
 
-      assert.is_truthy(table.get_size(level_one._entities) == 1)
-      assert.is_truthy(table.get_size(level_one._entities[entity_archetype]) == 1)
+      assert.is_truthy(table.get_size(level_one._entity_data) == 1)
+      assert.is_truthy(table.get_size(level_one._entity_data[entity_archetype]) == 1)
       assert.is_truthy(table.get_size(level_one._systems) == 1)
 
       level_one:destroy()
 
-      assert.is_truthy(table.get_size(level_one._entities) == 1)
-      assert.is_truthy(table.get_size(level_one._entities[entity_archetype]) == 0)
-      assert.is_falsy(level_one._entities[entity_archetype] == nil)
+      assert.is_truthy(table.get_size(level_one._entity_data) == 1)
+      assert.is_truthy(table.get_size(level_one._entity_data[entity_archetype]) == 0)
+      assert.is_falsy(level_one._entity_data[entity_archetype] == nil)
       assert.is_truthy(table.get_size(level_one._systems) == 0)
     end)
   end)

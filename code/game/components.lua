@@ -2,24 +2,11 @@ local component = require "code.engine.ecs.component"
 
 local acceleration_component = component({ x = 0, y = 0 })
 local animation_component = component({
-  animations = {
-    [ANIMATION_STATE_TYPES.IDLE] = {
-      spritesheet = "spritesheet_for_idle.png",
-      stay_at_endframe = false
-    },
-    [ANIMATION_STATE_TYPES.WALKING] = {
-      spritesheet = "spritesheet_for_walking.png",
-      stay_at_endframe = false
-    },
-    [ANIMATION_STATE_TYPES.DEAD] = {
-      spritesheet = "spritesheet_for_dead.png",
-      stay_at_endframe = true
-    }
-  },
   current_animation_state = ANIMATION_STATE_TYPES.IDLE,
-  current_time = 0,
-  duration = 0,
-  quads = {},
+  direction = 1,
+  [ANIMATION_STATE_TYPES.IDLE] = nil,
+  [ANIMATION_STATE_TYPES.WALKING] = nil,
+  [ANIMATION_STATE_TYPES.DEAD] = nil,
 })
 local input_component = component({
   player = 1, -- 1 == player 1, 2 == player 2

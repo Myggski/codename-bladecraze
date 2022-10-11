@@ -21,7 +21,7 @@ end
 function button_model:remove_listener(event_type, callback)
   local index = table.index_of(self.callbacks[event_type], callback)
 
-  if index then
+  if index > -1 then
     table.remove(self.callbacks[event_type], index)
   end
 end
