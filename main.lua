@@ -37,7 +37,7 @@ function love.load()
 
   level_one = ecs.world()
   draw_the_fucking_world = entity_draw(level_one)
-  player_one = player(level_one, 1, { x = -1, y = -1 })
+  player(level_one, 1, { x = -1, y = -1 })
 
   wall(level_one, 0, { x = 2, y = 2 })
   wall(level_one, 1, { x = 0, y = 2 })

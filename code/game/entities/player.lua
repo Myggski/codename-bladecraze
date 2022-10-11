@@ -10,7 +10,7 @@ local function create_player(world, player_id, start_position)
     components.position(start_position),
     components.size({ x = 1, y = 1 }),
     components.acceleration(),
-    components.speed(12),
+    components.speed(24),
     components.input(),
     components.health(1),
     components.animation({
