@@ -11,9 +11,11 @@ local animation_set_state_system = system(animate_query, function(self, dt)
     animation = entity[components.animation]
     acceleration = entity[components.acceleration]
 
-    -- Default animation - Idling
     current_animation = animation[animation.current_animation_state]
-    player_drawing.update_animation(current_animation, 1 / 60)
+
+    if not animation.freeze_frame then
+      player_drawing.update_animation(current_animation, dt)
+    end
 
     if not (acceleration.x == 0) or not (acceleration.y == 0) then
       animation.direction = acceleration.x > 0 and 1 or -1

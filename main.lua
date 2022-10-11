@@ -8,13 +8,13 @@ require "code.utilities.utility_functions"
 
 local ecs = require "code.engine.ecs"
 local player = require "code.game.entities.player"
+local wall = require "code.game.entities.wall"
 local input_system = require "code.game.systems.input_system"
 local input_acceleration_system = require "code.game.systems.input_acceleration_system"
 local movement_system = require "code.game.systems.movement_system"
 local animate_system = require "code.game.systems.animate_system"
 local animation_set_state_system = require "code.game.systems.animation_set_state_system"
 local entity_draw = require "code.game.entity_draw"
-local debug = require "code.utilities.debug"
 
 --[[
   Due to the level listening to game_events,
@@ -37,7 +37,12 @@ function love.load()
 
   level_one = ecs.world()
   draw_the_fucking_world = entity_draw(level_one)
-  player_one = player(level_one, 1, { x = 0, y = 0 })
+  player_one = player(level_one, 1, { x = -1, y = -1 })
+
+  wall(level_one, 0, { x = 2, y = 2 })
+  wall(level_one, 1, { x = 0, y = 2 })
+  wall(level_one, 2, { x = 1, y = 2 })
+  wall(level_one, 3, { x = 2, y = 2 })
 
 
   level_one:add_system(input_system)

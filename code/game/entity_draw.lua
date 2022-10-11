@@ -15,8 +15,9 @@ local entity_draw = system(draw_query, function(self)
     size = entity[components.size]
 
     current_animation = animation[animation.current_animation_state]
-    sprite_index = math.floor(current_animation.current_time / current_animation.duration *
-      #current_animation.quads) + 1
+    sprite_index = animation.freeze_frame and 1 or
+        math.floor(current_animation.current_time / current_animation.duration *
+          #current_animation.quads) + 1
     quad = current_animation.quads[sprite_index]
     center_position = get_center_position(position, size)
     _, _, w, h = quad:getViewport()
