@@ -64,11 +64,11 @@ function camera:toggle_fullscreen() self.is_fullscreen = love.window.setFullscre
 function camera:look_at(world_x, world_y) self.x, self.y = world_x or 0, world_y or 0 end
 
 -- Checks if rectangle is about to leave camera view
-function camera:is_outside_camera_view(rectangle)
+function camera:is_outside_camera_view(position, size)
   local x, y = self:get_position()
   local half_width, half_height = world_grid:world_to_grid(camera:get_screen_game_half_size())
-  local is_outside_x = rectangle.x < x - half_width or rectangle.x + rectangle.w > x + half_width
-  local is_outside_y = rectangle.y < y - half_height or rectangle.y + rectangle.h > y + half_height
+  local is_outside_x = position.x + size.x < x - half_width or position.x > x + half_width
+  local is_outside_y = position.y + size.y < y - half_height or position.y > y + half_height
 
   return is_outside_x or is_outside_y
 end

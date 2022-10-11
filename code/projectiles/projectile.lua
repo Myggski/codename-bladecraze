@@ -53,10 +53,6 @@ function projectile:update(dt)
 
   grid:update(self.client)
   self:check_collisions()
-
-  if camera:is_outside_camera_view(self.box) then
-    self:deactivate()
-  end
 end
 
 function projectile:draw()

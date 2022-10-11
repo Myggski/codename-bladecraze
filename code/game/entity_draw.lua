@@ -1,9 +1,15 @@
 local system = require "code.engine.ecs.system"
 local entity_query = require "code.engine.ecs.entity_query"
-local player_drawing = require "code.player.player_drawing"
+local camera = require "code.engine.camera"
 local world_grid = require "code.engine.world_grid"
 
-local draw_query = entity_query.all(components.position, components.size).any(components.animation, components.sprite)
+local camera_filter = entity_query.filter(function(e)
+  return camera:is_outside_camera_view(e[components.position], e[components.size])
+end)
+local draw_query = entity_query
+    .all(components.position, components.size)
+    .any(components.animation, components.sprite)
+    .none(camera_filter())
 
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, current_animation, sprite_index, quad = nil, nil, nil, nil, nil, nil

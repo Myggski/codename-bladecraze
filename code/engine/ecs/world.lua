@@ -166,7 +166,6 @@ local function create_world()
       for entity_index = 1, #entity_list do
         current_entity = entity_list[entity_index]
         if not (current_entity.archetype == self._entity_data[archetype_index].archetype) then
-          print(current_entity.archetype, self._entity_data[archetype_index].archetype)
           self._entity_data[archetype_index].entities[entity_index] = nil
           self:_add_entity_to_archetype(current_entity)
         end
