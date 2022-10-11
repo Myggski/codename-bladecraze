@@ -76,7 +76,7 @@ end
 -- Preparing to draw the game world
 function camera:start_draw_world()
   love.graphics.setCanvas(self.canvas_game)
-  love.graphics.clear(0, 0, 0, 0)
+  love.graphics.clear(0.18039215686, 0.13333333333, 0.18431372549, 1)
   love.graphics.push()
 
   local x, y = world_grid:grid_to_world(self:get_position())
