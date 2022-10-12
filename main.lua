@@ -12,9 +12,8 @@ local wall = require "code.game.entities.wall"
 local input_system = require "code.game.systems.input_system"
 local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
-local animate_system = require "code.game.systems.animate_system"
-local animation_set_state_system = require "code.game.systems.animation_set_state_system"
-local entity_draw = require "code.game.entity_draw"
+local set_animation_state_system = require "code.game.systems.set_animation_state_system"
+local debug_draw_entities = require "code.game.systems.debug_draw_entities"
 
 --[[
   Due to the level listening to game_events,
@@ -32,7 +31,24 @@ local draw_the_fucking_world
 local player_one
 local fixed_delta_time = 1 / 60
 
+local function visualize_level_data(level_data)
+  local word = "|"
+  local border = string.rep("-", level_data.width + 2)
+  print(border)
+  for i = 1, #level_data.content do
+    local c = level_data.content:sub(i, i)
+    word = word .. c
+    if (i % level_data.width == 0) then
+      print(word .. "|")
+      word = "|"
+    end
+  end
+  print(border)
+end
+
 function love.load()
+  low, high = love.math.getRandomSeed()
+  love.math.setRandomSeed(low, high)
   camera:load()
   game_event_manager.invoke(GAME_EVENT_TYPES.LOAD)
 
@@ -48,11 +64,15 @@ function love.load()
   wall(level_one, 3, { x = 2, y = 2 })
 
 
+  local level_data = level_generator.generate_level_data()
+  visualize_level_data(level_data)
+
+
   level_one:add_system(input_system)
   level_one:add_system(input_velocity_system)
   level_one:add_system(movement_system)
-  level_one:add_system(animation_set_state_system)
-  level_one:add_system(animate_system)
+  level_one:add_system(set_animation_state_system)
+  level_one:add_system(debug_draw_entities)
 end
 
 function love.update(dt)
