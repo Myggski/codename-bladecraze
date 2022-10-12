@@ -10,7 +10,7 @@ local ecs = require "code.engine.ecs"
 local player = require "code.game.entities.player"
 local wall = require "code.game.entities.wall"
 local input_system = require "code.game.systems.input_system"
-local input_acceleration_system = require "code.game.systems.input_acceleration_system"
+local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
 local animate_system = require "code.game.systems.animate_system"
 local animation_set_state_system = require "code.game.systems.animation_set_state_system"
@@ -42,14 +42,14 @@ function love.load()
   player(level_one, 1, { x = 0, y = 0 })
 
 
-  wall(level_one, 0, { x = 2, y = 2 })
+  wall(level_one, 0, { x = -1, y = 2 })
   wall(level_one, 1, { x = 0, y = 2 })
   wall(level_one, 2, { x = 1, y = 2 })
   wall(level_one, 3, { x = 2, y = 2 })
 
 
   level_one:add_system(input_system)
-  level_one:add_system(input_acceleration_system)
+  level_one:add_system(input_velocity_system)
   level_one:add_system(movement_system)
   level_one:add_system(animation_set_state_system)
   level_one:add_system(animate_system)

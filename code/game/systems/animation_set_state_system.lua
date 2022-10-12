@@ -8,12 +8,12 @@ local animation_set_state_system = system(animation_set_state_query, function(se
 
   for _, entity in self:entity_iterator() do
     animation = entity[components.animation]
-    acceleration = entity[components.acceleration]
+    velocity = entity[components.velocity]
     health = entity[components.health]
     new_state = ANIMATION_STATE_TYPES.IDLE
 
     -- Is moving
-    if acceleration and (not (acceleration.x == 0) or not (acceleration.y == 0))
+    if velocity and (not (velocity.x == 0) or not (velocity.y == 0))
         and animation[ANIMATION_STATE_TYPES.WALKING] then
       new_state = ANIMATION_STATE_TYPES.WALKING
     end

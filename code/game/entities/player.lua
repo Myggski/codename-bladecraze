@@ -9,8 +9,11 @@ local function create_player(world, player_id, start_position)
   world:entity(
     components.position(start_position),
     components.size({ x = 1, y = 1 }),
-    components.acceleration(),
-    components.speed(24),
+    components.velocity(),
+    components.acceleration({
+      speed = 5,
+      friction = 10,
+    }),
     components.input(),
     components.health(1),
     components.animation({
