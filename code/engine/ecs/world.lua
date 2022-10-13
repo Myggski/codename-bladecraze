@@ -159,14 +159,14 @@ local function create_world()
     -- TODO: Optimize this with events or in some other way
     -- It doesn'have to be checked in every update
     local current_entity = nil
-    local entity_list = nil
+    local archetype_data = nil
 
     for archetype_index = 1, #self._entity_data do
-      entity_list = self._entity_data[archetype_index].entities
-      for entity_index = 1, #entity_list do
-        current_entity = entity_list[entity_index]
-        if not (current_entity.archetype == self._entity_data[archetype_index].archetype) then
-          self._entity_data[archetype_index].entities[entity_index] = nil
+      archetype_data = self._entity_data[archetype_index]
+      for entity_index = 1, #archetype_data.entities do
+        current_entity = archetype_data.entities[entity_index]
+        if not (current_entity.archetype == archetype_data.archetype) then
+          archetype_data.entities[entity_index] = nil
           self:_add_entity_to_archetype(current_entity)
         end
       end

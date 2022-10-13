@@ -119,7 +119,7 @@ function spatial_grid:remove_client(client)
             local key = hash_key(x, y)
             if set.contains(self.cells, key) then
                 local index = table.index_of(self.cells[key], client)
-                if not (index == -1) then
+                if index > 0 then
                     table.remove(self.cells[key], index)
                 end
             end

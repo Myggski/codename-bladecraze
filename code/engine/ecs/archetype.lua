@@ -1,3 +1,5 @@
+require "code.utilities.set"
+
 local CACHE_WITH = {}
 local CACHE_WITHOUT = {}
 local archetypes = {} -- All the archetypes
@@ -19,8 +21,8 @@ function archetype.setup(...)
       return
     end
 
-    if components[current_component] == nil then
-      components[current_component] = true
+    if not set.contains(components, current_component) then
+      set.add(components, current_component)
       table.insert(component_ids, current_component:get_id())
     end
   end
@@ -41,7 +43,7 @@ end
 
 -- Adds a component to a archetype
 function archetype:add(component_type)
-  if self._components[component_type] then
+  if set.contains(self._components, component_type) then
     return self
   end
 
@@ -71,7 +73,7 @@ end
 
 -- Removes a component to a archetype
 function archetype:remove(component_type)
-  if self._components[component_type] == nil then
+  if not set.contains(self._components, component_type) then
     return self
   end
 
@@ -111,7 +113,7 @@ end
 
 -- Checks if the archetype has a specific component
 function archetype:has(component_type)
-  return self._components[component_type] == true
+  return set.contains(self._components, component_type)
 end
 
 -- Checks if the archetype has all of the listed componets
