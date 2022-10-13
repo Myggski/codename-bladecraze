@@ -42,7 +42,7 @@ local function create_players()
     }
 
     set.add(active_entities, players[i])
-    follow_target:add_target(players[i])
+    --follow_target:add_target(players[i])
   end
 end
 

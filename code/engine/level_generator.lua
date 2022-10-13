@@ -2,20 +2,23 @@ local level_generator = {}
 
 local empty_tile = 'E'
 local indestructible_tile = '0'
-local destructible_tiles = { '1', '2', '3', '4' }
+local destructible_tiles = { '1', '2' }
+local player_tile = 'P'
 
 local function generate_level_data()
-  local width, height, content = 17, 17, ""
+  local width, height, content = 15, 9, ""
   local max_tiles = width * height - 12
-  local min_tile_count = math.floor(max_tiles * 0.8)
-  local skippable_tile_count = max_tiles - min_tile_count
+  local max_percentage_skippable_tiles = 0.2
+  local chance_of_empty = 0.1
+  local skippable_tile_count = math.floor(max_percentage_skippable_tiles * max_tiles)
   local skipped_tiles = 0
+  local outer_edges = { top = 1, bot = height, left = 1, right = width }
+  local inner_edges = { top = 2, bot = height - 1, left = 2, right = width - 1 }
 
   get_random_tile = function()
     if skipped_tiles < skippable_tile_count then
-      local rand = love.math.random(10)
-      --chance to make empty tile
-      if rand == 1 then
+      local rand = love.math.random()
+      if rand <= chance_of_empty then
         skipped_tiles = skipped_tiles + 1
         return empty_tile
       end
@@ -26,18 +29,33 @@ local function generate_level_data()
 
   for row = 1, height do
     for col = 1, width do
-      --empty corner tiles
       local tile = ""
-      if row == 1 and (col <= 2 or col >= width - 1) or
-          row == 2 and (col == 1 or col == width) or
-          row == height - 1 and (col == 1 or col == width) or
-          row == height and (col <= 2 or col >= width - 1)
+
+      --indestructible borders
+      if row == outer_edges.top or row == outer_edges.bot or col == outer_edges.left or col == outer_edges.right then
+        tile = indestructible_tile
+        goto continue
+      end
+
+      --empty v shape corner tiles
+      if row == inner_edges.top and (col <= inner_edges.left + 1 or col >= inner_edges.right - 1) or
+          row == inner_edges.top + 1 and (col == inner_edges.left or col == inner_edges.right) or
+          row == inner_edges.bot and (col <= inner_edges.left + 1 or col >= inner_edges.right - 1) or
+          row == inner_edges.bot - 1 and (col == inner_edges.left or col == inner_edges.right)
       then
-        tile = empty_tile
+        local is_corner = row == inner_edges.top and col == inner_edges.left or
+            row == inner_edges.top and col == inner_edges.right or
+            row == inner_edges.bot and col == inner_edges.left or
+            row == inner_edges.bot and col == inner_edges.right
+        if is_corner then
+          tile = player_tile
+        else
+          tile = empty_tile
+        end
       else
         --borders shouldn't have indestructible tiles
-        if row > 1 and row < height and col > 1 and col < width then
-          if col % 2 == 0 and row % 2 == 0 then
+        if row > inner_edges.top and row < inner_edges.bot and col > inner_edges.left and col < inner_edges.right then
+          if col % 2 == 1 and row % 2 == 1 then
             tile = indestructible_tile
             goto continue
           end
@@ -53,8 +71,9 @@ local function generate_level_data()
     height = height,
     content = content,
     empty_tile = empty_tile,
+    player_tile = player_tile,
     indestructible_tile = indestructible_tile,
-    destructible_tiles = destructible_tiles
+    destructible_tiles = destructible_tiles,
   }
 end
 

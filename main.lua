@@ -12,8 +12,10 @@ local wall = require "code.game.entities.wall"
 local input_system = require "code.game.systems.input_system"
 local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
-local set_animation_state_system = require "code.game.systems.set_animation_state_system"
-local debug_draw_entities = require "code.game.systems.debug_draw_entities"
+local entity_draw = require "code.game.entity_draw"
+local level_generator = require "code.engine.level_generator"
+--local set_animation_state_system = require "code.game.systems.set_animation_state_system"
+--local debug_draw_entities = require "code.game.systems.debug_draw_entities"
 
 --[[
   Due to the level listening to game_events,
@@ -55,24 +57,47 @@ function love.load()
   level_one = ecs.world()
   draw_the_fucking_world = entity_draw(level_one)
 
-  player(level_one, 1, { x = 0, y = 0 })
 
 
-  wall(level_one, 0, { x = -1, y = 2 })
-  wall(level_one, 1, { x = 0, y = 2 })
-  wall(level_one, 2, { x = 1, y = 2 })
-  wall(level_one, 3, { x = 2, y = 2 })
 
+  print(camera:get_screen_game_size())
+
+  camera:look_at(7.5, 4.3)
+  local player_index = 1
 
   local level_data = level_generator.generate_level_data()
   visualize_level_data(level_data)
+  for i = 0, #level_data.content - 1 do
+    local x, y = i % level_data.width, math.floor(i / level_data.width)
+    local char = level_data.content:sub(i + 1, i + 1)
+    if not (char == level_data.empty_tile or char == level_data.player_tile) then
+      local tile_type = nil
+      if char == level_data.indestructible_tile then
+        tile_type = 0
+      else
+        tile_type = tonumber(char)
+      end
+      if not (tile_type == nil) then
+        wall(level_one, tile_type, { x = x, y = y })
+      end
+    else
+      if char == level_data.player_tile then
+        player(level_one, player_index, { x = x, y = y })
+        player_index = player_index + 1
+      end
+    end
+  end
+
+
+
+
 
 
   level_one:add_system(input_system)
   level_one:add_system(input_velocity_system)
   level_one:add_system(movement_system)
-  level_one:add_system(set_animation_state_system)
-  level_one:add_system(debug_draw_entities)
+  --level_one:add_system(set_animation_state_system)
+  --level_one:add_system(debug_draw_entities)
 end
 
 function love.update(dt)
