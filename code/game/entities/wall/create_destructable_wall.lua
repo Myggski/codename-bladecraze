@@ -1,4 +1,4 @@
-local function create_destructable_wall(world, start_position, wall_animation)
+local function create_destructible_wall(world, start_position, wall_animation)
   world:entity(
     components.animation({
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
@@ -11,4 +11,4 @@ local function create_destructable_wall(world, start_position, wall_animation)
   )
 end
 
-return create_destructable_wall
+return create_destructible_wall
