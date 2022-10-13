@@ -85,8 +85,8 @@ function player:handle_ultimate()
 end
 
 function player:update(dt)
-  local center_position = vector2(self.box:center_x(), self.box:center_y())
-  self.input = player_input.get_input(self.index, center_position)
+  --[[local center_position = vector2(self.box:center_x(), self.box:center_y())
+  self.input = player_input.get_input(self.index)
 
   local new_position = vector2(
     center_position.x + self.input.move_dir.x * 5 * dt,
@@ -130,6 +130,7 @@ function player:update(dt)
   self.shoot_timer = self.shoot_timer - dt
   player_drawing.update_animation(animation, dt)
   self.animations.current = animation
+  ]]
 end
 
 function player:draw()

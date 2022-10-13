@@ -9,7 +9,7 @@ local ecs = require "code.engine.ecs"
 local input_system = require "code.game.systems.input_system"
 local input_acceleration_system = require "code.game.systems.input_acceleration_system"
 local movement_system = require "code.game.systems.movement_system"
-local set_animation_state_system = require "code.game.systems.set_animation_state_system"
+local animation_set_state_system = require "code.game.systems.animation_set_state_system"
 local debug_draw_entities = require "code.game.systems.debug_draw_entities"
 
 --[[
@@ -43,7 +43,7 @@ function love.load()
   level_one:add_system(input_system)
   level_one:add_system(input_acceleration_system)
   level_one:add_system(movement_system)
-  level_one:add_system(set_animation_state_system)
+  level_one:add_system(animation_set_state_system)
   level_one:add_system(debug_draw_entities)
 end
 

@@ -23,6 +23,11 @@ BUTTON_ANIMATION_STATE_TYPES = {
   CLICK = 3,
 }
 
+CONTROLLER_TYPES = {
+  KEYBOARD = "keyboard",
+  GAMEPAD = "gamepad",
+}
+
 GAME_EVENT_TYPES = {
   LOAD = "load",
   QUIT = "quit",
@@ -34,6 +39,8 @@ GAME_EVENT_TYPES = {
   LATE_UPDATE = "lateupdate",
   JOYSTICK_ADDED = "joystickadded",
   JOYSTICK_REMOVED = "joystickremoved",
+  JOYSTICK_PRESSED = "joystickpressed",
+  JOYSTICK_RELEASED = "joystickreleased",
   KEY_PRESSED = "keypressed",
   KEY_RELEASED = "keyreleased",
 }

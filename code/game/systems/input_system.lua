@@ -16,9 +16,7 @@ local input_system = system(input_query, function(self)
       return
     end
 
-    center_position.x = position.x + size.x / 2
-    center_position.y = position.y + size.y / 2
-    pi = player_input.get_input(input.player, center_position)
+    pi = player_input.get_input(input.player)
 
     input.movement_direction = pi.move_dir
     input.action = pi.action
