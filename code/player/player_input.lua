@@ -99,7 +99,7 @@ end
 
 local function joystick_removed(joystick)
   local index = table.index_of(available_joysticks, joystick)
-  if index then
+  if index > 0 then
     table.remove(available_joysticks, index)
   end
 end

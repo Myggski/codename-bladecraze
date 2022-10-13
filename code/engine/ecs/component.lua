@@ -6,7 +6,7 @@ local function create_component(value)
 end
 
 -- Creates a new component type
--- Examples of type: position, size, acceleration, speed and so on
+-- Examples of type: position, size, acceleration and so on
 local function create_component_type(default_value)
   COMPONENT_ID = COMPONENT_ID + 1
 

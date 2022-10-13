@@ -128,7 +128,7 @@ end
 function follow_target:remove_target(target)
   local index = table.index_of(self._targets, target)
 
-  if index then
+  if index > 0 then
     table.remove(self._targets, index)
     self:_set_camera_position()
   end

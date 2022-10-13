@@ -100,10 +100,9 @@ function player:update(dt)
   )
 
   local collided = self:check_collisions(new_position)
-  local is_outside = camera:is_outside_camera_view(new_rectangle)
 
   --Move player if no collisions
-  if not collided and not is_outside then
+  if not collided then
     self.previous_position = { x = center_position.x, y = center_position.y }
     self.client.position = new_position
     self.box.x = new_rectangle.x

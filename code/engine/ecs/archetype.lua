@@ -1,3 +1,5 @@
+require "code.utilities.set"
+
 local CACHE_WITH = {}
 local CACHE_WITHOUT = {}
 local archetypes = {} -- All the archetypes
@@ -11,15 +13,17 @@ function archetype.setup(...)
   local component_types = (...).is_component_type and { ... } or ...
   local component_ids = {}
   local components = {}
+  local current_component = nil
 
-  for _, component in pairs(component_types) do
-    if not component.is_component_type or component.is_component then
+  for index = 1, #component_types do
+    current_component = component_types[index]
+    if not current_component.is_component_type or current_component.is_component then
       return
     end
 
-    if components[component] == nil then
-      components[component] = true
-      table.insert(component_ids, component:get_id())
+    if not set.contains(components, current_component) then
+      set.add(components, current_component)
+      table.insert(component_ids, current_component:get_id())
     end
   end
 
@@ -39,7 +43,7 @@ end
 
 -- Adds a component to a archetype
 function archetype:add(component_type)
-  if self._components[component_type] then
+  if set.contains(self._components, component_type) then
     return self
   end
 
@@ -69,7 +73,7 @@ end
 
 -- Removes a component to a archetype
 function archetype:remove(component_type)
-  if self._components[component_type] == nil then
+  if not set.contains(self._components, component_type) then
     return self
   end
 
@@ -103,17 +107,21 @@ function archetype.get_version()
   return version
 end
 
+function archetype:get_id()
+  return self._id
+end
+
 -- Checks if the archetype has a specific component
 function archetype:has(component_type)
-  return self._components[component_type] == true
+  return set.contains(self._components, component_type)
 end
 
 -- Checks if the archetype has all of the listed componets
 function archetype:has_all(...)
   local components = (...).is_component_type and { ... } or ...
 
-  for _, component in pairs(components) do
-    if not self:has(component) then
+  for index = 1, #components do
+    if not self:has(components[index]) then
       return false
     end
   end
@@ -125,8 +133,8 @@ end
 function archetype:has_any(...)
   local components = (...).is_component_type and { ... } or ...
 
-  for _, component in pairs(components) do
-    if self:has(component) then
+  for index = 1, #components do
+    if self:has(components[index]) then
       return true
     end
   end

@@ -61,7 +61,7 @@ end
 function button:remove(button)
   local index = table.index_of(self._buttons, button)
 
-  if index then
+  if index > -1 then
     table.remove(self._buttons, index)
   end
 
