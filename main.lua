@@ -73,7 +73,7 @@ function love.load()
         tile_type = tonumber(char)
       end
       if not (tile_type == nil) then
-        wall(level_one, tile_type, { x = x, y = y })
+        wall(level_one, tile_type, 1, { x = x, y = y })
       end
     else
       if char == level_data.player_tile then
