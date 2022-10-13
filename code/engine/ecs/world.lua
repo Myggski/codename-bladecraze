@@ -1,4 +1,5 @@
 local entity = require "code.engine.ecs.entity"
+local archetype = require "code.engine.ecs.archetype"
 
 local world_type = {}
 local world_meta = {
@@ -29,11 +30,7 @@ function world_type:entity(...)
     ...
   )
 
-  if not self._entities[new_entity.archetype] then
-    self._entities[new_entity.archetype] = { [id] = new_entity }
-  else
-    self._entities[new_entity.archetype][id] = new_entity
-  end
+  self:_add_entity_to_archetype(new_entity)
 
   return new_entity
 end
@@ -50,16 +47,29 @@ function world_type:destroy_entity_callback()
     table.insert(self_world._destroyed_entity_ids, e:get_id())
     table.insert(self_world._destroyed_entities, e)
 
-    self_world._entities[e.archetype][e:get_id()] = nil
+    local archetype_index = self_world:_find_archetype(e.archetype)
+
+    if archetype_index == -1 then
+      return
+    end
+
+    local entity_list = self_world._entity_data[archetype_index].entities
+    local entity_index = table.index_of(entity_list, e)
+
+    if entity_index == -1 then
+      return
+    end
+
+    self_world._entity_data[archetype_index].entities[entity_index] = nil
     e._id = -1
   end
 end
 
 -- Destroys the entire world
 function world_type:destroy()
-  for _, entities in pairs(self._entities) do
-    for _, entity in pairs(entities) do
-      entity:destroy()
+  for archetype_index = 1, #self._entity_data do
+    for entity_index = 1, #self._entity_data[archetype_index].entities do
+      self._entity_data[archetype_index].entities[entity_index]:destroy()
     end
   end
 
@@ -73,13 +83,36 @@ end
 -- Generating the world
 local function create_world()
   local world = setmetatable({
-    _entities = {},
+    _entity_data = {},
     _destroyed_entity_ids = {},
     _destroyed_entities = {},
     _systems = {},
     _system_keys = {}, -- To make sure that the sytems are called in correct order
     _last_entity_id = 0,
   }, world_meta)
+
+  function world:_find_archetype(archetype)
+    local archetype_index = -1
+
+    for index = 1, #self._entity_data do
+      if self._entity_data[index].archetype == archetype then
+        archetype_index = index
+        break
+      end
+    end
+
+    return archetype_index
+  end
+
+  function world:_add_entity_to_archetype(entity)
+    local index = self:_find_archetype(entity.archetype)
+
+    if index == -1 then
+      table.insert(self._entity_data, { archetype = entity.archetype, entities = { entity } })
+    else
+      table.insert(self._entity_data[index].entities, entity)
+    end
+  end
 
   -- Adds a system to the world
   function world:add_system(system_type)
@@ -100,11 +133,11 @@ local function create_world()
   function world_type:for_each_entity(query, action)
     local index = 1
 
-    for archetype, entities in pairs(self._entities) do
-      if query:is_valid_archetype(archetype) then
-        for _, entity in pairs(entities) do
-          if query:is_entity_valid(entity) then
-            action(entity, index)
+    for archetype_index = 1, #self._entity_data do
+      if query:is_valid_archetype(self._entity_data[archetype_index].archetype) then
+        for entity_index = 1, #self._entity_data[archetype_index].entities do
+          if query:is_entity_valid(self._entity_data[archetype_index].entities[entity_index]) then
+            action(self._entity_data[archetype_index].entities[entity_index], index)
             index = index + 1
           end
         end
@@ -125,16 +158,16 @@ local function create_world()
     -- Update the archetype list if needed
     -- TODO: Optimize this with events or in some other way
     -- It doesn'have to be checked in every update
-    for archetype, entities in pairs(self._entities) do
-      for _, entity in pairs(entities) do
-        if not (entity.archetype == archetype) then
-          self._entities[archetype][entity:get_id()] = nil
+    local current_entity = nil
+    local archetype_data = nil
 
-          if self._entities[entity.archetype] then
-            self._entities[entity.archetype][entity:get_id()] = entity
-          else
-            self._entities[entity.archetype] = { [entity:get_id()] = entity }
-          end
+    for archetype_index = 1, #self._entity_data do
+      archetype_data = self._entity_data[archetype_index]
+      for entity_index = 1, #archetype_data.entities do
+        current_entity = archetype_data.entities[entity_index]
+        if not (current_entity.archetype == archetype_data.archetype) then
+          archetype_data.entities[entity_index] = nil
+          self:_add_entity_to_archetype(current_entity)
         end
       end
     end

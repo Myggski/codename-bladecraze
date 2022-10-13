@@ -4,7 +4,7 @@ function table.index_of(table, value)
       return i
     end
   end
-  return nil
+  return -1
 end
 
 function table.get_size(table)
@@ -18,6 +18,7 @@ end
 function table.contains_key(table, key)
   return not (table[key] == nil)
 end
+
 function table.pack_all(...) return { n = select('#', ...), ... } end
 
 function table.unpack_all(t) return unpack(t, 1, t.n) end

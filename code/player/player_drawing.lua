@@ -4,8 +4,6 @@ local world_grid = require "code.engine.world_grid"
 
 local font = nil
 local function draw_player(player)
-  love.graphics.setColor(player.color)
-
   local current_animation = player.animations.current
   local sprite_index = math.floor(current_animation.current_time / current_animation.duration *
     #current_animation.quads) + 1
@@ -57,10 +55,9 @@ local function update_animation(animation, dt)
   animation.current_time = animation.current_time + dt
 
   if animation.current_time > animation.duration then
-    animation.current_time = animation.current_time - animation.duration
+    animation.current_time = 0
   end
 
-  animation.current_time = animation.current_time
   return animation
 end
 
