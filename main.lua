@@ -57,11 +57,6 @@ function love.load()
   level_one = ecs.world()
   draw_the_fucking_world = entity_draw(level_one)
 
-
-
-
-  print(camera:get_screen_game_size())
-
   camera:look_at(7.5, 4.3)
   local player_index = 1
 
@@ -87,11 +82,6 @@ function love.load()
       end
     end
   end
-
-
-
-
-
 
   level_one:add_system(input_system)
   level_one:add_system(input_velocity_system)
