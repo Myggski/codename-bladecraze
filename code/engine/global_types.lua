@@ -24,8 +24,8 @@ BUTTON_ANIMATION_STATE_TYPES = {
 }
 
 CONTROLLER_TYPES = {
-  KEYBOARD = "keyboard",
-  GAMEPAD = "gamepad",
+  KEYBOARD = 0,
+  GAMEPAD = 1,
 }
 
 GAME_EVENT_TYPES = {

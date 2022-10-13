@@ -10,7 +10,8 @@
     "before_each",
     "stub",
     "spy",
-    "after_each"
+    "after_each",
+    "components"
   ],
   "editor.tabSize": 2
 }

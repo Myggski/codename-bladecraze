@@ -12,34 +12,42 @@ local draw_query = entity_query
     .none(camera_filter())
 
 local entity_draw = system(draw_query, function(self)
-  local animation, position, size, current_animation, sprite_index, quad = nil, nil, nil, nil, nil, nil
-  local w, h, origin_x, origin_y, center_position = nil, nil, nil, nil, { x = 0, y = 0 }
+  local animation, position, size, sprite, current_animation, sprite_index = nil, nil, nil, nil, nil, nil
+  local quad, center_position, w, h = nil, { x = 0, y = 0 }, 0, 0
 
   for _, entity in self:entity_iterator() do
     animation = entity[components.animation]
     position = entity[components.position]
     size = entity[components.size]
+    sprite = entity[components.sprite]
 
-    current_animation = animation[animation.current_animation_state]
-    sprite_index = animation.freeze_frame and 1 or
-        math.floor(current_animation.current_time / current_animation.duration *
-          #current_animation.quads) + 1
-    quad = current_animation.quads[sprite_index]
     center_position = get_center_position(position, size)
-    _, _, w, h = quad:getViewport()
-    origin_x, origin_y = w / 2, h / 2
 
-    love.graphics.draw(
-      current_animation.sprite_sheet,
-      quad,
-      world_grid:convert_to_world(center_position.x),
-      world_grid:convert_to_world(center_position.y),
-      0,
-      animation.direction,
-      1,
-      origin_x,
-      origin_y
-    )
+    if animation then
+      current_animation = animation[animation.current_animation_state]
+      sprite_index = 1 +
+          math.floor(current_animation.current_time / current_animation.duration * #current_animation.quads)
+      quad = current_animation.quads[sprite_index]
+      _, _, w, h = quad:getViewport()
+
+      love.graphics.draw(
+        current_animation.sprite_sheet,
+        quad,
+        world_grid:convert_to_world(center_position.x),
+        world_grid:convert_to_world(center_position.y),
+        0,
+        animation.direction,
+        1,
+        w / 2,
+        h / 2
+      )
+    elseif sprite then
+      love.graphics.draw(
+        sprite,
+        world_grid:convert_to_world(center_position.x),
+        world_grid:convert_to_world(center_position.y)
+      )
+    end
   end
 end)
 

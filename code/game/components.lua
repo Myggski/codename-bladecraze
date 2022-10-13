@@ -21,6 +21,7 @@ local input_component = component({
   action = PLAYER.ACTIONS.NONE,
 })
 local health_component = component(1)
+local player_data_component = component({ player_id = -1, controller_type = CONTROLLER_TYPES.GAMEPAD })
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
 local rotation_component = component(0) -- Radian?
@@ -35,6 +36,7 @@ _G.components = {
   input = input_component,
   health = health_component,
   object_pool = object_pool_component,
+  player_data = player_data_component,
   position = position_component,
   rotation = rotation_component,
   size = size_component,

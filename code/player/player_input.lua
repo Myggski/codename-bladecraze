@@ -6,6 +6,8 @@ local vector2 = require "code.engine.vector2"
 local player_input = {}
 local mouse_pressed = false
 local analog_stick_deadzone = 0.2
+local available_joysticks = {} -- The joysticks that's connected but not active
+local active_controllers = {} -- Can be both joysticks and keyboard
 
 local function mousepressed(x, y, btn, is_touch)
   mouse_pressed = true
@@ -73,8 +75,8 @@ local function get_move_direction(player_controller)
   local move_dir = vector2.zero()
 
   if player_controller.type == CONTROLLER_TYPES.GAMEPAD then
-    local lx, ly = player_controller.contoller:getGamepadAxis("leftx"),
-        player_controller.contoller:getGamepadAxis("lefty")
+    local lx, ly = player_controller.controller:getGamepadAxis("leftx"),
+        player_controller.controller:getGamepadAxis("lefty")
     if math.abs(lx) > analog_stick_deadzone then
       move_dir.x = lx
     end
@@ -88,9 +90,6 @@ local function get_move_direction(player_controller)
   return move_dir
 end
 
-local available_joysticks = {} -- The joysticks that's connected but not active
-local active_controllers = {} -- Can be both joysticks and keyboard
-
 local function joystick_added(joystick)
   if joystick:isGamepad() then
     table.insert(available_joysticks, joystick)
@@ -99,16 +98,23 @@ end
 
 local function joystick_removed(joystick)
   local index = table.index_of(available_joysticks, joystick)
+
+  for active_index = 1, #active_controllers do
+    if joystick == active_controllers[active_index].controller then
+      table.remove(active_controllers, joystick)
+    end
+  end
+
   if index > 0 then
     table.remove(available_joysticks, index)
   end
 end
 
-local keyboard_activity_check = function()
+local keyboard_activity_check = function(key, controller_activition_callback)
   local has_keyboard = false
 
   for index = 1, #active_controllers do
-    if active_controllers[index].controller_type == CONTROLLER_TYPES.KEYBOARD then
+    if active_controllers[index].type == CONTROLLER_TYPES.KEYBOARD then
       has_keyboard = true
       break
     end
@@ -118,33 +124,63 @@ local keyboard_activity_check = function()
     return
   end
 
-  if love.keyboard:isDown("enter") or love.keyboard:isDown("space") then
-    table.insert(active_controllers, {
+  if key == "return" or key == "space" then
+    local controller = {
       type = CONTROLLER_TYPES.KEYBOARD,
       controller = love.keyboard,
-    })
+    }
+
+    table.insert(active_controllers, controller)
+    controller_activition_callback()
   end
 end
 
-local gamepad_activity_check = function(joystick)
-  local index = table.index_of(active_controllers, joystick)
+local gamepad_activity_check = function(joystick, controller_activition_callback)
+  local has_gamepad = false
 
-  if index == -1 and joystick:isGamepadDown("start") then
-    table.insert(active_controllers, {
-      controller_type = CONTROLLER_TYPES.GAMEPAD,
+  for index = 1, #active_controllers do
+    if active_controllers[index].type == CONTROLLER_TYPES.GAMEPAD then
+      if joystick == active_controllers[index].controller then
+        has_gamepad = true
+        break
+      end
+    end
+  end
+
+  if not has_gamepad and joystick:isGamepadDown("start") then
+    local controller = {
+      type = CONTROLLER_TYPES.GAMEPAD,
       controller = joystick,
-    })
+    }
+
+    table.insert(active_controllers, controller)
+    controller_activition_callback()
   end
 end
 
-function player_input.start_controller_activation()
-  game_event_manager.add_listener(GAME_EVENT_TYPES.KEY_PRESSED, keyboard_activity_check)
-  game_event_manager.add_listener(GAME_EVENT_TYPES.JOYSTICK_PRESSED, gamepad_activity_check)
+local player_key_pressed_event = nil
+local player_joystick_pressed_event = nil
+
+function player_input.add_on_player_activated(controller_activition_callback)
+  player_input.remove_on_player_activated()
+
+  player_key_pressed_event = function(key) keyboard_activity_check(key, controller_activition_callback) end
+  player_joystick_pressed_event = function(joystick) gamepad_activity_check(joystick, controller_activition_callback) end
+
+  game_event_manager.add_listener(GAME_EVENT_TYPES.KEY_PRESSED, player_key_pressed_event)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.JOYSTICK_PRESSED, player_joystick_pressed_event)
 end
 
-function player_input.stop_controller_activation()
-  game_event_manager.remove_listener(GAME_EVENT_TYPES.KEY_PRESSED, keyboard_activity_check)
-  game_event_manager.remove_listener(GAME_EVENT_TYPES.JOYSTICK_PRESSED, gamepad_activity_check)
+function player_input.remove_on_player_activated()
+  if player_key_pressed_event then
+    game_event_manager.remove_listener(GAME_EVENT_TYPES.KEY_PRESSED, player_key_pressed_event)
+    player_key_pressed_event = nil
+  end
+
+  if player_joystick_pressed_event then
+    game_event_manager.remove_listener(GAME_EVENT_TYPES.JOYSTICK_PRESSED, player_joystick_pressed_event)
+    player_joystick_pressed_event = nil
+  end
 end
 
 function player_input.get_input(player_id)
@@ -154,15 +190,17 @@ function player_input.get_input(player_id)
     action = PLAYER.ACTIONS.NONE,
   }
 
-  if not player_controller then
-    return input
+  if player_controller then
+    input.move_dir = math.normalize2(get_move_direction(player_controller))
+    input.action = get_action(player_controller)
   end
-
-  input.move_dir = math.normalize2(get_move_direction(player_controller))
-  input.action = get_action(player_controller)
 
   return input
 end
+
+function player_input.get_available_joysticks() return available_joysticks end
+
+function player_input.get_active_controllers() return active_controllers end
 
 -- Returns the mouse position on the screen
 function player_input.mouse_position_screen() return camera:screen_coordinates(love.mouse.getPosition()) end
