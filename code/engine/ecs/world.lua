@@ -1,5 +1,4 @@
 local entity = require "code.engine.ecs.entity"
-local archetype = require "code.engine.ecs.archetype"
 
 local world_type = {}
 local world_meta = {
@@ -47,20 +46,6 @@ function world_type:destroy_entity_callback()
     table.insert(self_world._destroyed_entity_ids, e:get_id())
     table.insert(self_world._destroyed_entities, e)
 
-    local archetype_index = self_world:_find_archetype(e.archetype)
-
-    if archetype_index == -1 then
-      return
-    end
-
-    local entity_list = self_world._entity_data[archetype_index].entities
-    local entity_index = table.index_of(entity_list, e)
-
-    if entity_index == -1 then
-      return
-    end
-
-    self_world._entity_data[archetype_index].entities[entity_index] = nil
     e._id = -1
   end
 end
@@ -145,6 +130,31 @@ local function create_world()
     end
   end
 
+  function world_type:to_list(query, action)
+    local index = 1
+    local entities = {}
+    action = type(action) == "function" and action or function(_, _) end
+
+    if query.is_query_builder then
+      query = query.build()
+    end
+
+    for archetype_index = 1, #self._entity_data do
+      if query:is_valid_archetype(self._entity_data[archetype_index].archetype) then
+        for entity_index = 1, #self._entity_data[archetype_index].entities do
+          if query:is_entity_valid(self._entity_data[archetype_index].entities[entity_index]) then
+            index = index + 1
+            table.insert(entities, self._entity_data[archetype_index].entities[entity_index])
+
+            action(self._entity_data[archetype_index].entities[entity_index], index)
+          end
+        end
+      end
+    end
+
+    return entities
+  end
+
   --[[ 
     This is called every tick
     It saves the system keys in seperate table to make sure that the systems run same sequal every time
@@ -163,7 +173,7 @@ local function create_world()
 
     for archetype_index = 1, #self._entity_data do
       archetype_data = self._entity_data[archetype_index]
-      for entity_index = 1, #archetype_data.entities do
+      for entity_index = #archetype_data.entities, 1, -1 do
         current_entity = archetype_data.entities[entity_index]
         if not (current_entity.archetype == archetype_data.archetype) then
           archetype_data.entities[entity_index] = nil
@@ -174,6 +184,20 @@ local function create_world()
 
     -- Evaporate the dead completely from this world
     for index = 1, #self._destroyed_entities do
+      local e = self._destroyed_entities[index]
+      local archetype_index = self:_find_archetype(e.archetype)
+
+      if archetype_index == -1 then
+        return
+      end
+
+      local entity_index = table.index_of(self._entity_data[archetype_index].entities, e)
+
+      if entity_index == -1 then
+        return
+      end
+
+      table.remove(self._entity_data[archetype_index].entities, entity_index)
       self._destroyed_entities[index] = nil
     end
   end

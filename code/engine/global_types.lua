@@ -45,6 +45,66 @@ GAME_EVENT_TYPES = {
   KEY_RELEASED = "keyreleased",
 }
 
+GAMEPAD = {
+  BUTTONS = {
+    A = "a",
+    B = "b",
+    X = "x",
+    Y = "y",
+    BACK = "back",
+    GUIDE = "guide",
+    START = "start",
+    LEFT_STICK = "leftstick",
+    RIGHT_STICK = "rightstick",
+    LEFT_SHOULDER = "leftshoulder",
+    RIGHT_SHOULDER = "rightshoulder",
+    DP_UP = "dpup",
+    DP_DOWN = "dpdown",
+    DP_LEFT = "dpleft",
+    DP_RIGHT = "dpright",
+  },
+  AXES = {
+    LEFT_X = "leftx",
+    LEFT_Y = "lefty",
+    RIGHT_X = "right_x",
+    RIGHT_Y = "right_y",
+    TRIGGER_LEFT = "triggerleft",
+    TRIGGER_RIGHT = "triggerright",
+  },
+}
+
+GAMEPAD.AXES.TRIGGERS = {
+  GAMEPAD.AXES.TRIGGER_LEFT, GAMEPAD.AXES.TRIGGER_RIGHT,
+}
+
+GAMEPAD.BUTTONS.ALL = {
+  GAMEPAD.BUTTONS.A, GAMEPAD.BUTTONS.B, GAMEPAD.BUTTONS.X, GAMEPAD.BUTTONS.Y,
+  GAMEPAD.BUTTONS.BACK, GAMEPAD.BUTTONS.GUIDE, GAMEPAD.BUTTONS.START,
+  GAMEPAD.BUTTONS.LEFT_STICK, GAMEPAD.BUTTONS.RIGHT_STICK,
+  GAMEPAD.BUTTONS.LEFT_SHOULDER, GAMEPAD.BUTTONS.RIGHT_SHOULDER,
+  GAMEPAD.BUTTONS.DP_UP, GAMEPAD.BUTTONS.DP_DOWN, GAMEPAD.BUTTONS.DP_LEFT, GAMEPAD.BUTTONS.DP_RIGHT,
+}
+
+KEYBOARD = {
+  W = "w",
+  A = "a",
+  S = "s",
+  D = "d",
+  UP = "up",
+  LEFT = "left",
+  DOWN = "down",
+  RIGHT = "right",
+  SPACE = "space",
+  ENTER = "return",
+  ESCAPE = "escape"
+}
+
+KEYBOARD.ALL = {
+  KEYBOARD.W, KEYBOARD.A, KEYBOARD.S, KEYBOARD.D,
+  KEYBOARD.UP, KEYBOARD.LEFT, KEYBOARD.DOWN, KEYBOARD.RIGHT,
+  KEYBOARD.SPACE, KEYBOARD.ENTER, KEYBOARD.ESCAPE,
+}
+
 ENTITY_EVENT_TYPES = {
   ACTIVATED = "activated",
   DEACTIVATED = "deactivated"

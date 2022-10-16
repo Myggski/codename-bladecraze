@@ -2,7 +2,10 @@ local system = require "code.engine.ecs.system"
 local entity_query = require "code.engine.ecs.entity_query"
 local world_grid = require "code.engine.world_grid"
 
-local movement_query = entity_query.all(components.position, components.velocity)
+local movement_query = entity_query.all(
+  components.position, 
+  components.velocity
+).none(components.target_position)
 
 local movement_system = system(movement_query, function(self, dt)
   local position, velocity = nil, nil

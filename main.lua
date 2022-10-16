@@ -48,15 +48,15 @@ function love.joystickadded(joystick)
 end
 
 function love.joystickremoved(joystick)
-  game_event_manager:invoke(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick)
+  game_event_manager.invoke(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick)
 end
 
-function love.joystickpressed(joystick)
-  game_event_manager.invoke(GAME_EVENT_TYPES.JOYSTICK_PRESSED, joystick)
+function love.joystickpressed(joystick, button)
+  game_event_manager.invoke(GAME_EVENT_TYPES.JOYSTICK_PRESSED, joystick, button)
 end
 
-function love.joystickreleased(joystick)
-  game_event_manager:invoke(GAME_EVENT_TYPES.JOYSTICK_RELEASED, joystick)
+function love.joystickreleased(joystick, button)
+  game_event_manager.invoke(GAME_EVENT_TYPES.JOYSTICK_RELEASED, joystick, button)
 end
 
 function love.keypressed(key, scancode, is_repeat)

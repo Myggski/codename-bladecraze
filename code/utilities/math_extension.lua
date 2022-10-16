@@ -12,7 +12,7 @@ function math.lerp(a, b, t) return (1 - t) * a + t * b end
 function math.lerp2(a, b, t) return a + (b - a) * t end
 
 -- Normalize two numbers.
-function math.normalize(x, y) local l = (x * x + y * y) ^ .5 if l == 0 then return 0, 0 else return x / l, y / l, l end end
+function math.normalize(x, y) local l = (x * x + y * y) ^ .5 if l == 0 then return 0, 0, 0 else return x / l, y / l, l end end
 
 function math.normalize2(vector)
   local l = (vector.x * vector.x + vector.y * vector.y) ^ .5

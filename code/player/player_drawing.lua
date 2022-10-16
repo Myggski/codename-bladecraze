@@ -47,8 +47,6 @@ local function draw_stats(player)
   for key, value in pairs(player.stats) do
     str = str .. key .. ":" .. value .. "\n"
   end
-
-  -- draw_text(player.box.x, player.box.y + 20, str)
 end
 
 local function update_animation(animation, dt)

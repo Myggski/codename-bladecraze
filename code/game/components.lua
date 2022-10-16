@@ -27,6 +27,7 @@ local position_component = component()
 local rotation_component = component(0) -- Radian?
 local size_component = component({ x = 1, y = 1 })
 local sprite_component = component("") -- Url to static image?
+local target_position_component = component({ x = 0, y = 0 })
 local velocity_component = component({ x = 0, y = 0 })
 
 _G.components = {
@@ -41,6 +42,7 @@ _G.components = {
   rotation = rotation_component,
   size = size_component,
   sprite = sprite_component,
+  target_position = target_position_component,
   velocity = velocity_component,
 }
 
