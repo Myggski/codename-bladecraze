@@ -16,11 +16,11 @@ function rectangle:is_inside(x, y)
 end
 
 function rectangle:center_x()
-  return self.x + self.w / 2
+  return self.x + self.w * 0.5
 end
 
 function rectangle:center_y()
-  return self.y + self.h / 2
+  return self.y + self.h * 0.5
 end
 
 function rectangle:center()

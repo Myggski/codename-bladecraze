@@ -38,8 +38,8 @@ local entity_draw = system(draw_query, function(self)
         0,
         animation.direction,
         1,
-        w / 2,
-        h / 2
+        w * 0.5,
+        h * 0.5
       )
     elseif sprite then
       love.graphics.draw(

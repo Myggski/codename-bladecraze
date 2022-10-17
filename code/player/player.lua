@@ -22,15 +22,15 @@ function player:check_collisions(desired_location)
   end
 
   self.nearby_clients = table.get_size(clients)
-  box.x = desired_location.x - box.w / 2
-  box.y = desired_location.y - box.h / 2
+  box.x = desired_location.x - box.w * 0.5
+  box.y = desired_location.y - box.h * 0.5
 
   local overlapping = false
   for key, _ in pairs(clients) do
     local x, y, w, h = key.position.x, key.position.y, key.dimensions.x, key.dimensions.y
 
-    x = x - w / 2
-    y = y - h / 2
+    x = x - w * 0.5
+    y = y - h * 0.5
 
     if box:overlap(x, y, w, h) then
       overlapping = true
@@ -197,7 +197,7 @@ function player:create(data)
     index = data.index,
     animations = animations,
     stats = character_data[data.class].stats,
-    box = rectangle:create(x - w / 2, y - h / 2, w, h),
+    box = rectangle:create(x - w * 0.5, y - h * 0.5, w, h),
     class = data.class,
     name = character_data[data.class].name,
     client = client,

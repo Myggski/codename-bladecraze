@@ -31,3 +31,12 @@ function math.rsign() return love.math.random(2) == 2 and 1 or -1 end
 
 -- Returns 1 if number is positive, -1 if it's negative, or 0 if it's 0.
 function math.sign(n) return n > 0 and 1 or n < 0 and -1 or 0 end
+
+function math.average(t)
+  local sum = 0
+
+  for _, v in pairs(t) do -- Get the sum of all numbers in t
+    sum = sum + v
+  end
+  return sum / #t
+end

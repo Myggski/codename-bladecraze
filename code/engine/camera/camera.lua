@@ -34,7 +34,7 @@ end
 function camera:get_screen_game_half_size()
   local width, height = self:get_screen_game_size()
 
-  return width / 2, height / 2
+  return width * 0.5, height * 0.5
 end
 
 -- Returns scale diff between game and hud

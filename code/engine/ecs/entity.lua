@@ -9,14 +9,19 @@ local function add_component(entity, component_type, component_value)
 
   if component_value == nil and entity:has_component(component_type) then
     entity:remove_component(component_type)
-  elseif type(component_value) == "table" and component_value.is_component then
+    return
+  end
+
+  if type(component_value) == "table" and component_value.is_component then
     entity._component_values[component_type] = component_value
 
     if not entity:has_component(component_type) then
       local new_archetype = entity.archetype:add(component_type)
 
       if not (entity.archetype == new_archetype) then
+        local old_archetype = entity.archetype
         entity.archetype = new_archetype
+        entity._archetype_changed(entity, old_archetype)
       end
     end
   else
@@ -24,8 +29,32 @@ local function add_component(entity, component_type, component_value)
     entity[component_type] = component_type(component_value)
 
     if not (entity.archetype == new_archetype) then
+      local old_archetype = entity.archetype
       entity.archetype = new_archetype
+      entity._archetype_changed(entity, old_archetype)
     end
+  end
+end
+
+local function add_components(entity, ...)
+  local components = { ... }
+  local new_archetype = nil
+  local component = nil
+
+  for index = 1, #components do
+    component = components[index]
+
+    if type(component) == "table" and component.is_component then
+      entity._component_values[component.get_type()] = component
+      new_archetype = new_archetype and new_archetype:add(component.get_type()) or
+          entity.archetype:add(component.get_type())
+    end
+  end
+
+  if not (entity.archetype == new_archetype) then
+    local old_archetype = entity.archetype
+    entity.archetype = new_archetype
+    entity._archetype_changed(entity, old_archetype)
   end
 end
 
@@ -37,7 +66,9 @@ local function remove_component(entity, component_type)
   local new_archetype = entity.archetype:remove(component_type)
 
   if not (entity.archetype == new_archetype) then
+    local old_archetype = entity.archetype
     entity.archetype = new_archetype
+    entity._archetype_changed(entity, old_archetype)
   end
 end
 
@@ -73,17 +104,19 @@ local entity_meta = {
 }
 
 -- Creates an entity
-local create = function(id, destroy_callback, ...)
+local create = function(id, destroy_callback, archetype_changed_callback, ...)
   assert(not (id == nil), "Error, an id expected, got: " .. id)
   assert(not (destroy_callback == nil), "Error, entity needs a destroy_callback function set")
 
   local entity = {
     _id = id,
-    archetype = archetype.EMPTY,
     _component_values = {},
+    _archetype_changed = archetype_changed_callback,
+    archetype = archetype.EMPTY,
     get_id = get_id,
     is_alive = is_alive,
     add_component = add_component,
+    add_components = add_components,
     remove_component = remove_component,
     has_component = has_component,
     has_components = has_components,
@@ -92,14 +125,9 @@ local create = function(id, destroy_callback, ...)
   }
   entity.__index = entity
 
-  local components = { ... }
-
   -- Adds all the components to the entity
-  for index = 1, #components do
-    if components[index].is_component then
-      entity:add_component(components[index].get_type(), components[index])
-    end
-  end
+  entity:add_components(...)
+
 
   return setmetatable(entity, entity_meta)
 end

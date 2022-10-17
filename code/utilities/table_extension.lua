@@ -1,9 +1,14 @@
 function table.index_of(table, value)
+  if not table then
+    return -1
+  end
+
   for i, v in ipairs(table) do
     if v == value then
       return i
     end
   end
+
   return -1
 end
 

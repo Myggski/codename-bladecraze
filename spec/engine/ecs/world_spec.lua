@@ -63,7 +63,7 @@ insulate("world", function()
       end)
 
       local second_system = system(_, function(self, dt)
-        value = value / 2
+        value = value * 0.5
       end)
 
       local third_system = system(_, function(self, dt)

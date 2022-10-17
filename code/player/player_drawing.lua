@@ -9,7 +9,7 @@ local function draw_player(player)
     #current_animation.quads) + 1
   local quad = current_animation.quads[sprite_index]
   local _, _, w, h = quad:getViewport()
-  local origin_x, origin_y = w / 2, h / 2
+  local origin_x, origin_y = w * 0.5, h * 0.5
   love.graphics.draw(
     current_animation.sprite_sheet,
     quad,
