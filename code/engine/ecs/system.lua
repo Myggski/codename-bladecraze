@@ -42,7 +42,7 @@ local function create_system_type(query, update_fn)
       query = query or system_type.query
 
       local entities_coroutine = coroutine.create(function()
-        self._world:to_list(query or system_type.query, function(value, count)
+        self._world:for_each(query or system_type.query, function(value, count)
           coroutine.yield(value, count)
         end)
       end)
@@ -53,8 +53,8 @@ local function create_system_type(query, update_fn)
       end
     end
 
-    function system:to_list(query)
-      return self._world:to_list(query or system_type.query)
+    function system:for_each(query, action)
+      return self._world:for_each(query or system_type.query, action)
     end
 
     function system:get_world()

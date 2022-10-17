@@ -15,7 +15,7 @@ local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation, sprite_index = nil, nil, nil, nil, nil, nil
   local quad, center_position, w, h = nil, { x = 0, y = 0 }, 0, 0
 
-  for _, entity in self:entity_iterator() do
+  self:for_each(draw_query, function(entity)
     animation = entity[components.animation]
     position = entity[components.position]
     size = entity[components.size]
@@ -48,7 +48,7 @@ local entity_draw = system(draw_query, function(self)
         world_grid:convert_to_world(center_position.y)
       )
     end
-  end
+  end)
 end)
 
 return entity_draw

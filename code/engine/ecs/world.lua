@@ -123,7 +123,7 @@ local function create_world()
     table.remove(self._system_keys, table.index_of(self._system_keys, system_type))
   end
 
-  function world_type:to_list(query, action)
+  function world_type:for_each(query, action)
     local index = 1
     local entities, archetype_entities, entity = {}, {}, nil
     action = type(action) == "function" and action or function(_, _) end

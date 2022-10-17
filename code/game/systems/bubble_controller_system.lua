@@ -13,7 +13,7 @@ local bubble_controller_query = entity_query:all(
 
 -- The system that's being called every frame
 local bubble_controller_system = system(bubble_controller_query, function(self, _)
-  local entities = helper.sort_entities(self:to_list())
+  local entities = helper.sort_entities(self:for_each())
   local number_available_joysticks = #player_input.get_available_joysticks()
   local number_active_controllers = #player_input.get_active_controllers()
   local expected_number_of_bubbles = number_available_joysticks + 1 - number_active_controllers
