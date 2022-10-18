@@ -249,7 +249,7 @@ local function enable_controller_events(self)
   -- When joystick is disconnected
   self.player_joystick_removed_event = function(joystick)
     rearrange_bubble_ids(
-      sort_entities(self:for_each()),
+      self:to_list(),
       player_input.deactivate_controller(CONTROLLER_TYPES.GAMEPAD, joystick)
     )
   end

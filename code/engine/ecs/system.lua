@@ -53,6 +53,10 @@ local function create_system_type(query, update_fn)
       end
     end
 
+    function system:to_list(query)
+      return self._world:to_list(query or system_type.query)
+    end
+
     function system:for_each(query, action)
       return self._world:for_each(query or system_type.query, action)
     end

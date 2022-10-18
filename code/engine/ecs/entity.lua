@@ -97,6 +97,8 @@ local entity_meta = {
     if type(key) == "table" and entity:has_component(key) then
       return entity._component_values[key].value
     end
+
+    return nil
   end,
   __newindex = function(entity, key, value)
     add_component(entity, key, value)

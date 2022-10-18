@@ -13,15 +13,13 @@ local draw_query = entity_query
 
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation, sprite_index = nil, nil, nil, nil, nil, nil
-  local quad, center_position, w, h = nil, { x = 0, y = 0 }, 0, 0
+  local quad, w, h = nil, 0, 0
 
   self:for_each(draw_query, function(entity)
     animation = entity[components.animation]
     position = entity[components.position]
     size = entity[components.size]
     sprite = entity[components.sprite]
-
-    center_position = get_center_position(position, size)
 
     if animation then
       current_animation = animation[animation.current_animation_state]
@@ -33,8 +31,8 @@ local entity_draw = system(draw_query, function(self)
       love.graphics.draw(
         current_animation.sprite_sheet,
         quad,
-        world_grid:convert_to_world(center_position.x),
-        world_grid:convert_to_world(center_position.y),
+        world_grid:convert_to_world(position.x + size.x * 0.5),
+        world_grid:convert_to_world(position.y + size.y * 0.5),
         0,
         animation.direction,
         1,
@@ -44,8 +42,8 @@ local entity_draw = system(draw_query, function(self)
     elseif sprite then
       love.graphics.draw(
         sprite,
-        world_grid:convert_to_world(center_position.x),
-        world_grid:convert_to_world(center_position.y)
+        world_grid:convert_to_world(position.x + size.x * 0.5),
+        world_grid:convert_to_world(position.y + size.y * 0.5)
       )
     end
   end)

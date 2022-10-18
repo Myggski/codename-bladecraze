@@ -14,8 +14,8 @@ local print_execution_time_seconds = function(func_name, func, ...)
   print(string.format("%s executed in %es", func_name, get_execution_time(func, ...)))
 end
 
-local track_function_call_time = function(check_every_in_seconds)
-  local total_runtime = 0
+local track_function_call_time = function(number_of_calls)
+  local total_of_calls = 0
   local track_data = {
     lowest = 9999999,
     highest = -9999999,
@@ -24,6 +24,21 @@ local track_function_call_time = function(check_every_in_seconds)
   }
 
   return function(func_name, func, ...)
+    total_of_calls = total_of_calls + 1
+
+    if total_of_calls >= number_of_calls then
+      track_data.avg = math.average(track_data.timers)
+      print(string.format("%s execution info - lowest %fms, highest: %fms, avg: %fms", func_name,
+        track_data.lowest * 1000,
+        track_data.highest * 1000, track_data.avg * 1000))
+
+      total_of_calls = 0
+      track_data.lowest = 999999
+      track_data.highest = -999999
+      track_data.timers = {}
+      track_data.avg = 0
+    end
+
     local time = get_execution_time(func, ...)
 
     if time < track_data.lowest then
@@ -35,21 +50,6 @@ local track_function_call_time = function(check_every_in_seconds)
     end
 
     table.insert(track_data.timers, time)
-
-    total_runtime = total_runtime + time
-
-    if total_runtime >= check_every_in_seconds then
-      track_data.avg = math.average(track_data.timers)
-      print(string.format("%s execution info - lowest %fms, highest: %fms, avg: %fms", func_name,
-        track_data.lowest * 1000,
-        track_data.highest * 1000, track_data.avg * 1000))
-
-      total_runtime = 0
-      track_data.lowest = 999999
-      track_data.highest = -999999
-      track_data.timers = {}
-      track_data.avg = 0
-    end
   end
 end
 

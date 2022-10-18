@@ -41,9 +41,11 @@ local function load()
   level:add_system(bubble_controller_system)
   level:add_system(target_movement_system)
 
-  background_image(level, "level/press_start.png", { x = -1.6875, y = -3.5 })
-  background_image(level, "level/lobby_ready.png", { x = 4.5, y = -1.95 })
-  background_image(level, "level/lobby_quit.png", { x = -7.5, y = -1.95 })
+  for index = 1, 10000 do
+    background_image(level, "level/press_start.png", { x = -1.6875, y = -3.5 })
+    background_image(level, "level/lobby_ready.png", { x = 4.5, y = -1.95 })
+    background_image(level, "level/lobby_quit.png", { x = -7.5, y = -1.95 })
+  end
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, on_draw)

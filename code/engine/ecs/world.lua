@@ -1,5 +1,4 @@
 local entity = require "code.engine.ecs.entity"
-
 local world_type = {}
 local world_meta = {
   __index = world_type,
@@ -123,10 +122,8 @@ local function create_world()
     table.remove(self._system_keys, table.index_of(self._system_keys, system_type))
   end
 
-  function world_type:for_each(query, action)
-    local index = 1
+  function world_type:to_list(query)
     local entities, archetype_entities, entity = {}, {}, nil
-    action = type(action) == "function" and action or function(_, _) end
 
     if query.is_query_builder then
       query = query.build()
@@ -138,16 +135,36 @@ local function create_world()
         for entity_index = 1, #archetype_entities do
           entity = archetype_entities[entity_index]
           if query:is_entity_valid(entity) then
-            index = index + 1
             table.insert(entities, entity)
-
-            action(entity, index)
           end
         end
       end
     end
 
     return entities
+  end
+
+  function world_type:for_each(query, action)
+    local index = 1
+    local archetype_entities, entity = {}, {}, nil
+    action = type(action) == "function" and action or function(_, _) end
+
+    if query.is_query_builder then
+      query = query.build()
+    end
+
+    for archetype_index = 1, #self._entity_data do
+      if query:is_valid_archetype(self._entity_data[archetype_index].archetype) then
+        archetype_entities = self._entity_data[archetype_index].entities
+        for entity_index = 1, #archetype_entities do
+
+          if query:is_entity_valid(archetype_entities[entity_index]) then
+            index = index + 1
+            action(archetype_entities[entity_index], index)
+          end
+        end
+      end
+    end
   end
 
   --[[ 
