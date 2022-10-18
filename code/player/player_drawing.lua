@@ -56,6 +56,10 @@ local function update_animation(animation, dt)
     animation.current_time = 0
   end
 
+  animation.current_quad = animation.quads[
+      1 + math.floor((animation.current_time / animation.duration) * #animation.quads)]
+  _, _, animation.viewport.x, animation.viewport.y = animation.current_quad:getViewport()
+
   return animation
 end
 

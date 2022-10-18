@@ -12,9 +12,7 @@ local draw_query = entity_query
     .none(camera_filter())
 
 local entity_draw = system(draw_query, function(self)
-  local animation, position, size, sprite, current_animation, sprite_index = nil, nil, nil, nil, nil, nil
-  local quad, w, h = nil, 0, 0
-
+  local animation, position, size, sprite, current_animation = nil, nil, nil, nil, nil
   self:for_each(draw_query, function(entity)
     animation = entity[components.animation]
     position = entity[components.position]
@@ -23,21 +21,17 @@ local entity_draw = system(draw_query, function(self)
 
     if animation then
       current_animation = animation[animation.current_animation_state]
-      sprite_index = 1 +
-          math.floor(current_animation.current_time / current_animation.duration * #current_animation.quads)
-      quad = current_animation.quads[sprite_index]
-      _, _, w, h = quad:getViewport()
 
       love.graphics.draw(
         current_animation.sprite_sheet,
-        quad,
+        current_animation.current_quad,
         world_grid:convert_to_world(position.x + size.x * 0.5),
         world_grid:convert_to_world(position.y + size.y * 0.5),
         0,
         animation.direction,
         1,
-        w * 0.5,
-        h * 0.5
+        current_animation.viewport.x * 0.5,
+        current_animation.viewport.y * 0.5
       )
     elseif sprite then
       love.graphics.draw(

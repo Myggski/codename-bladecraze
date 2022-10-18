@@ -5,23 +5,96 @@ local world_meta = {
 }
 
 -- Returns a unique id for entities
-function world_type:generate_entity_id()
+local function generate_entity_id(world)
   local entity_id = 0
 
-  if #self._destroyed_entity_ids > 0 then
-    entity_id = self._destroyed_entity_ids[1]
-    table.remove(self._destroyed_entity_ids, 1)
+  if #world._destroyed_entity_ids > 0 then
+    entity_id = world._destroyed_entity_ids[1]
+    table.remove(world._destroyed_entity_ids, 1)
   else
-    entity_id = self._last_entity_id + 1
-    self._last_entity_id = entity_id
+    entity_id = world._last_entity_id + 1
+    world._last_entity_id = entity_id
   end
 
   return entity_id
 end
 
+local function find_archetype(world, archetype)
+  local archetype_index = -1
+
+  for index = 1, #world._entity_data do
+    if world._entity_data[index].archetype == archetype then
+      archetype_index = index
+      break
+    end
+  end
+
+  return archetype_index
+end
+
+local function add_entity_to_archetype(world, entity)
+  local index = find_archetype(world, entity.archetype)
+
+  if index == -1 then
+    table.insert(world._entity_data, { archetype = entity.archetype, entities = { entity } })
+  else
+    table.insert(world._entity_data[index].entities, entity)
+  end
+end
+
+local function delete_entities(world)
+  local destroyed_entity, archetype_index, entity_index, changed_index = nil, -1, -1, -1
+
+  -- Evaporate the dead completely from this world
+  for index = #world._destroyed_entities, 1, -1 do
+    destroyed_entity = world._destroyed_entities[index]
+    archetype_index = find_archetype(world, destroyed_entity.archetype)
+
+    if archetype_index == -1 then
+      return
+    end
+
+    entity_index = table.index_of(world._entity_data[archetype_index].entities, destroyed_entity)
+
+    if entity_index == -1 then
+      return
+    end
+
+    world._entity_data[archetype_index].entities[entity_index] = nil
+    world._destroyed_entities[index] = nil
+
+    changed_index = table.index_of(world._changed_entity_data_list, destroyed_entity)
+
+    -- Remove entity from the changelist if it's being deleted
+    if changed_index > 0 then
+      table.remove(world._changed_entity_data_list, changed_index)
+    end
+  end
+end
+
+local function update_entities(world)
+  local changed_entity_data, archetype_index, entity_index = nil, -1, -1
+
+  for index = #world._changed_entity_data_list, 1, -1 do
+    changed_entity_data = world._changed_entity_data_list[index]
+    archetype_index = find_archetype(world, changed_entity_data.old_archetype)
+
+    if archetype_index > 0 then
+      entity_index = table.index_of(world._entity_data[archetype_index].entities, changed_entity_data.entity)
+
+      if entity_index > 0 then
+        world._entity_data[archetype_index][entity_index] = nil
+        add_entity_to_archetype(world, changed_entity_data.entity)
+      end
+    end
+
+    table.remove(world._changed_entity_data_list, index)
+  end
+end
+
 -- Creates an entity and adds it into the world
 function world_type:entity(...)
-  local id = self:generate_entity_id()
+  local id = generate_entity_id(self)
   local new_entity = entity(
     id,
     self:destroy_entity_callback(),
@@ -29,25 +102,27 @@ function world_type:entity(...)
     ...
   )
 
-  self:_add_entity_to_archetype(new_entity)
+  add_entity_to_archetype(self, new_entity)
+  self._number_of_entities = self._number_of_entities + 1
 
   return new_entity
+end
+
+local function destroy_entity(world, e)
+  if not e:is_alive() then
+    return
+  end
+
+  table.insert(world._destroyed_entity_ids, e:get_id())
+  table.insert(world._destroyed_entities, e)
+  e._id = -1
 end
 
 -- Removes the entity from the world
 function world_type:destroy_entity_callback()
   local self_world = self
 
-  return function(e)
-    if not e:is_alive() then
-      return
-    end
-
-    table.insert(self_world._destroyed_entity_ids, e:get_id())
-    table.insert(self_world._destroyed_entities, e)
-
-    e._id = -1
-  end
+  return function(e) destroy_entity(self_world, e) end
 end
 
 function world_type:entity_archetype_changed_callback()
@@ -62,7 +137,7 @@ end
 function world_type:destroy()
   for archetype_index = 1, #self._entity_data do
     for entity_index = 1, #self._entity_data[archetype_index].entities do
-      self._entity_data[archetype_index].entities[entity_index]:destroy()
+      destroy_entity(self, self._entity_data[archetype_index].entities[entity_index])
     end
   end
 
@@ -76,6 +151,7 @@ end
 -- Generating the world
 local function create_world()
   local world = setmetatable({
+    _number_of_entities = 0,
     _entity_data = {},
     _destroyed_entity_ids = {},
     _destroyed_entities = {},
@@ -84,29 +160,6 @@ local function create_world()
     _system_keys = {}, -- To make sure that the sytems are called in correct order
     _last_entity_id = 0,
   }, world_meta)
-
-  function world:_find_archetype(archetype)
-    local archetype_index = -1
-
-    for index = 1, #self._entity_data do
-      if self._entity_data[index].archetype == archetype then
-        archetype_index = index
-        break
-      end
-    end
-
-    return archetype_index
-  end
-
-  function world:_add_entity_to_archetype(entity)
-    local index = self:_find_archetype(entity.archetype)
-
-    if index == -1 then
-      table.insert(self._entity_data, { archetype = entity.archetype, entities = { entity } })
-    else
-      table.insert(self._entity_data[index].entities, entity)
-    end
-  end
 
   -- Adds a system to the world
   function world:add_system(system_type)
@@ -146,7 +199,7 @@ local function create_world()
 
   function world_type:for_each(query, action)
     local index = 1
-    local archetype_entities, entity = {}, {}, nil
+    local archetype_entities = {}
     action = type(action) == "function" and action or function(_, _) end
 
     if query.is_query_builder then
@@ -177,44 +230,8 @@ local function create_world()
       self._systems[self._system_keys[index]]:update(dt)
     end
 
-    local changed_entity_data, archetype_index, entity_index = nil, -1, -1
-
-    for index = #self._changed_entity_data_list, 1, -1 do
-      changed_entity_data = self._changed_entity_data_list[index]
-      archetype_index = self:_find_archetype(changed_entity_data.old_archetype)
-
-      if archetype_index > 0 then
-        entity_index = table.index_of(self._entity_data[archetype_index].entities, changed_entity_data.entity)
-
-        if entity_index > 0 then
-          self._entity_data[archetype_index][entity_index] = nil
-          self:_add_entity_to_archetype(changed_entity_data.entity)
-        end
-      end
-
-      table.remove(self._changed_entity_data_list, index)
-    end
-
-    local destroyed_entity, archetype_index, entity_index = nil, -1, -1
-
-    -- Evaporate the dead completely from this world
-    for index = 1, #self._destroyed_entities do
-      destroyed_entity = self._destroyed_entities[index]
-      archetype_index = self:_find_archetype(destroyed_entity.archetype)
-
-      if archetype_index == -1 then
-        return
-      end
-
-      entity_index = table.index_of(self._entity_data[archetype_index].entities, destroyed_entity)
-
-      if entity_index == -1 then
-        return
-      end
-
-      table.remove(self._entity_data[archetype_index].entities, entity_index)
-      self._destroyed_entities[index] = nil
-    end
+    delete_entities(self)
+    update_entities(self)
   end
 
   return world

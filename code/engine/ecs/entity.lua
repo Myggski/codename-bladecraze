@@ -53,7 +53,7 @@ local function add_components(entity, ...)
 
   if not (entity.archetype == new_archetype) then
     local old_archetype = entity.archetype
-    entity.archetype = new_archetype
+    entity.archetype = new_archetype and new_archetype or archetype.EMPTY
     entity._archetype_changed(entity, old_archetype)
   end
 end

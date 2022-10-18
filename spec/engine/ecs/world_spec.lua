@@ -11,6 +11,7 @@ insulate("world", function()
 
   after_each(function()
     level_one:destroy()
+    level_one:update()
     level_one = nil
   end)
 
@@ -37,18 +38,18 @@ insulate("world", function()
 
   describe("destroy", function()
     it("should remove att systems and entities from the world but keeps the archetypes", function()
-      local new_entity = level_one:entity()
-      local entity_archetype = new_entity.archetype
+      level_one:entity()
       level_one:add_system(system())
 
-      assert.is_truthy(table.get_size(level_one._entity_data) == 1)
-      assert.is_truthy(table.get_size(level_one._entity_data[1].entities) == 1)
+      assert.is_truthy(#level_one._entity_data == 1)
+      assert.is_truthy(#level_one._entity_data[1].entities == 1)
       assert.is_truthy(table.get_size(level_one._systems) == 1)
 
       level_one:destroy()
+      level_one:update() -- Removes the entities
 
-      assert.is_truthy(table.get_size(level_one._entity_data) == 1)
-      assert.is_truthy(table.get_size(level_one._entity_data[1].entities) == 0)
+      assert.is_truthy(#level_one._entity_data == 1)
+      assert.is_truthy(#level_one._entity_data[1].entities == 0)
       assert.is_falsy(level_one._entity_data[1] == nil)
       assert.is_truthy(table.get_size(level_one._systems) == 0)
     end)
