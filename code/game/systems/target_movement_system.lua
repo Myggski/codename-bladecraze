@@ -12,7 +12,7 @@ local target_movement_system = system(target_movement_query, function(self, dt)
   local position, acceleration, target, velocity = nil, nil, nil, { x = 0, y = 0 }
   local dist, dir_x, dir_y = nil, nil, nil
 
-  for _, entity in self:entity_iterator() do
+  self:for_each(nil, function(entity)
     position = entity[components.position]
     acceleration = entity[components.acceleration]
     target = entity[components.target_position]
@@ -33,7 +33,7 @@ local target_movement_system = system(target_movement_query, function(self, dt)
       position.x = position.x + world_grid:convert_to_world(velocity.x * dt)
       position.y = position.y + world_grid:convert_to_world(velocity.y * dt)
     end
-  end
+  end)
 end)
 
 return target_movement_system

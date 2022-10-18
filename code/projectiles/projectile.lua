@@ -87,13 +87,13 @@ function projectile:deactivate()
   game_event_manager.invoke(ENTITY_EVENT_TYPES.DEACTIVATED, self)
 end
 
-function projectile:create(sprite_sheet, entity_grid, type, pool)
+function projectile:create(texture, entity_grid, type, pool)
   self.__index = self
 
   grid = entity_grid
   local center_position = vector2(-9999, -9999)
   local x, y, w, h = unpack(projectile_data[type].quad_data)
-  local quad = love.graphics.newQuad(x, y, w, h, sprite_sheet:getDimensions())
+  local quad = love.graphics.newQuad(x, y, w, h, texture:getDimensions())
 
   local obj = setmetatable({
     type = type,
@@ -105,9 +105,10 @@ function projectile:create(sprite_sheet, entity_grid, type, pool)
     move_dir = vector2(1, 1),
     speed = projectile_data[type].speed,
     quad = quad,
-    box = rectangle:create(center_position.x - (w * 0.5), center_position.y - (h * 0.5), projectile_data[type].bounds[1],
+    box = rectangle:create(center_position.x - (w * 0.5), center_position.y - (h * 0.5), projectile_data[type].bounds[1]
+      ,
       projectile_data[type].bounds[2]),
-    image = sprite_sheet
+    image = texture
   }, self)
 
   return obj

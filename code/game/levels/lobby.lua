@@ -1,9 +1,9 @@
 local background_image = require "code.game.entities.background_image"
+local player = require "code.game.entities.player"
 local entity_draw = require "code.game.entity_draw"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local player_input = require "code.player.player_input"
 local world = require "code.engine.ecs.world"
-
 -- systems
 local input_system = require "code.game.systems.input_system"
 local input_velocity_system = require "code.game.systems.input_velocity_system"
@@ -18,6 +18,8 @@ local draw
 
 local function on_update(dt)
   level:update(dt)
+  print(love.timer.getFPS())
+
 end
 
 local function on_draw()
@@ -44,6 +46,11 @@ local function load()
   background_image(level, "level/press_start.png", { x = -1.6875, y = -3.5 })
   background_image(level, "level/lobby_ready.png", { x = 4.5, y = -1.95 })
   background_image(level, "level/lobby_quit.png", { x = -7.5, y = -1.95 })
+
+
+  for index = 1, 3000 do
+    player(level, 1, { x = index % 24, y = math.floor(index / 32) })
+  end
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, on_draw)

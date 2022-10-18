@@ -26,7 +26,7 @@ local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
 local rotation_component = component(0) -- Radian?
 local size_component = component({ x = 1, y = 1 })
-local sprite_component = component("") -- Url to static image?
+local sprite_component = component({ texture = nil, quad = nil }) -- Url to static image?
 local target_position_component = component({ x = 0, y = 0 })
 local velocity_component = component({ x = 0, y = 0 })
 

@@ -6,7 +6,7 @@ local input_velocity_query = entity_query.all(components.input, components.accel
 local input_velocity_system = system(input_velocity_query, function(self, dt)
   local input, acceleration, velocity = nil, nil, nil
 
-  for _, entity in self:entity_iterator() do
+  self:for_each(input_velocity_query, function(entity)
     input = entity[components.input]
     acceleration = entity[components.acceleration]
     velocity = entity[components.velocity]
@@ -23,7 +23,7 @@ local input_velocity_system = system(input_velocity_query, function(self, dt)
     if math.abs(velocity.y) < 0.01 then
       velocity.y = 0
     end
-  end
+  end)
 end)
 
 return input_velocity_system

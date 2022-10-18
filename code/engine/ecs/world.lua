@@ -1,4 +1,5 @@
 local entity = require "code.engine.ecs.entity"
+
 local world_type = {}
 local world_meta = {
   __index = world_type,
@@ -72,6 +73,7 @@ local function delete_entities(world)
   end
 end
 
+-- Move entity to correct archetype group
 local function update_entities(world)
   local changed_entity_data, archetype_index, entity_index = nil, -1, -1
 
@@ -197,8 +199,23 @@ local function create_world()
     return entities
   end
 
+  local function get_entity_index(world, current_index)
+    local total_entities, number_of_entities = 0, 0
+
+    for archetype_index = 1, #world._entity_data do
+      number_of_entities = #world._entity_data[archetype_index].entities
+
+      if current_index <= total_entities + number_of_entities then
+        return archetype_index, (total_entities + number_of_entities - current_index) + 1
+      end
+
+      total_entities = total_entities + number_of_entities
+    end
+
+    return 1, 1
+  end
+
   function world_type:for_each(query, action)
-    local index = 1
     local archetype_entities = {}
     action = type(action) == "function" and action or function(_, _) end
 
@@ -206,14 +223,16 @@ local function create_world()
       query = query.build()
     end
 
-    for archetype_index = 1, #self._entity_data do
+    local archetype_index, entity_index = -1, -1
+
+    for index = self._number_of_entities, 1, -1 do
+      archetype_index, entity_index = get_entity_index(self, index)
+
       if query:is_valid_archetype(self._entity_data[archetype_index].archetype) then
         archetype_entities = self._entity_data[archetype_index].entities
-        for entity_index = 1, #archetype_entities do
-          if query:is_entity_valid(archetype_entities[entity_index]) then
-            index = index + 1
-            action(archetype_entities[entity_index], index)
-          end
+        if query:is_entity_valid(archetype_entities[entity_index]) then
+          index = index + 1
+          action(archetype_entities[entity_index], index)
         end
       end
     end

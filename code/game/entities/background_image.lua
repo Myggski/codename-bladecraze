@@ -8,11 +8,15 @@ local background_image_archetype = archetype.setup(
 )
 
 local function create_background_image(world, sprite_url, position)
-  local sprite = asset_manager:get_image(sprite_url)
+  local texture = asset_manager:get_image(sprite_url)
+  local width, height = texture:getDimensions()
 
   return world:entity(
     components.size({ x = 0, y = 0 }),
-    components.sprite(sprite),
+    components.sprite({
+      texture = texture,
+      quad = love.graphics.newQuad(0, 0, width, height, texture),
+    }),
     components.position(position)
   )
 end

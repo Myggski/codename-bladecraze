@@ -7,7 +7,7 @@ local input_query = entity_query.all(components.input, components.position, comp
 local input_system = system(input_query, function(self)
   local input, position, size, center_position, pi = nil, nil, nil, { x = 0, y = 0 }, nil
 
-  for _, entity in self:entity_iterator() do
+  self:for_each(input_query, function(entity)
     input = entity[components.input]
     position = entity[components.position]
     size = entity[components.size]
@@ -20,7 +20,7 @@ local input_system = system(input_query, function(self)
 
     input.movement_direction = pi.move_dir
     input.action = pi.action
-  end
+  end)
 end)
 
 return input_system

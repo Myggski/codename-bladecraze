@@ -10,7 +10,7 @@ local block_query = entity_query.all(components.position, components.size, compo
 local block_system = system(block_query, function(self, dt)
   local position, size, collided_entites, entity_position, entity_velocity = nil, nil, nil, nil, nil
 
-  for _, entity in self:entity_iterator() do
+  self:for_each(block_query, function(entity)
     position = entity[components.position]
     size = entity[components.size]
 
@@ -24,7 +24,7 @@ local block_system = system(block_query, function(self, dt)
       entity_position.x = entity_position.x - world_grid:convert_to_world(entity_velocity.x * dt)
       entity_position.y = entity_position.y - world_grid:convert_to_world(entity_velocity.y * dt)
     end
-  end
+  end)
 end)
 
 return block_system

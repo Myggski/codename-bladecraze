@@ -11,7 +11,7 @@ local function draw_player(player)
   local _, _, w, h = quad:getViewport()
   local origin_x, origin_y = w * 0.5, h * 0.5
   love.graphics.draw(
-    current_animation.sprite_sheet,
+    current_animation.texture,
     quad,
     world_grid:convert_to_world(player.box:center_x()),
     world_grid:convert_to_world(player.box:center_y()),

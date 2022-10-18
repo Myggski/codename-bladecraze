@@ -14,6 +14,7 @@ local draw_query = entity_query
 
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation = nil, nil, nil, nil, nil
+
   self:for_each(draw_query, function(entity)
     animation = entity[components.animation]
     position = entity[components.position]
@@ -24,7 +25,7 @@ local entity_draw = system(draw_query, function(self)
       current_animation = animation[animation.current_animation_state]
 
       love.graphics.draw(
-        current_animation.sprite_sheet,
+        current_animation.texture,
         current_animation.current_quad,
         world_grid:convert_to_world(position.x + size.x * 0.5),
         world_grid:convert_to_world(position.y + size.y * 0.5),
@@ -36,7 +37,7 @@ local entity_draw = system(draw_query, function(self)
       )
     elseif sprite then
       love.graphics.draw(
-        sprite,
+        sprite.texture,
         world_grid:convert_to_world(position.x + size.x * 0.5),
         world_grid:convert_to_world(position.y + size.y * 0.5)
       )

@@ -4,7 +4,7 @@ function animations.new_animation(image, image_data, duration)
   local offset_x, offset_y, width, height, frame_count = unpack(image_data)
   local animation = {
     quads = {},
-    sprite_sheet = image,
+    texture = image,
     duration = duration,
     current_time = 0,
     current_quad = {},
@@ -16,7 +16,7 @@ function animations.new_animation(image, image_data, duration)
     for x = offset_x, image:getWidth() - width, width do
       table.insert(
         animation.quads,
-        love.graphics.newQuad(x, y, width, height, image:getDimensions())
+        love.graphics.newQuad(x, y, width, height, image)
       )
 
       frames_added = frames_added + 1
