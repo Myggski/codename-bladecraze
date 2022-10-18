@@ -6,6 +6,7 @@ local world_grid = require "code.engine.world_grid"
 local camera_filter = entity_query.filter(function(e)
   return camera:is_outside_camera_view(e[components.position], e[components.size])
 end)
+
 local draw_query = entity_query
     .all(components.position, components.size)
     .any(components.animation, components.sprite)

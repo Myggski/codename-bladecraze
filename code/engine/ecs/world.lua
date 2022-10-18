@@ -60,7 +60,7 @@ local function delete_entities(world)
       return
     end
 
-    world._entity_data[archetype_index].entities[entity_index] = nil
+    table.remove(world._entity_data[archetype_index].entities, entity_index)
     world._destroyed_entities[index] = nil
 
     changed_index = table.index_of(world._changed_entity_data_list, destroyed_entity)
@@ -210,7 +210,6 @@ local function create_world()
       if query:is_valid_archetype(self._entity_data[archetype_index].archetype) then
         archetype_entities = self._entity_data[archetype_index].entities
         for entity_index = 1, #archetype_entities do
-
           if query:is_entity_valid(archetype_entities[entity_index]) then
             index = index + 1
             action(archetype_entities[entity_index], index)
