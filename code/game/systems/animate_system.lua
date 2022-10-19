@@ -17,7 +17,7 @@ local animation_set_state_system = system(animate_query, function(self, dt)
       player_drawing.update_animation(current_animation, dt)
     end
 
-    if velocity and (not (velocity.x == 0) or not (velocity.y == 0)) then
+    if animation.current_animation_state == ANIMATION_STATE_TYPES.WALKING then
       if velocity.x > 0 then
         animation.direction = 1
       elseif velocity.x < 0 then

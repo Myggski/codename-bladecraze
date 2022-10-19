@@ -19,8 +19,6 @@ function love.load()
 end
 
 function love.update(dt)
-  dt = dt < fixed_delta_time and dt or fixed_delta_time
-
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.LATE_UPDATE, dt)
 end
