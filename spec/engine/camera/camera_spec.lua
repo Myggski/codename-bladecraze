@@ -1,6 +1,5 @@
 insulate("camera", function()
   require "spec.love_setup"
-  local rectangle = require "code.engine.rectangle"
   local world_grid = require "code.engine.world_grid"
 
   local ZOOM_MAX = -3

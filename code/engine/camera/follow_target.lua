@@ -1,6 +1,7 @@
 local camera = require "code.engine.camera"
 local world_grid = require "code.engine.world_grid"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
+local utilities = require "code.engine.utilities"
 
 local ZOOM_ANIMATION_STEP = 1
 local ZOOM_ANIMATION_SPEED = 0.0625
@@ -16,15 +17,15 @@ local follow_target = {
 
 -- TODO: Change to better name
 -- Checks if it's outside zoom area, if it's outside the camera should zoom out
-function follow_target._is_outside(rectangle, margin_percentage)
+function follow_target._is_outside(position, size, margin_percentage)
   margin_percentage = margin_percentage or 0
 
   local x, y = camera:get_position()
   local _, half_height = world_grid:world_to_grid(camera:get_screen_game_half_size())
   half_height = half_height - half_height * margin_percentage
 
-  local is_outside_x = rectangle.x < x - half_height or rectangle.x + rectangle.w > x + half_height
-  local is_outside_y = rectangle.y < y - half_height or rectangle.y + rectangle.h > y + half_height
+  local is_outside_x = position.x < x - half_height or position.x + size.x > x + half_height
+  local is_outside_y = position.y < y - half_height or position.y + size.y > y + half_height
 
   return is_outside_x or is_outside_y
 end
@@ -32,8 +33,8 @@ end
 -- Checks if the camera should zoom in or zoom out
 function follow_target:_get_zoom_animation_state()
   local furthest_target = self:_get_furthest_target()
-  local is_inside_outer = self._is_outside(furthest_target.box, 0.05)
-  local is_inside_inner = self._is_outside(furthest_target.box, 0.5)
+  local is_inside_outer = self._is_outside(furthest_target[components.position], furthest_target[components.size], 0.05)
+  local is_inside_inner = self._is_outside(furthest_target[components.position], furthest_target[components.size], 0.5)
   local animation_state = ZOOM_ANIMATION_STATE.NONE
 
   if camera:can_zoom_out() and is_inside_outer then
@@ -70,14 +71,23 @@ end
 -- Gets the following targets thats furthest on x and y axis
 function follow_target:_get_furthest_target()
   local furthest_target = nil
-  local x, y = camera:get_position()
+  local camera_x, camera_y = camera:get_position()
 
   for index = 1, table.get_size(self._targets) do
     local target = self._targets[index]
-    local distance = math.dist(x, y, target.box:center_x(), target.box:center_y())
+    local distance = math.dist(
+      camera_x,
+      camera_y,
+      utilities.get_center_position(target[components.position], target[components.size])
+    )
 
-    if furthest_target == nil or
-        distance > math.dist(x, y, furthest_target.box:center_x(), furthest_target.box:center_y()) then
+    local is_further_than_furthest_target = furthest_target and distance > math.dist(
+      camera_x,
+      camera_y,
+      utilities.get_center_position(furthest_target[components.position], furthest_target[components.size])
+    )
+
+    if not furthest_target or is_further_than_furthest_target then
       furthest_target = target
     end
   end
@@ -87,12 +97,12 @@ end
 
 -- Sets the position of where the camera should look
 function follow_target:_set_camera_position()
-  local number_of_targets = table.get_size(self._targets)
+  local number_of_targets = #self._targets
   local position_x, position_y = 0, 0
 
   for index = 1, number_of_targets do
     local target = self._targets[index]
-    local center_x, center_y = target.box:center()
+    local center_x, center_y = utilities.get_center_position(target[components.position], target[components.size])
 
     position_x = position_x + center_x
     position_y = position_y + center_y
@@ -135,7 +145,7 @@ function follow_target:remove_target(target)
 end
 
 function follow_target:load()
-  game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, function(...) self:_late_update() end)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.LATE_UPDATE, function(...) self:_late_update() end)
 end
 
 function follow_target:_late_update()

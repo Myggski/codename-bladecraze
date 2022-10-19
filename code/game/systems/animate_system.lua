@@ -1,8 +1,22 @@
 local system = require "code.engine.ecs.system"
 local entity_query = require "code.engine.ecs.entity_query"
-local player_drawing = require "code.player.player_drawing"
 
 local animate_query = entity_query.all(components.animation)
+
+-- // Updates the animation by ticking the animation time and sets the current quad
+local function update_animation(animation, dt)
+  animation.current_time = animation.current_time + dt
+
+  if animation.current_time > animation.duration then
+    animation.current_time = 0
+  end
+
+  animation.current_quad = animation.quads[
+      1 + math.floor((animation.current_time / animation.duration) * #animation.quads)]
+  _, _, animation.viewport.x, animation.viewport.y = animation.current_quad:getViewport()
+
+  return animation
+end
 
 local animation_set_state_system = system(animate_query, function(self, dt)
   local animation, velocity, current_animation = nil, nil, nil
@@ -14,7 +28,7 @@ local animation_set_state_system = system(animate_query, function(self, dt)
     current_animation = animation[animation.current_animation_state]
 
     if not animation.freeze_frame then
-      player_drawing.update_animation(current_animation, dt)
+      update_animation(current_animation, dt)
     end
 
     if animation.current_animation_state == ANIMATION_STATE_TYPES.WALKING then

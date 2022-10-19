@@ -1,6 +1,6 @@
 local system = require "code.engine.ecs.system"
 local entity_query = require "code.engine.ecs.entity_query"
-local player_input = require "code.player.player_input"
+local player_input = require "code.game.player_input"
 
 local input_query = entity_query.all(components.input, components.position, components.size)
 

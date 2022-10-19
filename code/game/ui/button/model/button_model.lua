@@ -1,5 +1,4 @@
-local camera = require "code.engine.camera"
-local player_input = require "code.player.player_input"
+local utilities = require "code.engine.utilities"
 
 local button_model = {}
 
@@ -27,7 +26,7 @@ function button_model:remove_listener(event_type, callback)
 end
 
 function button_model:try_click(x, y, btn, is_pressing)
-  if btn == BUTTON_CLICK_TYPES.LEFT and is_pressing and self.rectangle:is_inside(x, y) then
+  if btn == BUTTON_CLICK_TYPES.LEFT and is_pressing and utilities.is_inside(x, y, self.position, self.size) then
     self:_set_state(BUTTON_ANIMATION_STATE_TYPES.CLICK)
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.CLICK]) do
@@ -43,7 +42,8 @@ function button_model:try_click(x, y, btn, is_pressing)
 end
 
 function button_model:try_hover()
-  if self.rectangle:is_inside(love.mouse.getPosition()) then
+  local x, y = love.mouse.getPosition()
+  if utilities.is_inside(x, y, self.position, self.size) then
     if not self.is_mouse_hovering then
       self:_set_state(BUTTON_ANIMATION_STATE_TYPES.HOVER)
       self.is_mouse_hovering = true
@@ -62,13 +62,14 @@ function button_model:try_hover()
   end
 end
 
-function button_model:create(rectangle, text, font, sprite_batch, quads)
+function button_model:create(position, size, text, font, sprite_batch, quads)
   return setmetatable({
     animation_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
     animation_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
     font = font,
     is_mouse_hovering = false,
-    rectangle = rectangle,
+    position = position,
+    size = size,
     sprite_batch = sprite_batch,
     text = text or "",
     text_id = text .. font:getHeight(),

@@ -1,7 +1,7 @@
 local system = require "code.engine.ecs.system"
 local entity_query = require "code.engine.ecs.entity_query"
 local helper = require "code.game.systems.bubble_controller_system_helper"
-local player_input = require "code.player.player_input"
+local player_input = require "code.game.player_input"
 
 local bubble_controller_query = entity_query:all(
   components.animation,

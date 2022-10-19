@@ -1,6 +1,6 @@
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local bubble_controller = require "code.game.entities.bubble_controller"
-local player_input = require "code.player.player_input"
+local player_input = require "code.game.player_input"
 local player = require "code.game.entities.player"
 
 -- Sorting function for table.sort -> Sorts on player_id

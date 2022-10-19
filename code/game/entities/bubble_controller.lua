@@ -1,7 +1,7 @@
 local animations = require "code.engine.animations"
 local archetype = require "code.engine.ecs.archetype"
 local asset_manager = require "code.engine.asset_manager"
-local player_input = require "code.player.player_input"
+local player_input = require "code.game.player_input"
 
 local bubble_controller_archetype = archetype.setup(
   components.acceleration,

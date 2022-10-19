@@ -1,6 +1,6 @@
 local system = require "code.engine.ecs.system"
 local entity_query = require "code.engine.ecs.entity_query"
-local debug = require "code.utilities.debug"
+local debug = require "code.engine.debug"
 
 local debug_query = entity_query.all(components.position)
 

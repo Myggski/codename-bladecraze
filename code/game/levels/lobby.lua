@@ -1,6 +1,6 @@
 local background_image = require "code.game.entities.background_image"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
-local player_input = require "code.player.player_input"
+local player_input = require "code.game.player_input"
 local world = require "code.engine.ecs.world"
 
 -- systems
