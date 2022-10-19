@@ -1,6 +1,4 @@
 local background_image = require "code.game.entities.background_image"
-local player = require "code.game.entities.player"
-local entity_draw = require "code.game.entity_draw"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local player_input = require "code.player.player_input"
 local world = require "code.engine.ecs.world"
@@ -13,6 +11,7 @@ local animate_system = require "code.game.systems.animate_system"
 local animation_set_state_system = require "code.game.systems.animation_set_state_system"
 local bubble_controller_system = require "code.game.systems.bubble_controller_system"
 local target_movement_system = require "code.game.systems.target_movement_system"
+local entity_draw = require "code.game.entity_draw"
 
 local level
 local draw
