@@ -109,6 +109,7 @@ local entity_meta = {
 local create = function(id, destroy_callback, archetype_changed_callback, ...)
   assert(not (id == nil), "Error, an id expected, got: " .. id)
   assert(not (destroy_callback == nil), "Error, entity needs a destroy_callback function set")
+  assert(not (archetype_changed_callback == nil), "Error, entity needs a archetype_changed_callback function set")
 
   local entity = {
     _id = id,
