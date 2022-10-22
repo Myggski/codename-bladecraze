@@ -1,5 +1,6 @@
-local system = require "code.engine.ecs.system"
+local components = require "code.engine.components"
 local entity_query = require "code.engine.ecs.entity_query"
+local system = require "code.engine.ecs.system"
 local world_grid = require "code.engine.world_grid"
 
 local block_filter = entity_query.filter(function(e)
@@ -10,7 +11,7 @@ local block_query = entity_query.all(components.position, components.size, compo
 local block_system = system(block_query, function(self, dt)
   local position, size, collided_entites, entity_position, entity_velocity = nil, nil, nil, nil, nil
 
-  self:for_each(block_query, function(entity)
+  self:for_each(function(entity)
     position = entity[components.position]
     size = entity[components.size]
 

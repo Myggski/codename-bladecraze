@@ -1,4 +1,4 @@
-local gizmos = require "code.utilities.debug.gizmos"
+local gizmos = require "code.engine.debug.gizmos"
 
 local get_execution_time = function(func, ...)
   local start = love.timer.getTime()

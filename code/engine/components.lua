@@ -1,4 +1,6 @@
+-- All the componets with their default values in the game, that the systems will use to get values
 local component = require "code.engine.ecs.component"
+local vector2 = require "code.engine.vector2"
 
 local acceleration_component = component({
   speed = 10,
@@ -16,8 +18,8 @@ local input_component = component({
   player = 1, -- 1 == player 1, 2 == player 2
   controller = "keyboard" or "gamepad",
   enabled = true,
-  movement_direction = { x = 0, y = 0 },
-  aim_direction = { x = 0, y = 0 },
+  movement_direction = vector2.zero(),
+  aim_direction = vector2.zero(),
   action = PLAYER.ACTIONS.NONE,
 })
 local health_component = component(1)
@@ -25,12 +27,12 @@ local player_data_component = component({ player_id = -1, controller_type = CONT
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
 local rotation_component = component(0) -- Radian?
-local size_component = component({ x = 1, y = 1 })
+local size_component = component(vector2.one())
 local sprite_component = component({ texture = nil, quad = nil }) -- Url to static image?
-local target_position_component = component({ x = 0, y = 0 })
-local velocity_component = component({ x = 0, y = 0 })
+local target_position_component = component(vector2.zero())
+local velocity_component = component(vector2.zero())
 
-_G.components = {
+return {
   acceleration = acceleration_component,
   animation = animation_component,
   block = block_component,
@@ -45,5 +47,3 @@ _G.components = {
   target_position = target_position_component,
   velocity = velocity_component,
 }
-
-return _G.components

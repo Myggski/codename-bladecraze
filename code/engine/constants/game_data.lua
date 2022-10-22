@@ -11,12 +11,12 @@ GAME = {
     MAGIC = 3,
   },
 }
+
 PLAYER = {
   ACTIONS = {
     NONE = 0,
     BASIC = 1,
-    SPECIAL = 2,
-    ULTIMATE = 3
   },
 }
+
 GAME.TILE_SIZE = GAME.GAME_WIDTH / GAME.GRID_COL_COUNT

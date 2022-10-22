@@ -3,6 +3,7 @@ insulate("entity", function()
 
   local entity = require "code.engine.ecs.entity"
   local component = require "code.engine.ecs.component"
+  local vector2 = require "code.engine.vector2"
 
   local destroy_callback = function() end
   local archetype_changed_callback = function() end
@@ -78,9 +79,9 @@ insulate("entity", function()
   describe("has_components", function()
     it("should return true when entity has all the components", function()
       first_entity:add_component(health_component, 100)
-      first_entity:add_component(position_component, { x = 0, y = 0 })
+      first_entity:add_component(position_component, vector2.zero())
       second_entity[health_component] = 80
-      second_entity[position_component] = { x = 0, y = 0 }
+      second_entity[position_component] = vector2.zero()
 
       assert.is_truthy(first_entity:has_components(health_component, position_component))
       assert.is_truthy(second_entity:has_component(health_component, position_component))
@@ -107,7 +108,7 @@ insulate("entity", function()
   describe("has_any_components", function()
     it("should return true when entity has at least one of the components", function()
       first_entity:add_component(health_component, 100)
-      second_entity[position_component] = { x = 0, y = 0 }
+      second_entity[position_component] = vector2.zero()
 
       assert.is_truthy(first_entity:has_any_components(health_component, position_component))
       assert.is_truthy(second_entity:has_any_components(health_component, position_component))

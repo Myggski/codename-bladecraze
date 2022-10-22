@@ -1,5 +1,6 @@
-local system = require "code.engine.ecs.system"
+local components = require "code.engine.components"
 local entity_query = require "code.engine.ecs.entity_query"
+local system = require "code.engine.ecs.system"
 
 local animate_query = entity_query.all(components.animation)
 
@@ -21,7 +22,7 @@ end
 local animation_set_state_system = system(animate_query, function(self, dt)
   local animation, velocity, current_animation = nil, nil, nil
 
-  self:for_each(animate_query, function(entity)
+  self:for_each(function(entity)
     animation = entity[components.animation]
     velocity = entity[components.velocity]
 

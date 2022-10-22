@@ -1,3 +1,4 @@
+-- Returns the index of a value in a table
 function table.index_of(table, value)
   if not table then
     return -1
@@ -12,14 +13,16 @@ function table.index_of(table, value)
   return -1
 end
 
+-- Returns the size of a table, when #table is not enough
 function table.get_size(table)
   local count = 0
-  for _, __ in pairs(table) do
+  for _, __ in ipairs(table) do
     count = count + 1
   end
   return count
 end
 
+-- Checks if the table has a specific property value
 function table.contains_key(table, key)
   return not (table[key] == nil)
 end
@@ -28,6 +31,7 @@ function table.pack_all(...) return { n = select('#', ...), ... } end
 
 function table.unpack_all(t) return unpack(t, 1, t.n) end
 
+-- Deep clones tables, to make sure that a value doesn't refer the same table as another
 function table.deep_clone(root_table, child_table)
   child_table = child_table or {}
   if root_table == nil then return nil end

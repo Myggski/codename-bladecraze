@@ -38,33 +38,26 @@ local function create_system_type(query, update_fn)
       _world = world,
     }, system_type)
 
-    function system:entity_iterator(query)
-      query = query or system_type.query
-
-      local entities_coroutine = coroutine.create(function()
-        self._world:for_each(query or system_type.query, function(value, count)
-          coroutine.yield(value, count)
-        end)
-      end)
-
-      return function()
-        local _, item, index = coroutine.resume(entities_coroutine)
-        return index, item
-      end
-    end
-
+    -- Returns all the matching entities in a list
     function system:to_list(query)
       return self._world:to_list(query or system_type.query)
     end
 
-    function system:for_each(query, action)
-      return self._world:for_each(query or system_type.query, action)
+    -- Calls a action function for every matching entity
+    function system:for_each(action, query)
+      self._world:for_each(action, query or system_type.query)
     end
 
+    function system:archetype_for_each(archetype, action)
+      self._world:archetype_for_each(archetype, action)
+    end
+
+    -- Returns the world
     function system:get_world()
       return self._world
     end
 
+    -- If the system has a on_call function, call it when the system is being added to the world
     if system.on_start then
       system:on_start()
     end
@@ -79,6 +72,7 @@ local function create_system_type(query, update_fn)
 
   -- Destroys the system and everything that's in it
   function system_type:destroy()
+    -- If the system has a on_destroy function, call it when the system is being destroyed in the world
     if system_type.on_destroy then
       system_type:on_destroy()
     end

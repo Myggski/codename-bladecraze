@@ -2,10 +2,12 @@ local world_grid = require "code.engine.world_grid"
 --[[
   PIXEL COORDINATES = love.mouse.getPosition() returns pixel coordinates
   top-left = (0, 0), bottom-right = screen resolution, e.g. 1920x1080 or 3440x1440 and so on.
-  VIRTUAL RESOLUTION = Screen resolution / Scale. e.g. 1920x1080 / 6 = 320x180.
+  VIRTUAL RESOLUTION = Screen resolution / camera scale. e.g. 1920x1080 / 6 = 320x180.
   We're dealing with small images, and scaling the canvas up to make the images look larger than it actually is.
   WORLD COORDINATES = Is the position of a entity or thing in the game world.
   SCREEN COORDINATES = Pixel coordinates on the screen that is upscaled same as the images.
+  SCALE = How much many times the images are upscaled, scale 5 = original size of image * scale
+  ZOOM = How much the camera has zoomed in. Scale is default size of the images and zoom is used to zoom in/out the view
 ]]
 
 local ZOOM_MAX = -3
@@ -17,9 +19,7 @@ local camera = {
   scale = 5,
   canvas_game = {},
   canvas_hud = {},
-  delta_time = 0,
   is_fullscreen = false,
-  follow_targets = {},
   zoom = 0,
   zoom_animation_coroutine = nil,
 }
@@ -31,6 +31,7 @@ function camera:get_screen_game_size()
   return width / (self.scale + self.zoom), height / (self.scale + self.zoom)
 end
 
+-- Get half screen size with scale and zoom
 function camera:get_screen_game_half_size()
   local width, height = self:get_screen_game_size()
 
@@ -104,10 +105,13 @@ function camera:stop_draw_hud()
   love.graphics.draw(self.canvas_hud)
 end
 
+-- Returns the current scale of the camera
 function camera:get_scale() return self.scale or 0 end
 
+-- Returns the current zoom of the camera
 function camera:get_zoom() return self.zoom or 0 end
 
+-- Sets the zoom of the camera
 function camera:set_zoom(new_zoom)
   if new_zoom < ZOOM_MAX then
     new_zoom = ZOOM_MAX
@@ -118,8 +122,10 @@ function camera:set_zoom(new_zoom)
   self.zoom = new_zoom
 end
 
+-- Checks if the camera is able to zoom out
 function camera:can_zoom_out() return self.zoom > ZOOM_MAX end
 
+-- Checks if the camera is able to zoom in
 function camera:can_zoom_in() return self.zoom < ZOOM_MIN end
 
 -- Setting up the canvas for game world
@@ -134,8 +140,8 @@ function camera:set_canvas_hud(width, height)
   self.canvas_hud:setFilter("nearest", "nearest")
 end
 
+-- Loads the camera, should be called first when the game starts
 function camera:load()
-  --self:toggle_fullscreen()
   local width, height = camera:get_screen_game_size()
   local scale = camera:get_scale()
 

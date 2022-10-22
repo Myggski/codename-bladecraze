@@ -1,11 +1,14 @@
+
+
 insulate("camera", function()
   require "spec.love_setup"
+  local camera = require "code.engine.camera.camera"
+  local vector2 = require "code.engine.vector2"
   local world_grid = require "code.engine.world_grid"
 
   local ZOOM_MAX = -3
   local ZOOM_MIN = 0
-
-  local camera = require "code.engine.camera.camera"
+  
   local default_scale = camera.scale
   local default_zoom = camera.zoom
 
@@ -336,7 +339,7 @@ insulate("camera", function()
     describe("is_outside_camera_view", function()
       describe("when the entity top-left is in the center of the screen", function()
         it("should not be outside of camera view", function()
-          assert.is.falsy(camera:is_outside_camera_view({ x = 0, y = 0 }, { x = 1, y = 1 }))
+          assert.is.falsy(camera:is_outside_camera_view(vector2.zero(), vector2.one()))
         end)
       end)
 
@@ -344,7 +347,7 @@ insulate("camera", function()
         it("should not be outside of camera view", function()
           local world_x, world_y = world_grid:world_to_grid(camera:get_screen_game_half_size())
 
-          assert.is.falsy(camera:is_outside_camera_view({ x = world_x, y = world_y }, { x = 1, y = 1 }))
+          assert.is.falsy(camera:is_outside_camera_view(vector2(world_x, world_y), vector2(1, 1 )))
         end)
       end)
 
@@ -352,7 +355,7 @@ insulate("camera", function()
         it("should not be outside of camera view", function()
           local world_x, world_y = world_grid:world_to_grid(camera:get_screen_game_half_size())
 
-          assert.is.falsy(camera:is_outside_camera_view({ x = world_x, y = world_y }, { x = 1, y = 1 }))
+          assert.is.falsy(camera:is_outside_camera_view(vector2(world_x, world_y), vector2(1, 1)))
         end)
       end)
 
@@ -360,7 +363,7 @@ insulate("camera", function()
         it("should not be outside of camera view", function()
           local world_x, world_y = world_grid:world_to_grid(camera:get_screen_game_half_size())
 
-          assert.is.truthy(camera:is_outside_camera_view({ x = world_x + 1, y = world_y + 1 }, { x = 1, y = 1 }))
+          assert.is.truthy(camera:is_outside_camera_view(vector2(world_x + 1, world_y + 1), vector2(1, 1)))
         end)
       end)
     end)

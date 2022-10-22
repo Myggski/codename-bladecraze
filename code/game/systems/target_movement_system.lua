@@ -1,6 +1,8 @@
-local system = require "code.engine.ecs.system"
+local components = require "code.engine.components"
 local entity_query = require "code.engine.ecs.entity_query"
+local system = require "code.engine.ecs.system"
 local world_grid = require "code.engine.world_grid"
+local vector2 = require "code.engine.vector2"
 
 local target_movement_query = entity_query.all(
   components.position,
@@ -9,10 +11,10 @@ local target_movement_query = entity_query.all(
 ).none(components.input)
 
 local target_movement_system = system(target_movement_query, function(self, dt)
-  local position, acceleration, target, velocity = nil, nil, nil, { x = 0, y = 0 }
+  local position, acceleration, target, velocity = nil, nil, nil, vector2.zero()
   local dist, dir_x, dir_y = nil, nil, nil
 
-  self:for_each(nil, function(entity)
+  self:for_each(function(entity)
     position = entity[components.position]
     acceleration = entity[components.acceleration]
     target = entity[components.target_position]

@@ -3,7 +3,6 @@ require "code.engine.constants.game_data"
 require "code.engine.extensions.love_extension"
 require "code.engine.extensions.table_extension"
 require "code.engine.extensions.math_extension"
-require "code.game.components"
 
 local camera = require "code.engine.camera"
 local game_event_manager = require "code.engine.game_event.game_event_manager"

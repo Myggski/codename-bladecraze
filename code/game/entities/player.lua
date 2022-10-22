@@ -1,6 +1,8 @@
 local animations = require "code.engine.animations"
 local archetype = require "code.engine.ecs.archetype"
 local asset_manager = require "code.engine.asset_manager"
+local components = require "code.engine.components"
+local vector2 = require "code.engine.vector2"
 
 local player_archetype = archetype.setup(components.position,
   components.size,
@@ -17,7 +19,7 @@ local function create_player(world, player_id, position)
 
   local player = world:entity(
     components.position(position),
-    components.size({ x = 1, y = 1 }),
+    components.size(vector2.one()),
     components.velocity(),
     components.acceleration({
       speed = 5,

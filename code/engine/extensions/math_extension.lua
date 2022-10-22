@@ -1,3 +1,5 @@
+local vector2 = require "code.engine.vector2"
+
 -- Returns the distance between two points.
 function math.dist(x1, y1, x2, y2) return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5 end
 
@@ -17,9 +19,9 @@ function math.normalize(x, y) local l = (x * x + y * y) ^ .5 if l == 0 then retu
 function math.normalize2(vector)
   local l = (vector.x * vector.x + vector.y * vector.y) ^ .5
   if l == 0 then
-    return { x = 0, y = 0 }
+    return vector2.zero()
   else
-    return { x = vector.x / l, y = vector.y / l }
+    return vector2(vector.x / l, vector.y / l)
   end
 end
 
@@ -32,10 +34,11 @@ function math.rsign() return love.math.random(2) == 2 and 1 or -1 end
 -- Returns 1 if number is positive, -1 if it's negative, or 0 if it's 0.
 function math.sign(n) return n > 0 and 1 or n < 0 and -1 or 0 end
 
+-- Calculates the average value of a list of values
 function math.average(t)
   local sum = 0
 
-  for _, v in pairs(t) do -- Get the sum of all numbers in t
+  for _, v in ipairs(t) do -- Get the sum of all numbers in t
     sum = sum + v
   end
   return sum / #t

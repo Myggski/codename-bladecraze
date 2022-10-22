@@ -1,4 +1,6 @@
 local camera = require "code.engine.camera"
+local vector2 = require "code.engine.vector2"
+
 --[[
   9-Slice Scaling - Resizing Technique
   https://en.wikipedia.org/wiki/9-slice_scaling
@@ -14,7 +16,7 @@ local camera = require "code.engine.camera"
   ---------------------------
 ]]
 
-local nine_slice_dots = { { x = 6, y = 6 }, { x = 10, y = 10 } } -- nine_slice_dots is top-left and bottom-right of the center piece of a texture
+local nine_slice_dots = { vector2(6, 6), vector2(10, 10) } -- nine_slice_dots is top-left and bottom-right of the center piece of a texture
 local quad_data = { -- Hardcoding scalable quads for simplicity
   { scale_x = false, scale_y = false },
   { scale_x = true, scale_y = false },
@@ -27,9 +29,7 @@ local quad_data = { -- Hardcoding scalable quads for simplicity
   { scale_x = false, scale_y = false },
 }
 
---[[
-  Creates a new quad for the setmetatable-function
-]]
+-- Creates a new quad for the setmetatable-function
 local function new_quad(x1, y1, x2, y2, edge_x, edge_y)
   local x, y = x1, y1
   local width, height = x2 - x1, y2 - y1
@@ -45,10 +45,8 @@ local function new_quad(x1, y1, x2, y2, edge_x, edge_y)
   return { __index = quad }
 end
 
---[[
-  Creates and setup all the data for the quads on a button
-  Sets the position and size in the texture, also sets if it's on the edge of the texture
-]]
+-- Creates and setup all the data for the quads on a button
+-- Sets the position and size in the texture, also sets if it's on the edge of the texture
 local function setup_quad_data(image_width, image_height)
   -- Gets position of x and y position depending on the current and next column in the grid. Index 4 doesn't exsist so it ends where the image ends)
   local grid_position_x = { 0, nine_slice_dots[1].x, nine_slice_dots[2].x, image_width }
@@ -64,9 +62,7 @@ local function setup_quad_data(image_width, image_height)
   end
 end
 
---[[
-  Creates a love2d quad
-]]
+-- Creates a love2d quad
 local function get_graphics_quad(index, sprite_offset_x, sprite_width, sprite_height)
   local quad_width, quad_height = quad_data[index].width, quad_data[index].height
   local quad_x, quad_y = quad_data[index].x + sprite_offset_x, quad_data[index].y
@@ -74,10 +70,8 @@ local function get_graphics_quad(index, sprite_offset_x, sprite_width, sprite_he
   return love.graphics.newQuad(quad_x, quad_y, quad_width, quad_height, sprite_width, sprite_height)
 end
 
---[[
-  Returns all the quads for the ui, for all the animations
-  Assuming that the textures animation changes on the x-axis (width)
-]]
+-- Returns all the quads for the ui, for all the animations
+-- Assuming that the textures animation changes on the x-axis (width)
 local function create_quads(sprite_batch, image_width, image_height)
   local sprite_batch_quads = {}
   local texture = sprite_batch:getTexture()
@@ -95,9 +89,7 @@ local function create_quads(sprite_batch, image_width, image_height)
   return sprite_batch_quads
 end
 
---[[
-  Returns a quad with proper position and scale
-]]
+-- Returns a quad with proper position and scale
 local function setup_sprite_batch_quad(quads, index, x, y, width_to_add, height_to_add)
   local _, __, quad_width, quad_height = quads[index]:getViewport()
   local scale_x, scale_y = 1, 1
@@ -124,9 +116,7 @@ local function setup_sprite_batch_quad(quads, index, x, y, width_to_add, height_
   return quads[index], position_x, position_y, 0, scale_x, scale_y
 end
 
---[[
-  Sets the quads for the ui and sets them up with proper sizes and positions in the sprite batch
-]]
+-- Sets the quads for the ui and sets them up with proper sizes and positions in the sprite batch
 local function set_sprite_batch(position, size, image_width, image_height, quads, sprite_batch)
   local x, y = camera:screen_coordinates(position.x, position.y)
   local w, h = camera:screen_coordinates(size.x, size.y)

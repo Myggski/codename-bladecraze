@@ -3,6 +3,7 @@ local button_model = require "code.game.ui.button.model.button_model"
 local button_view = require "code.game.ui.button.view.button_view"
 local camera = require "code.engine.camera"
 local asset_manager = require "code.engine.asset_manager"
+local vector2 = require "code.engine.vector2"
 
 local button = {
   _buttons = {},
@@ -116,8 +117,8 @@ function button:create(x, y, w, h, text, font)
   h = math.max(h, 16 * camera:get_scale())
 
   local new_button = button_model(
-    { x = x, y = y },
-    { x = w, y = h},
+    vector2(x, y),
+    vector2(w, h),
     text,
     font,
     self._sprite_batch,

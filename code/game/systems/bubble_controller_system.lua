@@ -1,19 +1,11 @@
-local system = require "code.engine.ecs.system"
-local entity_query = require "code.engine.ecs.entity_query"
+local bubble_controller = require "code.game.entities.bubble_controller"
 local helper = require "code.game.systems.bubble_controller_system_helper"
 local player_input = require "code.game.player_input"
+local system = require "code.engine.ecs.system"
 
-local bubble_controller_query = entity_query:all(
-  components.animation,
-  components.player_data,
-  components.position,
-  components.size,
-  components.target_position
-).none(components.input)
-
--- The system that's being called every frame
-local bubble_controller_system = system(bubble_controller_query, function(self, _)
-  local entities = helper.sort_entities(self:to_list())
+-- Is being called every frame
+local bubble_controller_system = system(nil, function(self)
+  local entities = helper.sort_entities(self:to_list(bubble_controller.get_archetype()))
   local number_available_joysticks = #player_input.get_available_joysticks()
   local number_active_controllers = #player_input.get_active_controllers()
   local expected_number_of_bubbles = number_available_joysticks + 1 - number_active_controllers

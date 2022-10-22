@@ -2,6 +2,7 @@ local background_image = require "code.game.entities.background_image"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local player_input = require "code.game.player_input"
 local world = require "code.engine.ecs.world"
+local vector2 = require "code.engine.vector2"
 
 -- systems
 local input_system = require "code.game.systems.input_system"
@@ -18,6 +19,7 @@ local draw
 
 local function on_update(dt)
   level:update(dt)
+  print(love.timer.getFPS())
 end
 
 local function on_draw()
@@ -41,9 +43,9 @@ local function load()
   level:add_system(bubble_controller_system)
   level:add_system(target_movement_system)
 
-  background_image(level, "level/press_start.png", { x = -1.6875, y = -3.5 })
-  background_image(level, "level/lobby_ready.png", { x = 4.5, y = -1.95 })
-  background_image(level, "level/lobby_quit.png", { x = -7.5, y = -1.95 })
+  background_image(level, "level/press_start.png", vector2(-1.6875, -3.5))
+  background_image(level, "level/lobby_ready.png", vector2(4.5, -1.95))
+  background_image(level, "level/lobby_quit.png", vector2(-7.5, -1.95))
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, on_draw)
