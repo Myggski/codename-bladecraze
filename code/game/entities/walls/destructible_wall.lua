@@ -4,6 +4,7 @@ local vector2 = require "code.engine.vector2"
 
 local destructible_wall_archetype = archetype.setup(
   components.animation,
+  components.block,
   components.health,
   components.position,
   components.size
@@ -16,9 +17,10 @@ local function create_destructible_wall(world, start_position, wall_animation)
       freeze_frame = true,
       [ANIMATION_STATE_TYPES.IDLE] = wall_animation,
     }),
+    components.block(),
     components.health(1),
     components.position(start_position),
-    components.size(vector2.one())
+    components.size(vector2(1, 1))
   )
 end
 

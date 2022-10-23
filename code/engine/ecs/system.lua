@@ -48,6 +48,15 @@ local function create_system_type(query, update_fn)
       self._world:for_each(action, query or system_type.query)
     end
 
+    -- Updates the collision grid
+    function system:update_collision_grid(entity)
+      self._world:update_collision_grid(entity)
+    end
+
+    function system:find_near_entities(...)
+      return self._world:find_near_entities(...)
+    end
+
     -- Returns the world
     function system:get_world()
       return self._world

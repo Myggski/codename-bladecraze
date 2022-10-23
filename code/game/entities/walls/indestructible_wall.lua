@@ -18,7 +18,7 @@ local function create_indestructible_wall(world, start_position, wall_animation)
     }),
     components.block(),
     components.position(start_position),
-    components.size(vector2.one())
+    components.size(vector2(1, 1))
   )
 end
 

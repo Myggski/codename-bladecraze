@@ -30,7 +30,6 @@ end
 function table.pack_all(...) return { n = select("#", ...), ... } end
 
 function table.unpack_all(t) return unpack(t, 1, t.n) end
-
 -- Deep clones tables, to make sure that a value doesn't refer the same table as another
 function table.deep_clone(root_table, child_table)
   child_table = child_table or {}

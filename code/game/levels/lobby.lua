@@ -1,4 +1,5 @@
 local background_image = require "code.game.entities.background_image"
+local walls = require "code.game.entities.walls"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local player_input = require "code.game.player_input"
 local world = require "code.engine.ecs.world"
@@ -10,6 +11,7 @@ local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
 local animate_system = require "code.game.systems.animate_system"
 local animation_set_state_system = require "code.game.systems.animation_set_state_system"
+local block_system = require "code.game.systems.block_system"
 local bubble_controller_system = require "code.game.systems.bubble_controller_system"
 local target_movement_system = require "code.game.systems.target_movement_system"
 local entity_draw = require "code.game.entity_draw"
@@ -19,7 +21,7 @@ local draw
 
 local function on_update(dt)
   level:update(dt)
-  print(love.timer.getFPS())
+  --print(love.timer.getFPS())
 end
 
 local function on_draw()
@@ -37,15 +39,18 @@ local function load()
 
   level:add_system(input_system)
   level:add_system(input_velocity_system)
+  level:add_system(target_movement_system)
   level:add_system(movement_system)
+  level:add_system(block_system)
   level:add_system(animation_set_state_system)
   level:add_system(animate_system)
   level:add_system(bubble_controller_system)
-  level:add_system(target_movement_system)
 
   background_image(level, "level/press_start.png", vector2(-1.6875, -3.5))
   background_image(level, "level/lobby_ready.png", vector2(4.5, -1.95))
   background_image(level, "level/lobby_quit.png", vector2(-7.5, -1.95))
+
+  walls(level, 2, vector2(3, 3))
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, on_draw)

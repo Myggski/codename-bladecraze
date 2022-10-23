@@ -8,6 +8,8 @@ local camera = require "code.engine.camera"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local lobby = require "code.game.levels.lobby"
 
+local fixed_dt = 1 / 60
+
 function love.load()
   camera:load()
   lobby.load()
@@ -15,6 +17,7 @@ function love.load()
 end
 
 function love.update(dt)
+  dt = dt < fixed_dt and dt or fixed_dt
   game_event_manager.invoke(GAME_EVENT_TYPES.UPDATE, dt)
   game_event_manager.invoke(GAME_EVENT_TYPES.LATE_UPDATE, dt)
 end

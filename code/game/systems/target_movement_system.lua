@@ -18,8 +18,7 @@ local target_movement_system = system(target_movement_query, function(self, dt)
     position = entity[components.position]
     acceleration = entity[components.acceleration]
     target = entity[components.target_position]
-
-    if not target then
+    if not target or target == position then
       return
     end
 
@@ -27,14 +26,15 @@ local target_movement_system = system(target_movement_query, function(self, dt)
     velocity.x = velocity.x + (dir_x * acceleration.speed) * dt
     velocity.y = velocity.y + (dir_y * acceleration.speed) * dt
 
-    if dist < 0.05 then
+    -- Goal reached
+    if dist > 0.05 then
+      position.x = position.x + world_grid:convert_to_world(velocity.x * dt)
+      position.y = position.y + world_grid:convert_to_world(velocity.y * dt)
+    else
       position.x, position.y = target.x, target.y
     end
 
-    if not (position.x == target.x) or not (position.y == target.y) then
-      position.x = position.x + world_grid:convert_to_world(velocity.x * dt)
-      position.y = position.y + world_grid:convert_to_world(velocity.y * dt)
-    end
+    self:update_collision_grid(entity)
   end)
 end)
 
