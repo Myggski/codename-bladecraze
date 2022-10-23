@@ -5,7 +5,7 @@ local system = require "code.engine.ecs.system"
 local input_velocity_system = system(nil, function(self, dt)
   local input, acceleration, velocity = nil, nil, nil
 
-  self:archetype_for_each(player.get_archetype(), function(entity)
+  self:for_each(function(entity)
     input = entity[components.input]
     acceleration = entity[components.acceleration]
     velocity = entity[components.velocity]
@@ -21,7 +21,7 @@ local input_velocity_system = system(nil, function(self, dt)
     if math.abs(velocity.y) < 0.01 then
       velocity.y = 0
     end
-  end)
+  end, player.get_archetype())
 end)
 
 return input_velocity_system

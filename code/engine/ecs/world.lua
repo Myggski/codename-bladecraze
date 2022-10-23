@@ -119,6 +119,37 @@ local function get_archetype_entity_index(world, current_entity_index)
   return 1, 1
 end
 
+-- For each entity in the archetype, doesn't do any validation
+local function for_each_in_archetype(world, action, archetype)
+  local archetype_index = get_archetype_index(world, archetype)
+  local archetype_data = world._entity_data[archetype_index]
+
+  if archetype_index > 0 and archetype_data then
+    for index = 1, #archetype_data.entities do
+      action(archetype_data.entities[index], index)
+    end
+  end
+end
+
+-- For each entity that is valid according to the query
+local function for_each_entity(world, action, query)
+  local archetype_index, entity_index, archetype_entities = -1, -1, nil
+  query = query.is_query_builder and query.build() or query
+
+  for index = world._number_of_entities, 1, -1 do
+    archetype_index, entity_index = get_archetype_entity_index(world, index)
+
+    if query:is_valid_archetype(world._entity_data[archetype_index].archetype) then
+      archetype_entities = world._entity_data[archetype_index].entities
+      if query:is_entity_valid(archetype_entities[entity_index]) then
+        index = index + 1
+
+        action(archetype_entities[entity_index], index)
+      end
+    end
+  end
+end
+
 -- Creates an entity and adds it into the world
 function world_type:entity(...)
   local id = generate_entity_id(self)
@@ -240,36 +271,10 @@ local function create_world()
   -- Loops through all the entities in the world
   -- Those that are valid to the query, calls the action function with the entity
   function world_type:for_each(action, query)
-    local archetype_entities = {}
-
-    action = type(action) == "function" and action or function(_, _) end
-    query = query.is_query_builder and query.build() or query
-
-    local archetype_index, entity_index = -1, -1
-
-    for index = self._number_of_entities, 1, -1 do
-      archetype_index, entity_index = get_archetype_entity_index(self, index)
-
-      if query:is_valid_archetype(self._entity_data[archetype_index].archetype) then
-        archetype_entities = self._entity_data[archetype_index].entities
-        if query:is_entity_valid(archetype_entities[entity_index]) then
-          index = index + 1
-
-          action(archetype_entities[entity_index], index)
-        end
-      end
-    end
-  end
-
-  -- Selects a specific archetype and loops through all the entities
-  function world_type:archetype_for_each(archetype, action)
-    local archetype_index = get_archetype_index(self, archetype)
-    local archetype_data = self._entity_data[archetype_index]
-
-    if archetype_index > 0 and archetype_data then
-      for index = 1, #archetype_data.entities do
-        action(archetype_data.entities[index], index)
-      end
+    if query.is_archetype then
+      for_each_in_archetype(self, action, query)
+    else
+      for_each_entity(self, action, query)
     end
   end
 

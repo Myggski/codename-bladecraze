@@ -6,7 +6,7 @@ local system = require "code.engine.ecs.system"
 local input_system = system(nil, function(self)
   local input, pi = nil, nil
 
-  self:archetype_for_each(player.get_archetype(), function(entity)
+  self:for_each(function(entity)
     input = entity[components.input]
 
     if not input.enabled then
@@ -17,7 +17,7 @@ local input_system = system(nil, function(self)
 
     input.movement_direction = pi.move_dir
     input.action = pi.action
-  end)
+  end, player.get_archetype())
 end)
 
 return input_system

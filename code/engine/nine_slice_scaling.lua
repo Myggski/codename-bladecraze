@@ -79,7 +79,7 @@ local function create_quads(sprite_batch, image_width, image_height)
 
   setup_quad_data(image_width, image_height)
   for animation_index = 0, (texture_width / image_width) - 1 do
-    local sprite_offset_x = image_width * animation_index;
+    local sprite_offset_x = image_width * animation_index
 
     for index = 1, table.get_size(quad_data) do
       table.insert(sprite_batch_quads, get_graphics_quad(index, sprite_offset_x, texture_width, texture_height))

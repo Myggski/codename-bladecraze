@@ -48,10 +48,6 @@ local function create_system_type(query, update_fn)
       self._world:for_each(action, query or system_type.query)
     end
 
-    function system:archetype_for_each(archetype, action)
-      self._world:archetype_for_each(archetype, action)
-    end
-
     -- Returns the world
     function system:get_world()
       return self._world

@@ -16,7 +16,7 @@ end
 -- Returns the size of a table, when #table is not enough
 function table.get_size(table)
   local count = 0
-  for _, __ in ipairs(table) do
+  for _, __ in pairs(table) do
     count = count + 1
   end
   return count
@@ -27,7 +27,7 @@ function table.contains_key(table, key)
   return not (table[key] == nil)
 end
 
-function table.pack_all(...) return { n = select('#', ...), ... } end
+function table.pack_all(...) return { n = select("#", ...), ... } end
 
 function table.unpack_all(t) return unpack(t, 1, t.n) end
 

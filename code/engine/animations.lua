@@ -12,7 +12,7 @@ function animations.new_animation(image, image_data, duration)
     viewport = vector2.zero(),
   }
 
-  local frames_added = 0;
+  local frames_added = 0
   for y = offset_y, image:getHeight() - height, height do
     for x = offset_x, image:getWidth() - width, width do
       table.insert(

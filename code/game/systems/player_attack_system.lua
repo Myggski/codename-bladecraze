@@ -5,13 +5,13 @@ local system = require "code.engine.ecs.system"
 local input_system = system(_, function(self)
   local input = nil
 
-  self:archetype_for_each(player.get_archetype(), function(entity)
+  self:for_each(function(entity)
     input = entity[components.input]
 
     if input.action == PLAYER.ACTIONS.BASIC then
       -- Try to drop bomb
     end
-  end)
+  end, player.get_archetype())
 end)
 
 return input_system

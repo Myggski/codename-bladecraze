@@ -211,7 +211,7 @@ insulate("camera", function()
 
   describe("world_coordinates", function()
     describe("when screen size is 1280x720", function()
-      local half_width, half_height = camera:get_screen_game_half_size();
+      local half_width, half_height = camera:get_screen_game_half_size()
 
       describe("and camera.x and camera.y is set to 0", function()
         describe("and screen coordinates are (0, 0)", function()
@@ -327,7 +327,7 @@ insulate("camera", function()
       end)
 
       describe("when the parameters x and y does not have any values", function()
-        it('should set cameras x and y to 0', function()
+        it("should set cameras x and y to 0", function()
           camera.x, camera.y = 128, 32
 
           camera:look_at()
@@ -370,7 +370,7 @@ insulate("camera", function()
   end)
 
   describe("start_draw_world", function()
-    it('should setup the canvas_game, clear it and center position the camera view', function()
+    it("should setup the canvas_game, clear it and center position the camera view", function()
       stub(love.graphics, "setCanvas")
       stub(love.graphics, "clear")
       stub(love.graphics, "push")
