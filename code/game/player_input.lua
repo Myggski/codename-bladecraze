@@ -4,18 +4,9 @@ local camera = require "code.engine.camera"
 local vector2 = require "code.engine.vector2"
 
 local player_input = {}
-local mouse_pressed = false
 local analog_stick_deadzone = 0.2
 local available_joysticks = {} -- The joysticks that's connected but not active
 local active_controllers = {} -- Can be both joysticks and keyboard
-
-local function mousepressed(x, y, btn, is_touch)
-  mouse_pressed = true
-end
-
-local function mousereleased(x, y, btn, is_touch)
-  mouse_pressed = false
-end
 
 local function get_digital_axis(player_controller)
   local pressed_keys = { up = false, down = false, left = false, right = false }
@@ -23,6 +14,7 @@ local function get_digital_axis(player_controller)
   local x, y = 0, 0
 
   if player_input.is_keyboard(player_controller.type) then
+
     pressed_keys.left = controller.isDown(KEYBOARD.LEFT) or controller.isDown(KEYBOARD.A)
     pressed_keys.right = controller.isDown(KEYBOARD.RIGHT) or controller.isDown(KEYBOARD.D)
     pressed_keys.up = controller.isDown(KEYBOARD.UP) or controller.isDown(KEYBOARD.W)
@@ -54,13 +46,9 @@ local function get_action(player_controller)
   local action = PLAYER.ACTIONS.NONE
 
   if player_input.is_keyboard(player_controller.type) then
-    action = mouse_pressed and PLAYER.ACTIONS.BASIC or PLAYER.ACTIONS.NONE
-    action = controller.isDown(KEYBOARD.Q) and PLAYER.ACTIONS.SPECIAL or action
-    action = controller.isDown(KEYBOARD.R) and PLAYER.ACTIONS.ULTIMATE or action
+    action = controller.isDown(KEYBOARD.SPACE) and PLAYER.ACTIONS.BASIC or PLAYER.ACTIONS.NONE
   elseif player_input.is_gamepad(player_controller.type) then
     action = controller:isGamepadDown(GAMEPAD.BUTTONS.A) and PLAYER.ACTIONS.BASIC or PLAYER.ACTIONS.NONE
-    action = controller:isGamepadDown(GAMEPAD.BUTTONS.B) and PLAYER.ACTIONS.ULTIMATE or action
-    action = controller:isGamepadDown(GAMEPAD.BUTTONS.X) and PLAYER.ACTIONS.SPECIAL or action
   end
 
   return action
@@ -257,7 +245,5 @@ function player_input.mouse_position_grid() return world_grid:world_to_grid(play
 
 game_event_manager.add_listener(GAME_EVENT_TYPES.JOYSTICK_ADDED, joystick_added)
 game_event_manager.add_listener(GAME_EVENT_TYPES.JOYSTICK_REMOVED, joystick_removed)
-game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, mousepressed)
-game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, mousereleased)
 
 return player_input

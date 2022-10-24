@@ -3,7 +3,7 @@ insulate("system", function()
 
   local system = require "code.engine.ecs.system"
   local world = require "code.engine.ecs.world"
-  local level_one = world();
+  local level_one = world()
 
   before_each(function()
     level_one = world()

@@ -23,10 +23,18 @@ BUTTON_ANIMATION_STATE_TYPES = {
   CLICK = 3,
 }
 
-CONTROLLER_TYPES = {
-  KEYBOARD = 0,
-  GAMEPAD = 1,
+COLOR = {
+  RED = { 1, 0, 0, 1 },
+  BLUE = { 0, 0, 1, 1 },
+  GREEN = { 0, 1, 0, 1 },
+  CYAN = { 0, 1, 1, 1 },
+  YELLOW = { 1, 1, 0, 1 },
+  MAGENTA = { 1, 0, 1, 1 },
+  WHITE = { 1, 1, 1, 1 },
+  BLACK = { 0, 0, 0, 1 }
 }
+
+CONTROLLER_TYPES = { KEYBOARD = 0, GAMEPAD = 1, }
 
 GAME_EVENT_TYPES = {
   LOAD = "load",
@@ -44,6 +52,8 @@ GAME_EVENT_TYPES = {
   KEY_PRESSED = "keypressed",
   KEY_RELEASED = "keyreleased",
 }
+
+ENTITY_EVENT_TYPES = { ACTIVATED = "activated", DEACTIVATED = "deactivated", }
 
 GAMEPAD = {
   BUTTONS = {
@@ -98,16 +108,11 @@ KEYBOARD = {
   RIGHT = "right",
   SPACE = "space",
   ENTER = "return",
-  ESCAPE = "escape"
+  ESCAPE = "escape",
 }
 
 KEYBOARD.ALL = {
   KEYBOARD.W, KEYBOARD.A, KEYBOARD.S, KEYBOARD.D,
   KEYBOARD.UP, KEYBOARD.LEFT, KEYBOARD.DOWN, KEYBOARD.RIGHT,
   KEYBOARD.SPACE, KEYBOARD.ENTER, KEYBOARD.ESCAPE,
-}
-
-ENTITY_EVENT_TYPES = {
-  ACTIVATED = "activated",
-  DEACTIVATED = "deactivated"
 }

@@ -1,4 +1,6 @@
 local archetype = require "code.engine.ecs.archetype"
+local components = require "code.engine.components"
+local vector2 = require "code.engine.vector2"
 
 local indestructible_wall_archetype = archetype.setup(
   components.animation,
@@ -16,7 +18,7 @@ local function create_indestructible_wall(world, start_position, wall_animation)
     }),
     components.block(),
     components.position(start_position),
-    components.size({ x = 1, y = 1 })
+    components.size(vector2.one())
   )
 end
 

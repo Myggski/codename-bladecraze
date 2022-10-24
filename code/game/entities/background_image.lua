@@ -1,5 +1,7 @@
 local archetype = require "code.engine.ecs.archetype"
 local asset_manager = require "code.engine.asset_manager"
+local components = require "code.engine.components"
+local vector2 = require "code.engine.vector2"
 
 local background_image_archetype = archetype.setup(
   components.size,
@@ -12,7 +14,7 @@ local function create_background_image(world, sprite_url, position)
   local width, height = texture:getDimensions()
 
   return world:entity(
-    components.size({ x = 0, y = 0 }),
+    components.size(vector2.zero()),
     components.sprite({
       texture = texture,
       quad = love.graphics.newQuad(0, 0, width, height, texture),

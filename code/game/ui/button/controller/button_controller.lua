@@ -1,9 +1,9 @@
 local game_event_manager = require "code.engine.game_event.game_event_manager"
-local button_model = require "code.ui.button.model.button_model"
-local button_view = require "code.ui.button.view.button_view"
+local button_model = require "code.game.ui.button.model.button_model"
+local button_view = require "code.game.ui.button.view.button_view"
 local camera = require "code.engine.camera"
-local rectangle = require "code.engine.rectangle"
 local asset_manager = require "code.engine.asset_manager"
+local vector2 = require "code.engine.vector2"
 
 local button = {
   _buttons = {},
@@ -117,7 +117,8 @@ function button:create(x, y, w, h, text, font)
   h = math.max(h, 16 * camera:get_scale())
 
   local new_button = button_model(
-    rectangle:create(x, y, w, h),
+    vector2(x, y),
+    vector2(w, h),
     text,
     font,
     self._sprite_batch,

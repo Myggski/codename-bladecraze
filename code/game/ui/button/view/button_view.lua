@@ -27,10 +27,12 @@ local function _update_sprite_batch(button)
   local texture = button.sprite_batch:getTexture()
 
   nine_slice_scaling.set_sprite_batch(
-    button,
+    button.position,
+    button.size,
     texture:getWidth() / table.get_size(BUTTON_ANIMATION_STATE_TYPES),
     texture:getHeight(),
-    active_quads
+    active_quads,
+    button.sprite_batch
   )
 end
 
@@ -39,7 +41,8 @@ end
   When the button is being pressed down, the text should follow (animation-y-offset)
 ]]
 local function _add_text(button, text_list)
-  local button_center_x, button_center_y = button.rectangle:center()
+  local button_center_x = button.position.x + (button.size.x * 0.5)
+  local button_center_y = button.position.x + (button.size.y * 0.5)
   local text_width, text_height = asset_manager:get_text_size(button.font, button.text)
   local animation_y_offset = (button.animation_state - 1) * camera:get_scale()
   local text_x = button_center_x - text_width * 0.5

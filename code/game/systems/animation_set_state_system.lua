@@ -1,12 +1,13 @@
-local system = require "code.engine.ecs.system"
+local components = require "code.engine.components"
 local entity_query = require "code.engine.ecs.entity_query"
+local system = require "code.engine.ecs.system"
 
 local animation_set_state_query = entity_query.all(components.animation)
 
 local animation_set_state_system = system(animation_set_state_query, function(self)
   local animation, velocity, health, new_state = nil, nil, nil, nil
 
-  self:for_each(animation_set_state_query, function(entity)
+  self:for_each(function(entity)
     animation = entity[components.animation]
     velocity = entity[components.velocity]
     health = entity[components.health]

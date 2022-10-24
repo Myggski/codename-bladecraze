@@ -1,6 +1,7 @@
-local system = require "code.engine.ecs.system"
-local entity_query = require "code.engine.ecs.entity_query"
 local camera = require "code.engine.camera"
+local components = require "code.engine.components"
+local entity_query = require "code.engine.ecs.entity_query"
+local system = require "code.engine.ecs.system"
 local world_grid = require "code.engine.world_grid"
 
 local camera_filter = entity_query.filter(function(e)
@@ -15,7 +16,7 @@ local draw_query = entity_query
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation = nil, nil, nil, nil, nil
 
-  self:for_each(draw_query, function(entity)
+  self:for_each(function(entity)
     animation = entity[components.animation]
     position = entity[components.position]
     size = entity[components.size]

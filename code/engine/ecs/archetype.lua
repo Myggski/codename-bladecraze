@@ -1,12 +1,12 @@
-require "code.utilities.set"
+require "code.engine.set"
+
+local archetype = {}
+archetype.__index = archetype
 
 local CACHE_WITH = {}
 local CACHE_WITHOUT = {}
 local archetypes = {} -- All the archetypes
 local version = 0 -- Archetype version, changes whenever a new type of archetype is added
-
-local archetype = {}
-archetype.__index = archetype
 
 -- Gets already existing archetype or creates a new one
 function archetype.setup(...)
@@ -34,6 +34,7 @@ function archetype.setup(...)
     archetypes[archetype_id] = setmetatable({
       _id = archetype_id,
       _components = components,
+      is_archetype = true,
       get_id = function(a) return a._id end,
     }, archetype)
 

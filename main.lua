@@ -1,16 +1,12 @@
-require "code.engine.global_types"
-require "code.engine.game_data"
-require "code.utilities.love_extension"
-require "code.utilities.table_extension"
-require "code.utilities.math_extension"
-require "code.game.components"
-require "code.utilities.utility_functions"
+require "code.engine.constants.global_types"
+require "code.engine.constants.game_data"
+require "code.engine.extensions.love_extension"
+require "code.engine.extensions.table_extension"
+require "code.engine.extensions.math_extension"
 
 local camera = require "code.engine.camera"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local lobby = require "code.game.levels.lobby"
-
-local fixed_delta_time = 1 / 60
 
 function love.load()
   camera:load()

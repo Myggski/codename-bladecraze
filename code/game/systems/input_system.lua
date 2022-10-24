@@ -1,13 +1,12 @@
+local components = require "code.engine.components"
+local player = require "code.game.entities.player"
+local player_input = require "code.game.player_input"
 local system = require "code.engine.ecs.system"
-local entity_query = require "code.engine.ecs.entity_query"
-local player_input = require "code.player.player_input"
 
-local input_query = entity_query.all(components.input, components.position, components.size)
-
-local input_system = system(input_query, function(self)
+local input_system = system(nil, function(self)
   local input, pi = nil, nil
 
-  self:for_each(input_query, function(entity)
+  self:for_each(function(entity)
     input = entity[components.input]
 
     if not input.enabled then
@@ -18,7 +17,7 @@ local input_system = system(input_query, function(self)
 
     input.movement_direction = pi.move_dir
     input.action = pi.action
-  end)
+  end, player.get_archetype())
 end)
 
 return input_system

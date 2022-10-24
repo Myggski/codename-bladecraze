@@ -1,7 +1,9 @@
-local game_event_manager = require "code.engine.game_event.game_event_manager"
 local bubble_controller = require "code.game.entities.bubble_controller"
-local player_input = require "code.player.player_input"
+local components = require "code.engine.components"
+local game_event_manager = require "code.engine.game_event.game_event_manager"
 local player = require "code.game.entities.player"
+local player_input = require "code.game.player_input"
+local vector2 = require "code.engine.vector2"
 
 -- Sorting function for table.sort -> Sorts on player_id
 local function sort_on_player_id(a, b)
@@ -17,10 +19,12 @@ end
 
 -- Calcualtes and returns the bubble position depending on id and number of bubbles that are available
 local function get_bubble_position(bubble_id, expected_number_of_bubbles)
-  local center_bubble_position = { x = -1, y = -1.5 }
+  local center_bubble_position = vector2(-1, -1.5)
   local offset_x = (2 * bubble_id - 1) - (1 * expected_number_of_bubbles)
 
-  return { x = center_bubble_position.x + offset_x, y = center_bubble_position.y }
+  center_bubble_position.x = center_bubble_position.x + offset_x
+
+  return center_bubble_position
 end
 
 -- Returns a unique bubble id
@@ -249,7 +253,7 @@ local function enable_controller_events(self)
   -- When joystick is disconnected
   self.player_joystick_removed_event = function(joystick)
     rearrange_bubble_ids(
-      self:to_list(),
+      self:to_list(bubble_controller.get_archetype()),
       player_input.deactivate_controller(CONTROLLER_TYPES.GAMEPAD, joystick)
     )
   end

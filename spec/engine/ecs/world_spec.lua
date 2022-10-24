@@ -37,7 +37,7 @@ insulate("world", function()
   end)
 
   describe("destroy", function()
-    it("should remove att systems and entities from the world but keeps the archetypes", function()
+    it("should remove all systems and entities from the world but keeps the archetypes", function()
       level_one:entity()
       level_one:add_system(system())
 

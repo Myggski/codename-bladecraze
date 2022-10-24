@@ -1,7 +1,9 @@
 local animations = require "code.engine.animations"
 local archetype = require "code.engine.ecs.archetype"
 local asset_manager = require "code.engine.asset_manager"
-local player_input = require "code.player.player_input"
+local components = require "code.engine.components"
+local player_input = require "code.game.player_input"
+local vector2 = require "code.engine.vector2"
 
 local bubble_controller_archetype = archetype.setup(
   components.acceleration,
@@ -25,7 +27,7 @@ local function create_bubble_controller(world, player_id, controller_type, posit
     components.position(position),
     components.target_position(position),
     components.player_data({ player_id = player_id, controller_type = controller_type }),
-    components.size({ x = 2, y = 3 }),
+    components.size(vector2(2, 3)),
     components.animation({
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle,

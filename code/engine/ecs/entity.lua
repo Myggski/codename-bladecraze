@@ -1,17 +1,41 @@
 local archetype = require "code.engine.ecs.archetype"
 
+-- Adds list of components, all at once
+local function add_components(entity, ...)
+  local components = { ... }
+  local new_archetype = nil
+  local component = nil
+
+  for index = 1, #components do
+    component = components[index]
+    assert(type(component) == "table" and component.is_component,
+      "Invalid components param, param is not a component")
+
+    entity._component_values[component.get_type()] = component
+    new_archetype = new_archetype and new_archetype:add(component.get_type())
+        or entity.archetype:add(component.get_type())
+  end
+
+  if not (entity.archetype == new_archetype) then
+    local old_archetype = entity.archetype
+    entity.archetype = new_archetype and new_archetype or archetype.EMPTY
+    entity._archetype_changed(entity, old_archetype)
+  end
+end
+
 -- Adds a component to an entity
 -- This makes the entity change or create a new archetype
 local function add_component(entity, component_type, component_value)
-  if not (component_type and component_type.is_component_type and not component_type.is_component) then
-    return
-  end
+  assert(type(component_type) == "table" and component_type.is_component_type,
+    "Invalid component type param, param is not a component_type")
 
+  -- If the value is nil and the component exsist, remove the component
   if component_value == nil and entity:has_component(component_type) then
     entity:remove_component(component_type)
     return
   end
 
+  -- If the value is a table and it is of type component
   if type(component_value) == "table" and component_value.is_component then
     entity._component_values[component_type] = component_value
 
@@ -33,28 +57,6 @@ local function add_component(entity, component_type, component_value)
       entity.archetype = new_archetype
       entity._archetype_changed(entity, old_archetype)
     end
-  end
-end
-
-local function add_components(entity, ...)
-  local components = { ... }
-  local new_archetype = nil
-  local component = nil
-
-  for index = 1, #components do
-    component = components[index]
-
-    if type(component) == "table" and component.is_component then
-      entity._component_values[component.get_type()] = component
-      new_archetype = new_archetype and new_archetype:add(component.get_type()) or
-          entity.archetype:add(component.get_type())
-    end
-  end
-
-  if not (entity.archetype == new_archetype) then
-    local old_archetype = entity.archetype
-    entity.archetype = new_archetype and new_archetype or archetype.EMPTY
-    entity._archetype_changed(entity, old_archetype)
   end
 end
 
@@ -90,6 +92,7 @@ end
 -- Gets the id of the entity
 local function get_id(entity) return entity._id end
 
+-- Checks if the entitiy is alive and is not about to be removed
 local function is_alive(entity) return entity._id > -1 end
 
 local entity_meta = {
@@ -109,6 +112,7 @@ local entity_meta = {
 local create = function(id, destroy_callback, archetype_changed_callback, ...)
   assert(not (id == nil), "Error, an id expected, got: " .. id)
   assert(not (destroy_callback == nil), "Error, entity needs a destroy_callback function set")
+  assert(not (archetype_changed_callback == nil), "Error, entity needs a archetype_changed_callback function set")
 
   local entity = {
     _id = id,
@@ -118,7 +122,6 @@ local create = function(id, destroy_callback, archetype_changed_callback, ...)
     get_id = get_id,
     is_alive = is_alive,
     add_component = add_component,
-    add_components = add_components,
     remove_component = remove_component,
     has_component = has_component,
     has_components = has_components,
@@ -128,8 +131,7 @@ local create = function(id, destroy_callback, archetype_changed_callback, ...)
   entity.__index = entity
 
   -- Adds all the components to the entity
-  entity:add_components(...)
-
+  add_components(entity, ...)
 
   return setmetatable(entity, entity_meta)
 end
