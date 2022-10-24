@@ -12,7 +12,7 @@ insulate("entity_query", function()
 
   local empty_func = function() end
 
-  local first_entity = entity.create(1, empty_func, empty_func, health_component, name_component())
+  local first_entity = entity.create(1, empty_func, empty_func, health_component(), name_component())
   local second_entity = entity.create(2, empty_func, empty_func, health_component())
   local third_entity = entity.create(3, empty_func, empty_func, name_component(), position_component())
   local fourth_entity = entity.create(4, empty_func, empty_func, position_component())
