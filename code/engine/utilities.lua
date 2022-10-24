@@ -1,4 +1,5 @@
 local vector2 = require "code.engine.vector2"
+local gizmos = require "code.engine.debug.gizmos"
 
 local function is_inside(...)
   local position, size, x, y = ...
@@ -28,12 +29,23 @@ local function collision_direction(center1, center2)
   local vertical_dot = math.dot(0, -1, dir_x, dir_y) -- top och bottom
   local horizontal_dot = math.dot(-1, 0, dir_x, dir_y) -- left or right
 
-  print("VERT: ", vertical_dot, "HOR: ", horizontal_dot)
+  --print("TOP BOTTOM: ", vertical_dot, "LEFT RIGHT: ", horizontal_dot, math.abs(vertical_dot) > math.abs(horizontal_dot))
 
-  if math.abs(vertical_dot) > math.abs(horizontal_dot) then
-    return vertical_dot > 0 and vector2.up() or vector2.down()
-  else
+  if math.abs(vertical_dot) <= math.abs(horizontal_dot) then
+    if horizontal_dot > 0 then
+      gizmos.draw_rectangle((center1 - 0.625) * 16, { x = 24, y = 24 }, "line", COLOR.CYAN)
+    else
+      gizmos.draw_rectangle((center1 - 0.625) * 16, { x = 24, y = 24 }, "line", COLOR.BLACK)
+    end
     return horizontal_dot > 0 and vector2.left() or vector2.right()
+  else
+    if vertical_dot >= 0 then
+      gizmos.draw_rectangle((center1 - 0.625) * 16, { x = 24, y = 24 }, "line", COLOR.GREEN)
+    else
+      gizmos.draw_rectangle((center1 - 0.625) * 16, { x = 24, y = 24 }, "line", COLOR.YELLOW)
+
+    end
+    return vertical_dot >= 0 and vector2.up() or vector2.down()
   end
 end
 

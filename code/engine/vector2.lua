@@ -51,8 +51,8 @@ function vector2:__eq(value)
   return self.x == value.x and self.y == value.y
 end
 
-function vector2:copy(vector)
-
+function vector2:copy()
+  return create(self.x, self.y)
 end
 
 return setmetatable({
