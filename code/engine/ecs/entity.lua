@@ -8,12 +8,12 @@ local function add_components(entity, ...)
 
   for index = 1, #components do
     component = components[index]
+    assert(type(component) == "table" and component.is_component,
+      "Invalid components param, param is not a component")
 
-    if type(component) == "table" and component.is_component then
-      entity._component_values[component.get_type()] = component
-      new_archetype = new_archetype and new_archetype:add(component.get_type()) or
-          entity.archetype:add(component.get_type())
-    end
+    entity._component_values[component.get_type()] = component
+    new_archetype = new_archetype and new_archetype:add(component.get_type()) or
+        entity.archetype:add(component.get_type())
   end
 
   if not (entity.archetype == new_archetype) then
@@ -26,10 +26,8 @@ end
 -- Adds a component to an entity
 -- This makes the entity change or create a new archetype
 local function add_component(entity, component_type, component_value)
-  -- Checks if the component_type parameter is a component_typ
-  if not (component_type and component_type.is_component_type and not component_type.is_component) then
-    return
-  end
+  assert(type(component_type) == "table" and component_type.is_component_type,
+    "Invalid component type param, param is not a component_type")
 
   -- If the value is nil and the component exsist, remove the component
   if component_value == nil and entity:has_component(component_type) then
