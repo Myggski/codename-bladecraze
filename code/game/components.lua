@@ -21,11 +21,13 @@ local input_component = component({
   action = PLAYER.ACTIONS.NONE,
 })
 local health_component = component(1)
+local player_data_component = component({ player_id = -1, controller_type = CONTROLLER_TYPES.GAMEPAD })
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
 local rotation_component = component(0) -- Radian?
 local size_component = component({ x = 1, y = 1 })
-local sprite_component = component("") -- Url to static image?
+local sprite_component = component({ texture = nil, quad = nil }) -- Url to static image?
+local target_position_component = component({ x = 0, y = 0 })
 local velocity_component = component({ x = 0, y = 0 })
 
 _G.components = {
@@ -35,10 +37,12 @@ _G.components = {
   input = input_component,
   health = health_component,
   object_pool = object_pool_component,
+  player_data = player_data_component,
   position = position_component,
   rotation = rotation_component,
   size = size_component,
   sprite = sprite_component,
+  target_position = target_position_component,
   velocity = velocity_component,
 }
 

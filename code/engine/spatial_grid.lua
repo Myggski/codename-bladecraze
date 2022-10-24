@@ -49,7 +49,7 @@ function spatial_grid:get_cell_index(x, y)
 end
 
 function spatial_grid:get_indices(x, y, w, h)
-    local half_w, half_h = w / 2, h / 2
+    local half_w, half_h = w * 0.5, h * 0.5
 
     local min_x_index, min_y_index = self:get_cell_index(x - half_w, y - half_h)
     local max_x_index, max_y_index = self:get_cell_index(x + half_w, y + half_h)

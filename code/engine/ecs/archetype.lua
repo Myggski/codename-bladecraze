@@ -27,12 +27,14 @@ function archetype.setup(...)
     end
   end
 
+  table.sort(component_ids)
   local archetype_id = table.concat(component_ids, "_")
 
   if archetypes[archetype_id] == nil then
     archetypes[archetype_id] = setmetatable({
       _id = archetype_id,
       _components = components,
+      get_id = function(a) return a._id end,
     }, archetype)
 
     version = version + 1
@@ -105,10 +107,6 @@ end
 -- Get the archetype version
 function archetype.get_version()
   return version
-end
-
-function archetype:get_id()
-  return self._id
 end
 
 -- Checks if the archetype has a specific component

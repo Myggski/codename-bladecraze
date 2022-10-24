@@ -13,8 +13,8 @@ projectile_data[GAME.PROJECTILE_TYPES.BULLET] = { speed = 8, bounds = { 1, 1 }, 
 projectile_data[GAME.PROJECTILE_TYPES.MAGIC] = { speed = 6, bounds = { 1, 1 }, quad_data = { 288, 240, 16, 16 } }
 
 function projectile:shoot(start_position, direction, ignore_targets_set)
-  self.box.x = start_position.x - self.box.w / 2
-  self.box.y = start_position.y - self.box.h / 2
+  self.box.x = start_position.x - self.box.w * 0.5
+  self.box.y = start_position.y - self.box.h * 0.5
   self.ignore_targets = ignore_targets_set
   set.add(self.ignore_targets, self.client.guid)
   self.move_dir = direction
@@ -32,8 +32,8 @@ function projectile:check_collisions()
   for key, _ in pairs(clients) do
     local x, y, w, h = key.position.x, key.position.y, key.dimensions.x, key.dimensions.y
 
-    x = x - w / 2
-    y = y - h / 2
+    x = x - w * 0.5
+    y = y - h * 0.5
 
     if self.box:overlap(x, y, w, h) then
       self:deactivate()
@@ -47,8 +47,8 @@ function projectile:update(dt)
   x = x + self.move_dir.x * self.speed * dt
   y = y + self.move_dir.y * self.speed * dt
 
-  self.box.x = x - self.box.w / 2
-  self.box.y = y - self.box.h / 2
+  self.box.x = x - self.box.w * 0.5
+  self.box.y = y - self.box.h * 0.5
   self.client.position = { x = self.box:center_x(), y = self.box:center_y() }
 
   grid:update(self.client)
@@ -57,7 +57,7 @@ end
 
 function projectile:draw()
   local _, _, w, h = self.quad:getViewport()
-  local origin_x, origin_y = w / 2, h / 2
+  local origin_x, origin_y = w * 0.5, h * 0.5
 
   love.graphics.draw(
     self.image,
@@ -87,13 +87,13 @@ function projectile:deactivate()
   game_event_manager.invoke(ENTITY_EVENT_TYPES.DEACTIVATED, self)
 end
 
-function projectile:create(sprite_sheet, entity_grid, type, pool)
+function projectile:create(texture, entity_grid, type, pool)
   self.__index = self
 
   grid = entity_grid
   local center_position = vector2(-9999, -9999)
   local x, y, w, h = unpack(projectile_data[type].quad_data)
-  local quad = love.graphics.newQuad(x, y, w, h, sprite_sheet:getDimensions())
+  local quad = love.graphics.newQuad(x, y, w, h, texture:getDimensions())
 
   local obj = setmetatable({
     type = type,
@@ -105,9 +105,10 @@ function projectile:create(sprite_sheet, entity_grid, type, pool)
     move_dir = vector2(1, 1),
     speed = projectile_data[type].speed,
     quad = quad,
-    box = rectangle:create(center_position.x - (w / 2), center_position.y - (h / 2), projectile_data[type].bounds[1],
+    box = rectangle:create(center_position.x - (w * 0.5), center_position.y - (h * 0.5), projectile_data[type].bounds[1]
+      ,
       projectile_data[type].bounds[2]),
-    image = sprite_sheet
+    image = texture
   }, self)
 
   return obj

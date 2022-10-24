@@ -17,7 +17,7 @@ local level1 = {}
 local grid = {}
 local players = {}
 local active_entities = {}
-local sprite_sheet_image = nil
+local texture_image = nil
 
 local function create_grid()
   local bounds = { x_min = 0, y_min = 0, x_max = GAME.GAME_WIDTH, y_max = GAME.GAME_HEIGHT }
@@ -33,7 +33,7 @@ local function create_players()
 
     players[i] = player_character:create
     {
-      image = sprite_sheet_image,
+      image = texture_image,
       position = player_position,
       bounds = player_bounds,
       index = i,
@@ -57,7 +57,7 @@ end
 local function load()
   follow_target:load()
 
-  sprite_sheet_image = asset_manager:get_image("0x72_DungeonTilesetII_v1.4.png")
+  texture_image = asset_manager:get_image("0x72_DungeonTilesetII_v1.4.png")
   button(16, 16, 176, 96, "Start")
   button(16, 120, 176, 96, "Quit")
 
@@ -67,7 +67,7 @@ local function load()
   local projectile_pool_size = 20
   for _, value in pairs(GAME.PROJECTILE_TYPES) do
     if not (value == GAME.PROJECTILE_TYPES.NONE) then
-      projectile_pool:create(sprite_sheet_image, value, projectile_pool_size, grid)
+      projectile_pool:create(texture_image, value, projectile_pool_size, grid)
     end
   end
 

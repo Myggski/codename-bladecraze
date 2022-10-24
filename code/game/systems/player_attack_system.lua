@@ -6,13 +6,13 @@ local input_query = entity_query.all(components.input)
 local input_system = system(input_query, function(self)
   local input = nil
 
-  for _, entity in self:entity_iterator() do
+  self:for_each(input_query, function(entity)
     input = entity[components.input]
 
     if input.action == PLAYER.ACTIONS.BASIC then
       -- Try to drop bomb
     end
-  end
+  end)
 end)
 
 return input_system

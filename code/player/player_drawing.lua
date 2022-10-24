@@ -9,9 +9,9 @@ local function draw_player(player)
     #current_animation.quads) + 1
   local quad = current_animation.quads[sprite_index]
   local _, _, w, h = quad:getViewport()
-  local origin_x, origin_y = w / 2, h / 2
+  local origin_x, origin_y = w * 0.5, h * 0.5
   love.graphics.draw(
-    current_animation.sprite_sheet,
+    current_animation.texture,
     quad,
     world_grid:convert_to_world(player.box:center_x()),
     world_grid:convert_to_world(player.box:center_y()),
@@ -47,8 +47,6 @@ local function draw_stats(player)
   for key, value in pairs(player.stats) do
     str = str .. key .. ":" .. value .. "\n"
   end
-
-  -- draw_text(player.box.x, player.box.y + 20, str)
 end
 
 local function update_animation(animation, dt)
@@ -57,6 +55,10 @@ local function update_animation(animation, dt)
   if animation.current_time > animation.duration then
     animation.current_time = 0
   end
+
+  animation.current_quad = animation.quads[
+      1 + math.floor((animation.current_time / animation.duration) * #animation.quads)]
+  _, _, animation.viewport.x, animation.viewport.y = animation.current_quad:getViewport()
 
   return animation
 end

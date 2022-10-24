@@ -2,17 +2,17 @@ local projectile = require "code.projectiles.projectile"
 
 local projectile_pool = {}
 local grid = nil
-local sprite_sheet = nil
+local texture = nil
 
 function projectile_pool:create(image, type, count, entity_grid)
   grid = entity_grid
-  if sprite_sheet == nil then
-    sprite_sheet = image
+  if texture == nil then
+    texture = image
   end
   if projectile_pool[type] == nil then
     projectile_pool[type] = { current_index = 1, count = count, list = {} }
     for i = 1, count do
-      table.insert(projectile_pool[type].list, projectile:create(sprite_sheet, grid, type, projectile_pool[type].list))
+      table.insert(projectile_pool[type].list, projectile:create(texture, grid, type, projectile_pool[type].list))
     end
   end
 end

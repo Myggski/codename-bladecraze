@@ -42,8 +42,8 @@ local function _add_text(button, text_list)
   local button_center_x, button_center_y = button.rectangle:center()
   local text_width, text_height = asset_manager:get_text_size(button.font, button.text)
   local animation_y_offset = (button.animation_state - 1) * camera:get_scale()
-  local text_x = button_center_x - text_width / 2
-  local text_y = button_center_y - text_height / 2 + animation_y_offset
+  local text_x = button_center_x - text_width * 0.5
+  local text_y = button_center_y - text_height * 0.5 + animation_y_offset
 
   return text_list:add(button.text, text_x, text_y)
 end

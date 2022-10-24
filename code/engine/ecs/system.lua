@@ -41,12 +41,8 @@ local function create_system_type(query, update_fn)
     function system:entity_iterator(query)
       query = query or system_type.query
 
-      if query.is_query_builder then
-        query = query.build()
-      end
-
       local entities_coroutine = coroutine.create(function()
-        self._world:for_each_entity(query or system_type.query, function(value, count)
+        self._world:for_each(query or system_type.query, function(value, count)
           coroutine.yield(value, count)
         end)
       end)
@@ -55,6 +51,22 @@ local function create_system_type(query, update_fn)
         local _, item, index = coroutine.resume(entities_coroutine)
         return index, item
       end
+    end
+
+    function system:to_list(query)
+      return self._world:to_list(query or system_type.query)
+    end
+
+    function system:for_each(query, action)
+      return self._world:for_each(query or system_type.query, action)
+    end
+
+    function system:get_world()
+      return self._world
+    end
+
+    if system.on_start then
+      system:on_start()
     end
 
     return system
@@ -67,6 +79,10 @@ local function create_system_type(query, update_fn)
 
   -- Destroys the system and everything that's in it
   function system_type:destroy()
+    if system_type.on_destroy then
+      system_type:on_destroy()
+    end
+
     table.insert(destroyed_systems_ids, self._id)
     self._world:remove_system(self:get_type())
 
