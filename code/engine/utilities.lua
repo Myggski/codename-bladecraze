@@ -8,18 +8,15 @@ end
 local function get_center_position(...)
   local position, size = ...
 
-  return vector2(position.x + size.x * 0.5, position.y + size.y * 0.5)
+  return vector2(position.x + (size.x * 0.5), position.y + (size.y * 0.5))
 end
 
 local function overlap(position_a, size_a, position_b, size_b)
-  local center_a = get_center_position(position_a, size_a)
-  local center_b = get_center_position(position_b, size_b)
-
   return (
-      center_a.x <= center_b.x + size_b.x and
-          center_a.x + size_a.x >= center_b.x and
-          center_a.y <= center_b.y + size_b.y and
-          center_a.y + size_a.y >= center_b.y
+      position_a.x <= position_b.x + size_b.x and
+          position_a.x + size_a.x >= position_b.x and
+          position_a.y <= position_b.y + size_b.y and
+          position_a.y + size_a.y >= position_b.y
       )
 end
 
@@ -30,6 +27,8 @@ local function collision_direction(center1, center2)
   )
   local vertical_dot = math.dot(0, -1, dir_x, dir_y) -- top och bottom
   local horizontal_dot = math.dot(-1, 0, dir_x, dir_y) -- left or right
+
+  print("VERT: ", vertical_dot, "HOR: ", horizontal_dot)
 
   if math.abs(vertical_dot) > math.abs(horizontal_dot) then
     return vertical_dot > 0 and vector2.up() or vector2.down()

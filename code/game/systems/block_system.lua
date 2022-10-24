@@ -31,23 +31,38 @@ local block_system = system(block_query, function(self, dt)
         world_grid:convert_to_world(center_b.x), world_grid:convert_to_world(center_b.y)
       })
 
+      gizmos.draw_rectangle(position * 16, size * 16)
+      gizmos.draw_rectangle(nearby_position * 16, nearby_size * 16)
+
       if utilities.overlap(position, size, nearby_position, nearby_size) then
-        local direction = utilities.collision_direction(center_a, center_b)
-        print(((nearby_position - position).x +
-            (nearby_entity[components.size].x * direction.x)))
+        local collision_direction = utilities.collision_direction(center_a, center_b)
 
+        local is_moving_towards_x = nearby_entity[components.velocity] and
+            math.dot(nearby_entity[components.velocity].x, nearby_entity[components.velocity].y, collision_direction.x,
+              collision_direction.y) < 0
 
+        local is_moving_towards_y = nearby_entity[components.velocity] and
+            math.dot(nearby_entity[components.velocity].x, nearby_entity[components.velocity].y, collision_direction.x,
+              collision_direction.y) < 0
 
-        if not (direction.x == 0) then
-          local test = (nearby_position.x + (nearby_size.x * direction.x) * 0.5) -
-              (position.x + (position.x * direction.x) * 0.5)
-          nearby_position.x = nearby_position.x - test
+        -- Check left/right collision
+        if not (collision_direction.x == 0) and is_moving_towards_x then
+          local nearby_entity_x = center_b.x + ((nearby_size.x * 0.5) * -collision_direction.x)
+          local blocking_entity_x = center_a.x + ((size.x * 0.5) * collision_direction.x)
+
+          nearby_position.x = nearby_position.x - (nearby_entity_x - blocking_entity_x) + (0.001 * collision_direction.x
+              )
+          nearby_entity[components.velocity].x = 0
         end
 
-        if not (direction.y == 0) then
-          local test = (nearby_position.y + (nearby_size.y * direction.y) * 0.5) -
-              (position.y + (position.y * direction.y) * 0.5)
-          nearby_position.y = nearby_position.y - test
+        -- Check up/down collision
+        if not (collision_direction.y == 0) and is_moving_towards_y then
+          local nearby_entity_y = center_b.y + ((nearby_size.y * 0.5) * -collision_direction.y)
+          local blocking_entity_y = center_a.y + ((size.y * 0.5) * collision_direction.y)
+
+          nearby_position.y = nearby_position.y - (nearby_entity_y - blocking_entity_y) + (0.001 * collision_direction.y
+              )
+          nearby_entity[components.velocity].y = 0
         end
       end
     end

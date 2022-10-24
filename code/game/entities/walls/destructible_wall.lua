@@ -20,7 +20,7 @@ local function create_destructible_wall(world, start_position, wall_animation)
     components.block(),
     components.health(1),
     components.position(start_position),
-    components.size(vector2(1, 1))
+    components.size(vector2(1, 1.375))
   )
 end
 

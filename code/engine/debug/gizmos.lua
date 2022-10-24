@@ -204,7 +204,7 @@ local function draw_shape(shape)
       shape.position.x,
       shape.position.y,
       shape.size.x,
-      shape.size.x)
+      shape.size.y)
   elseif shape.gizmo_type == GIZMO_TYPE.ROUNDED_RECTANGLE then
     love.graphics.rectangle(shape.draw_mode,
       shape.position.x,
