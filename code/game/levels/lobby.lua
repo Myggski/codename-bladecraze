@@ -21,7 +21,6 @@ local draw
 
 local function on_update(dt)
   level:update(dt)
-  --print(love.timer.getFPS())
 end
 
 local function on_draw()
