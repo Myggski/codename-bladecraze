@@ -46,11 +46,12 @@ local function load()
   level:add_system(animate_system)
   level:add_system(bubble_controller_system)
 
-  --background_image(level, "level/press_start.png", vector2(-1.6875, -3.5))
+  background_image(level, "level/press_start.png", vector2(-1.6875, -3.5))
   --background_image(level, "level/lobby_ready.png", vector2(4.5, -1.95))
   --background_image(level, "level/lobby_quit.png", vector2(-7.5, -1.95))
 
   walls(level, 2, vector2(-6, -3))
+  walls(level, 2, vector2(-7, -4))
   walls(level, 2, vector2(-5, -3))
   walls(level, 2, vector2(-4, -3))
   walls(level, 2, vector2(-3, -3))
@@ -67,8 +68,6 @@ local function load()
   walls(level, 2, vector2(3, 2))
   walls(level, 2, vector2(3, 3))
   walls(level, 2, vector2(3, 4))
-
-
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, on_draw)

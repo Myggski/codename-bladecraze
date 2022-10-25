@@ -1,4 +1,4 @@
-local vector2 = {}
+local vector2 = { }
 vector2.__index = vector2
 
 --[[
