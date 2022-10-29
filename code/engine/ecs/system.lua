@@ -38,23 +38,33 @@ local function create_system_type(query, update_fn)
       _world = world,
     }, system_type)
 
-    function system:entity_iterator(query)
-      query = query or system_type.query
+    -- Returns all the matching entities in a list
+    function system:to_list(query)
+      return self._world:to_list(query or system_type.query)
+    end
 
-      if query.is_query_builder then
-        query = query.build()
-      end
+    -- Calls a action function for every matching entity
+    function system:for_each(action, query)
+      self._world:for_each(action, query or system_type.query)
+    end
 
-      local entities_coroutine = coroutine.create(function()
-        self._world:for_each_entity(query or system_type.query, function(value, count)
-          coroutine.yield(value, count)
-        end)
-      end)
+    -- Updates the collision grid
+    function system:update_collision_grid(entity)
+      self._world:update_collision_grid(entity)
+    end
 
-      return function()
-        local _, item, index = coroutine.resume(entities_coroutine)
-        return index, item
-      end
+    function system:find_near_entities(...)
+      return self._world:find_near_entities(...)
+    end
+
+    -- Returns the world
+    function system:get_world()
+      return self._world
+    end
+
+    -- If the system has a on_call function, call it when the system is being added to the world
+    if system.on_start then
+      system:on_start()
     end
 
     return system
@@ -67,6 +77,11 @@ local function create_system_type(query, update_fn)
 
   -- Destroys the system and everything that's in it
   function system_type:destroy()
+    -- If the system has a on_destroy function, call it when the system is being destroyed in the world
+    if system_type.on_destroy then
+      system_type:on_destroy()
+    end
+
     table.insert(destroyed_systems_ids, self._id)
     self._world:remove_system(self:get_type())
 

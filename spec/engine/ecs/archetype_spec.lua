@@ -12,7 +12,7 @@ insulate("archetype", function()
       local archetype_a = archetype.setup(position_component, acceleration_component)
       local archetype_b = archetype.setup(position_component)
       local archetype_c = archetype.setup(position_component, acceleration_component)
-      local archetype_d = archetype.setup(acceleration_component, position_component) -- Order matters
+      local archetype_d = archetype.setup(acceleration_component, position_component) -- Order doesn't matter
 
       assert.is_not_nil(archetype_a)
       assert.is_truthy(archetype_a:has(position_component))
@@ -25,7 +25,7 @@ insulate("archetype", function()
       assert.is_equal(archetype_a, archetype_c)
       assert.is_not_equal(archetype_b, archetype_c)
       assert.is_not_equal(archetype_b, archetype_a)
-      assert.is_not_equal(archetype_a, archetype_d)
+      assert.is_equal(archetype_a, archetype_d)
       assert.is_not_equal(archetype_b, archetype_d)
 
       assert.is_not_same(version, archetype.get_version())

@@ -124,15 +124,16 @@ function entity_query:is_entity_valid(entity)
     end
   end
 
-  local has_any_filters = not (#self._any_filters > 0)
+  -- If there's no "any filters", its true automatically
+  local is_valid_on_any_filters = #self._any_filters == 0
 
   for index = 1, #self._any_filters do
     if (self._any_filters[index])(entity) then
-      has_any_filters = true
+      is_valid_on_any_filters = true
     end
   end
 
-  if not has_any_filters then
+  if not is_valid_on_any_filters then
     return false
   end
 

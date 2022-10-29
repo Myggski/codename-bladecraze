@@ -4,6 +4,7 @@ insulate("entity_query", function()
   local component = require "code.engine.ecs.component"
   local entity = require "code.engine.ecs.entity"
   local entity_query = require "code.engine.ecs.entity_query"
+  local vector2 = require "code.engine.vector2"
 
   local health_component = component(0)
   local name_component = component("")
@@ -11,10 +12,10 @@ insulate("entity_query", function()
 
   local empty_func = function() end
 
-  local first_entity = entity.create(1, empty_func, health_component, name_component)
-  local second_entity = entity.create(2, empty_func, health_component)
-  local third_entity = entity.create(3, empty_func, name_component, position_component)
-  local fourth_entity = entity.create(4, empty_func, position_component)
+  local first_entity = entity.create(1, empty_func, empty_func, health_component(), name_component())
+  local second_entity = entity.create(2, empty_func, empty_func, health_component())
+  local third_entity = entity.create(3, empty_func, empty_func, name_component(), position_component())
+  local fourth_entity = entity.create(4, empty_func, empty_func, position_component())
 
   local health_filter = entity_query.filter(function(e, config)
     return e[health_component] >= config.min_health and e[health_component] <= config.max_health
@@ -39,10 +40,10 @@ insulate("entity_query", function()
 
   -- Entity 3 setup
   third_entity[name_component] = name_component("Third Entity Second Component")
-  third_entity[position_component] = position_component({ x = 18, y = 24 })
+  third_entity[position_component] = position_component(vector2(18, 24))
 
   -- Entity 4 setup
-  fourth_entity[position_component] = position_component({ x = 6, y = 12 })
+  fourth_entity[position_component] = position_component(vector2(6, 12))
 
   describe("is_valid_archetype", function()
     describe("all", function()

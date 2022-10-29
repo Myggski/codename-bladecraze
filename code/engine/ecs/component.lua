@@ -1,10 +1,6 @@
 local component_type_meta = { __call = function(ct, ...) return ct.create(...) end }
 local COMPONENT_ID = 0
 
-local function create_component(value)
-  return { value = value }
-end
-
 -- Creates a new component type
 -- Examples of type: position, size, acceleration and so on
 local function create_component_type(default_value)
@@ -25,7 +21,7 @@ local function create_component_type(default_value)
       value = table.deep_clone(default_value)
     end
 
-    local component = setmetatable(create_component(value), component_type)
+    local component = setmetatable({ value = value }, component_type)
     component.is_component = true
 
     return component

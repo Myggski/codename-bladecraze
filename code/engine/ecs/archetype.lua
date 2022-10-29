@@ -1,12 +1,12 @@
-require "code.utilities.set"
+require "code.engine.set"
+
+local archetype = {}
+archetype.__index = archetype
 
 local CACHE_WITH = {}
 local CACHE_WITHOUT = {}
 local archetypes = {} -- All the archetypes
 local version = 0 -- Archetype version, changes whenever a new type of archetype is added
-
-local archetype = {}
-archetype.__index = archetype
 
 -- Gets already existing archetype or creates a new one
 function archetype.setup(...)
@@ -27,12 +27,15 @@ function archetype.setup(...)
     end
   end
 
+  table.sort(component_ids)
   local archetype_id = table.concat(component_ids, "_")
 
   if archetypes[archetype_id] == nil then
     archetypes[archetype_id] = setmetatable({
       _id = archetype_id,
       _components = components,
+      is_archetype = true,
+      get_id = function(a) return a._id end,
     }, archetype)
 
     version = version + 1
@@ -105,10 +108,6 @@ end
 -- Get the archetype version
 function archetype.get_version()
   return version
-end
-
-function archetype:get_id()
-  return self._id
 end
 
 -- Checks if the archetype has a specific component
