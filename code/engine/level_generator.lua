@@ -2,7 +2,7 @@ local level_generator = {}
 
 local empty_tile = 'E'
 local indestructible_tile = '0'
-local destructible_tiles = { '1', '2' }
+local destructible_tiles = { '1', '2', '3' }
 local player_tile = 'P'
 
 local function generate_level_data()
