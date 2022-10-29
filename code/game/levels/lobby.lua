@@ -6,6 +6,7 @@ local world = require "code.engine.ecs.world"
 local vector2 = require "code.engine.vector2"
 
 -- systems
+local player_attack_system = require "code.game.systems.player_attack_system"
 local input_system = require "code.game.systems.input_system"
 local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
@@ -41,6 +42,7 @@ local function load()
   level:add_system(target_movement_system)
   level:add_system(collision_system)
   level:add_system(movement_system)
+  level:add_system(player_attack_system)
   level:add_system(animation_set_state_system)
   level:add_system(animate_system)
   level:add_system(bubble_controller_system)

@@ -10,7 +10,9 @@ local player_archetype = archetype.setup(components.position,
   components.acceleration,
   components.input,
   components.health,
-  components.animation)
+  components.animation,
+  components.player_stats
+)
 
 local function create_player(world, player_id, position)
   local idle = asset_manager:get_image("player/player_idle_" .. player_id .. ".png")
@@ -27,6 +29,7 @@ local function create_player(world, player_id, position)
     }),
     components.input(),
     components.health(1),
+    components.player_stats(),
     components.animation({
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       freeze_frame = false,
@@ -36,7 +39,7 @@ local function create_player(world, player_id, position)
     })
   )
 
-  player[components.input].player = player_id
+  player[components.input].player_id = player_id
 
   return player
 end

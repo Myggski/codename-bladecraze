@@ -8,7 +8,29 @@ local collision_filter = entity_query.filter(function(entity)
   return entity[components.box_collider] and entity[components.box_collider].enabled
 end)
 
-local collision_query = entity_query.all(components.position, components.size, components.box_collider, collision_filter())
+local collision_query = entity_query.all(components.position, components.size, components.box_collider,
+  collision_filter())
+
+-- Checks if the next tile the entity is moving towards is a collider
+local function is_moving_towards_collider(self, found_entity, position, size, velocity)
+  local vector_direction = vector2(math.clamp(-1, velocity.x, 1), math.clamp(-1, velocity.y, 1))
+  local center_position = utilities.get_center_position(position, size)
+  local moving_towards_tile = vector2(
+    math.floor(center_position.x) + vector_direction.x,
+    math.floor(center_position.y) + vector_direction.y
+  )
+  local possible_colliders = self:find_at(moving_towards_tile, set.create({ found_entity }))
+  local wall_collider = nil
+
+  for possible_wall, _ in pairs(possible_colliders) do
+    wall_collider = possible_wall[components.box_collider]
+    if wall_collider and wall_collider.enabled then
+      return true
+    end
+  end
+
+  return false
+end
 
 local collision_system = system(collision_query, function(self, dt)
   local collision_box_collider = nil
@@ -19,23 +41,29 @@ local collision_system = system(collision_query, function(self, dt)
     found_entities = self:find_near_entities(collision_box_collider.position, collision_box_collider.size * 1.25,
       set.create { entity })
 
-    for entity, _ in pairs(found_entities) do
-      position, size, velocity = entity[components.position], entity[components.size], entity[components.velocity]
+    for found_entity, _ in pairs(found_entities) do
+      position, size, velocity = found_entity[components.position], found_entity[components.size],
+          found_entity[components.velocity]
 
       if not velocity then
         goto continue
       end
 
-      -- TODO: Calculate where from point a (old position) to point b (new position) did the collision happend
-      -- and reduce the velocity based on percentage, maybe
+      -- Checking the x velocity if it collides
       if utilities.overlap(collision_box_collider.position, collision_box_collider.size,
         vector2(position.x + velocity.x * dt, position.y), size) then
-        velocity.x = 0
+
+        velocity.x = is_moving_towards_collider(self, found_entity, position, size, vector2(velocity.x, 0))
+            and 0
+            or velocity.x
       end
 
+      -- Checking the y velocity if it collides
       if utilities.overlap(collision_box_collider.position, collision_box_collider.size,
         vector2(position.x, position.y + velocity.y * dt), size) then
-        velocity.y = 0
+        velocity.y = is_moving_towards_collider(self, found_entity, position, size, vector2(0, velocity.y))
+            and 0
+            or velocity.y
       end
 
       ::continue::

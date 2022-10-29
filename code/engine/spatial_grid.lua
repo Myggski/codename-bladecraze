@@ -41,8 +41,9 @@ end
     insert the client into every cell that it occupies
 ]]
 function spatial_grid:insert(entity)
-    local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(entity[components.position],
-        entity[components.size])
+    local position, size = entity[components.position], entity[components.size]
+    local min_x_index, min_y_index = math.floor(position.x), math.floor(position.y)
+    local max_x_index, max_y_index = math.floor(position.x + size.x - 0.001), math.floor(position.y + size.y - 0.001)
 
     for x = min_x_index, max_x_index do
         for y = min_y_index, max_y_index do
@@ -74,6 +75,21 @@ function spatial_grid:find_near_entities(position, size, entities_to_exclude)
                         set.add(entity_set, self.cells[key][index])
                     end
                 end
+            end
+        end
+    end
+
+    return entity_set
+end
+
+function spatial_grid:find_at(position, entities_to_exclude)
+    local entity_set = {}
+    local key = hash_key(math.round(position.x), math.round(position.y))
+
+    if set.contains(self.cells, key) then
+        for index = 1, #self.cells[key] do
+            if not set.contains(entities_to_exclude, self.cells[key][index]) then
+                set.add(entity_set, self.cells[key][index])
             end
         end
     end

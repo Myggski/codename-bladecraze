@@ -290,6 +290,10 @@ local function create_world(spatial_grid_bounds)
     return self._collision_grid:find_near_entities(position, size, entities_to_exclude)
   end
 
+  function world:find_at(position, entities_to_exclude)
+    return self._collision_grid:find_at(position, entities_to_exclude)
+  end
+
   -- This is called every tick
   -- It saves the system keys in seperate table to make sure that the systems are being called in the same order every cycle
   function world:update(dt)

@@ -13,7 +13,7 @@ local input_system = system(nil, function(self)
       return
     end
 
-    pi = player_input.get_input(input.player)
+    pi = player_input.get_input(input.player_id)
 
     input.movement_direction = pi.move_dir
     input.action = pi.action

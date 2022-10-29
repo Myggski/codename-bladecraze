@@ -57,6 +57,10 @@ local function create_system_type(query, update_fn)
       return self._world:find_near_entities(...)
     end
 
+    function system:find_at(...)
+      return self._world:find_at(...)
+    end
+
     -- Returns the world
     function system:get_world()
       return self._world
