@@ -30,7 +30,7 @@ function math.dot(x1, y1, x2, y2)
 end
 
 function math.magnitude(x, y)
-  return math.sqrt(x ^ 2 + y ^ 2)
+  return math.sqrt(x * x + y * y)
 end
 
 -- Returns 'n' rounded to the nearest 'deci'th (defaulting whole numbers).
