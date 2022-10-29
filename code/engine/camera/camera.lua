@@ -22,6 +22,7 @@ local camera = {
   is_fullscreen = false,
   zoom = 0,
   zoom_animation_coroutine = nil,
+  clear_color = { 0.18039215686, 0.13333333333, 0.18431372549, 1 }
 }
 
 -- Get screen size with scale and zoom
@@ -77,7 +78,7 @@ end
 -- Preparing to draw the game world
 function camera:start_draw_world()
   love.graphics.setCanvas(self.canvas_game)
-  love.graphics.clear(0.18039215686, 0.13333333333, 0.18431372549, 1)
+  love.graphics.clear(self.clear_color)
   love.graphics.push()
 
   local x, y = world_grid:grid_to_world(self:get_position())

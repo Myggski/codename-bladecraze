@@ -6,7 +6,8 @@ require "code.engine.extensions.math_extension"
 
 local camera = require "code.engine.camera"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
-local lobby = require "code.game.levels.lobby"
+--local lobby = require "code.game.levels.lobby"
+local game_level = require "code.game.levels.game_level"
 
 local fixed_dt = 1 / 60
 
@@ -14,7 +15,8 @@ function love.load()
   low, high = love.math.getRandomSeed()
   love.math.setRandomSeed(low, high)
   camera:load()
-  lobby.load()
+  --lobby.load()
+  game_level.load()
   game_event_manager.invoke(GAME_EVENT_TYPES.LOAD)
 end
 

@@ -3,10 +3,12 @@ local animations = require "code.engine.animations"
 local destructible_wall = require "code.game.entities.walls.destructible_wall"
 local indestructible_wall = require "code.game.entities.walls.indestructible_wall"
 
-local function create_wall(world, wall_id, start_position)
+local function create_wall(world, wall_id, level_id, start_position)
+
+  local y_offset = level_id * 22
   local wall_animation = animations.new_animation(
     asset_manager:get_image("level/walls.png"),
-    { wall_id * 16, 0, 16, 22, 1 },
+    { wall_id * 16, y_offset, 16, 22, 1 },
     0
   )
 

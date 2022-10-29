@@ -37,7 +37,6 @@ function asset_manager:get_image(file_name)
   if is_loaded then
     return asset
   end
-  print(storage_path)
 
   local image = love.graphics.newPixelImage(file_path)
   images.loaded_data[storage_path] = image
