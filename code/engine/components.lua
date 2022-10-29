@@ -13,7 +13,11 @@ local animation_component = component({
   [ANIMATION_STATE_TYPES.WALKING] = nil,
   [ANIMATION_STATE_TYPES.DEAD] = nil,
 })
-local block_component = component(true) -- if true -> block movement, if false -> blockage is disabled
+local box_collider_component = component({
+  enabled = true,
+  position = vector2.one(),
+  size = vector2.one(),
+}) -- if true -> block movement, if false -> blockage is disabled
 local input_component = component({
   player = 1, -- 1 == player 1, 2 == player 2
   controller = "keyboard" or "gamepad",
@@ -35,7 +39,7 @@ local velocity_component = component(vector2.zero())
 return {
   acceleration = acceleration_component,
   animation = animation_component,
-  block = block_component,
+  box_collider = box_collider_component,
   input = input_component,
   health = health_component,
   object_pool = object_pool_component,

@@ -1,4 +1,5 @@
 local entity = require "code.engine.ecs.entity"
+local spatial_grid = require "code.engine.spatial_grid"
 
 local world_type = {}
 local world_meta = {
@@ -64,7 +65,7 @@ local function remove_destroyed_entities(world)
     end
 
     table.remove(world._entity_data[archetype_index].entities, entity_index)
-    world._destroyed_entities[index] = nil
+    table.remove(world._destroyed_entities, index)
     world._number_of_entities = world._number_of_entities - 1
 
     changed_index = table.index_of(world._changed_entity_data_list, destroyed_entity)
@@ -150,6 +151,18 @@ local function for_each_entity(world, action, query)
   end
 end
 
+-- Prepairing an entity to be removed at the end of a update loop
+local function destroy_entity(world, destroyed_entity)
+  if not destroyed_entity:is_alive() then
+    return
+  end
+
+  table.insert(world._destroyed_entity_ids, destroyed_entity:get_id())
+  table.insert(world._destroyed_entities, destroyed_entity)
+  world._collision_grid:remove(destroyed_entity)
+  destroyed_entity._id = -1
+end
+
 -- Creates an entity and adds it into the world
 function world_type:entity(...)
   local id = generate_entity_id(self)
@@ -161,19 +174,9 @@ function world_type:entity(...)
   )
 
   add_entity_to_archetype(self, new_entity)
+  self._collision_grid:insert(new_entity)
   self._number_of_entities = self._number_of_entities + 1
   return new_entity
-end
-
--- Prepairing an entity to be removed at the end of a update loop
-local function destroy_entity(world, e)
-  if not e:is_alive() then
-    return
-  end
-
-  table.insert(world._destroyed_entity_ids, e:get_id())
-  table.insert(world._destroyed_entities, e)
-  e._id = -1
 end
 
 -- Callback that an entity calls when it is being destroyed
@@ -207,7 +210,7 @@ function world_type:destroy()
 end
 
 -- Generating the world
-local function create_world()
+local function create_world(spatial_grid_bounds)
   local world = setmetatable({
     _number_of_entities = 0,
     _entity_data = {},
@@ -217,6 +220,7 @@ local function create_world()
     _systems = {},
     _system_keys = {}, -- To make sure that the sytems are called in correct order
     _last_entity_id = 0,
+    _collision_grid = spatial_grid(spatial_grid_bounds or { x_min = -8, y_min = -5, x_max = 7, y_max = 4 })
   }, world_meta)
 
   -- Adds a system to the world
@@ -276,6 +280,14 @@ local function create_world()
     else
       for_each_entity(self, action, query)
     end
+  end
+
+  function world:update_collision_grid(entity)
+    self._collision_grid:update(entity)
+  end
+
+  function world:find_near_entities(position, size, entities_to_exclude)
+    return self._collision_grid:find_near_entities(position, size, entities_to_exclude)
   end
 
   -- This is called every tick

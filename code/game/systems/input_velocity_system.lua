@@ -10,8 +10,10 @@ local input_velocity_system = system(nil, function(self, dt)
     acceleration = entity[components.acceleration]
     velocity = entity[components.velocity]
 
-    velocity = velocity +
-        ((input.movement_direction * acceleration.speed) - (velocity:value() * acceleration.friction)) * dt
+    velocity.x = velocity.x +
+        ((input.movement_direction.x * acceleration.speed) - (velocity.x * acceleration.friction)) * dt
+    velocity.y = velocity.y +
+        ((input.movement_direction.y * acceleration.speed) - (velocity.y * acceleration.friction)) * dt
 
 
     if math.abs(velocity.x) < 0.01 then

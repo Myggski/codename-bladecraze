@@ -19,11 +19,11 @@ local function create_player(world, player_id, position)
 
   local player = world:entity(
     components.position(position),
-    components.size(vector2.one()),
+    components.size(vector2(1, 1.25)),
     components.velocity(),
     components.acceleration({
-      speed = 5,
-      friction = 10,
+      speed = 200,
+      friction = 30,
     }),
     components.input(),
     components.health(1),

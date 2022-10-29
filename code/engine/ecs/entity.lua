@@ -12,8 +12,8 @@ local function add_components(entity, ...)
       "Invalid components param, param is not a component")
 
     entity._component_values[component.get_type()] = component
-    new_archetype = new_archetype and new_archetype:add(component.get_type())
-        or entity.archetype:add(component.get_type())
+    new_archetype = new_archetype and new_archetype:add(component.get_type()) or
+        entity.archetype:add(component.get_type())
   end
 
   if not (entity.archetype == new_archetype) then

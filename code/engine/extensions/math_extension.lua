@@ -25,6 +25,14 @@ function math.normalize2(vector)
   end
 end
 
+function math.dot(x1, y1, x2, y2)
+  return x1 * x2 + y1 * y2
+end
+
+function math.magnitude(x, y)
+  return math.sqrt(x * x + y * y)
+end
+
 -- Returns 'n' rounded to the nearest 'deci'th (defaulting whole numbers).
 function math.round(n, deci) deci = 10 ^ (deci or 0) return math.floor(n * deci + .5) / deci end
 

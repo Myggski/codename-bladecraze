@@ -1,7 +1,7 @@
 local asset_manager = require "code.engine.asset_manager"
 local animations = require "code.engine.animations"
-local destructible_wall = require "code.game.entities.wall.destructible_wall"
-local indestructible_wall = require "code.game.entities.wall.indestructible_wall"
+local destructible_wall = require "code.game.entities.walls.destructible_wall"
+local indestructible_wall = require "code.game.entities.walls.indestructible_wall"
 
 local function create_wall(world, wall_id, start_position)
   local wall_animation = animations.new_animation(

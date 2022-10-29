@@ -1,4 +1,4 @@
-local vector2 = {}
+local vector2 = { }
 vector2.__index = vector2
 
 --[[
@@ -26,34 +26,32 @@ end
 function vector2:__add(value)
   local x, y = get_value(value)
 
-  self.x, self.y = self.x + x, self.y + y
-  return self
+  return create(self.x + x, self.y + y)
 end
 
 function vector2:__sub(value)
   local x, y = get_value(value)
 
-  self.x, self.y = self.x - x, self.y - y
-  return self
+  return create(self.x - x, self.y - y)
 end
 
 function vector2:__mul(value)
   local x, y = get_value(value)
 
-  self.x, self.y = self.x * x, self.y * y
-  return self
+  return create(self.x * x, self.y * y)
 end
 
 function vector2:__div(value)
   local x, y = get_value(value)
 
-  self.x, self.y = self.x / x, self.y / y
-  return self
+  return create(self.x / x, self.y / y)
 end
 
--- TODO: Find better name
--- When you want the value but not the table reference
-function vector2:value()
+function vector2:__eq(value)
+  return self.x == value.x and self.y == value.y
+end
+
+function vector2:copy()
   return create(self.x, self.y)
 end
 
@@ -65,6 +63,7 @@ return setmetatable({
   down = function(_) return create(0, 1) end,
   left = function(_) return create(-1, 0) end,
   right = function(_) return create(1, 0) end,
+  copy = function(vector) return create(vector.x, vector.y) end,
 }, {
   __call = function(_, ...) return create(...) end,
 })

@@ -11,7 +11,10 @@
     "stub",
     "spy",
     "after_each",
-    "components"
+    "components",
+    "GAME_EVENT_TYPES",
+    "ANIMATION_STATE_TYPES"
   ],
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "lua.targetVersion": "5.2"
 }
