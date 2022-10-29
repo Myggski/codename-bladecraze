@@ -11,7 +11,7 @@ local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
 local animate_system = require "code.game.systems.animate_system"
 local animation_set_state_system = require "code.game.systems.animation_set_state_system"
-local block_system = require "code.game.systems.block_system"
+local collision_system = require "code.game.systems.collision_system"
 local bubble_controller_system = require "code.game.systems.bubble_controller_system"
 local target_movement_system = require "code.game.systems.target_movement_system"
 local entity_draw = require "code.game.entity_draw"
@@ -39,7 +39,7 @@ local function load()
   level:add_system(input_system)
   level:add_system(input_velocity_system)
   level:add_system(target_movement_system)
-  level:add_system(block_system)
+  level:add_system(collision_system)
   level:add_system(movement_system)
   level:add_system(animation_set_state_system)
   level:add_system(animate_system)
