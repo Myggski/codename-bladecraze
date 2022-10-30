@@ -290,8 +290,8 @@ local function create_world(spatial_grid_bounds)
     return self._collision_grid:find_near_entities(position, size, entities_to_exclude)
   end
 
-  function world:find_at(position, entities_to_exclude)
-    return self._collision_grid:find_at(position, entities_to_exclude)
+  function world:find_at(position, size, entities_to_exclude)
+    return self._collision_grid:find_at(position, size, entities_to_exclude)
   end
 
   -- This is called every tick
@@ -300,6 +300,8 @@ local function create_world(spatial_grid_bounds)
     for index = 1, #self._system_keys do
       self._systems[self._system_keys[index]]:update(dt)
     end
+
+    --self._collision_grid:draw_debug()
 
     -- Removes the destroyed entities and rearrange the changed entities to the right archetype
     remove_destroyed_entities(self)

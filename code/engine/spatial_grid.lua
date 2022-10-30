@@ -2,6 +2,7 @@ require "code.engine.set"
 local components = require "code.engine.components"
 local debug = require "code.engine.debug"
 local world_grid = require "code.engine.world_grid"
+local vector2 = require "code.engine.vector2"
 
 local spatial_grid = {}
 
@@ -82,14 +83,20 @@ function spatial_grid:find_near_entities(position, size, entities_to_exclude)
     return entity_set
 end
 
-function spatial_grid:find_at(position, entities_to_exclude)
+function spatial_grid:find_at(position, size, entities_to_exclude)
+    local min_x_index, min_y_index = position.x, position.y
+    local max_x_index, max_y_index = math.floor(position.x + size.x - 0.001), math.floor(position.y + size.y - 0.001)
     local entity_set = {}
-    local key = hash_key(math.round(position.x), math.round(position.y))
 
-    if set.contains(self.cells, key) then
-        for index = 1, #self.cells[key] do
-            if not set.contains(entities_to_exclude, self.cells[key][index]) then
-                set.add(entity_set, self.cells[key][index])
+    for x = min_x_index, max_x_index do
+        for y = min_y_index, max_y_index do
+            local key = hash_key(x, y)
+            if set.contains(self.cells, key) then
+                for index = 1, #self.cells[key] do
+                    if not set.contains(entities_to_exclude, self.cells[key][index]) then
+                        set.add(entity_set, self.cells[key][index])
+                    end
+                end
             end
         end
     end

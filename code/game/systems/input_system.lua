@@ -3,7 +3,7 @@ local player = require "code.game.entities.player"
 local player_input = require "code.game.player_input"
 local system = require "code.engine.ecs.system"
 
-local input_system = system(nil, function(self)
+local input_system = system(function(self)
   local input, pi = nil, nil
 
   self:for_each(function(entity)

@@ -29,9 +29,9 @@ local input_component = component({
 local health_component = component(1)
 local player_data_component = component({ player_id = -1, controller_type = CONTROLLER_TYPES.GAMEPAD })
 local player_stats_component = component({
-  available_bombs = 1,
+  available_bombs = 5,
   bomb_radius = 2, -- Center and 1 neighbor
-  explosion_duration = 200,
+  explosion_duration = 5,
   max_bombs = 1,
 })
 local object_pool_component = component(1000) -- Number of entites to pre-spawn

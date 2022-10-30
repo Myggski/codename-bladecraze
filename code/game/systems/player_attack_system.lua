@@ -19,17 +19,18 @@ local function spawn_bomb(world, position, player_stats)
   function_manager.execute_after_seconds(destroy_bomb, player_stats.explosion_duration, bomb_entity, player_stats)
 end
 
-local input_system = system(function(self)
+local attack_player_system = system(function(self)
   local position, bomb_spawn_position, input, player_stats, box_collider, has_collision = nil, nil, nil, nil, nil, false
 
   self:for_each(function(entity)
     input = entity[components.input]
     player_stats = entity[components.player_stats]
     position = entity[components.position]
-    bomb_spawn_position = vector2(position.x, position.y + (BOMB_SIZE.y * 0.5))
+    bomb_spawn_position = vector2(math.floor(position.x + (BOMB_SIZE.x * 0.5)),
+      math.floor(position.y + (BOMB_SIZE.y * 0.5)))
 
     if input.action == PLAYER.ACTIONS.BASIC and player_stats.available_bombs > 0 then
-      local found_entities = self:find_at(bomb_spawn_position, set.create { entity })
+      local found_entities = self:find_at(bomb_spawn_position, BOMB_SIZE, set.create { entity })
 
       for found_entity, _ in pairs(found_entities) do
         box_collider = found_entity[components.box_collider]
@@ -46,4 +47,4 @@ local input_system = system(function(self)
   end, player.get_archetype())
 end)
 
-return input_system
+return attack_player_system
