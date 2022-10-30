@@ -28,6 +28,7 @@ local function create_player(world, player_id, position)
     components.input(),
     components.health(1),
     components.animation({
+      z_index = -50,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       freeze_frame = false,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle, { 0, 0, 16, 20, 6 }, 0.6),

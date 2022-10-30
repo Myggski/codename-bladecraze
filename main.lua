@@ -11,6 +11,8 @@ local game_level = require "code.game.levels.game_level"
 
 local fixed_dt = 1 / 60
 
+local show_fps = false
+
 function love.load()
   low, high = love.math.getRandomSeed()
   love.math.setRandomSeed(low, high)
@@ -34,6 +36,10 @@ function love.draw()
   camera:start_draw_hud()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD)
   camera:stop_draw_hud()
+
+  if show_fps then
+    love.graphics.print("Current FPS: " .. tostring(love.timer.getFPS()), 10, 10)
+  end
 end
 
 function love.mousepressed(x, y, btn, is_touch)
@@ -62,6 +68,10 @@ end
 
 function love.keypressed(key, scancode, is_repeat)
   game_event_manager.invoke(GAME_EVENT_TYPES.KEY_PRESSED, key, scancode, is_repeat)
+
+  if key == "f1" then
+    show_fps = not show_fps
+  end
 
   if key == "escape" then
     love.event.quit()
