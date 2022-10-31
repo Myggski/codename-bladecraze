@@ -11,7 +11,8 @@ local player_archetype = archetype.setup(components.position,
   components.input,
   components.health,
   components.animation,
-  components.player_stats
+  components.player_stats,
+  components.box_collider
 )
 
 local function create_player(world, player_id, position)
@@ -21,7 +22,7 @@ local function create_player(world, player_id, position)
 
   local player = world:entity(
     components.position(position),
-    components.size(vector2(1, 1.25)),
+    components.size(vector2(1, 1.375)),
     components.velocity(),
     components.acceleration({
       speed = 200,
@@ -33,9 +34,14 @@ local function create_player(world, player_id, position)
     components.animation({
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       freeze_frame = false,
-      [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle, { 0, 0, 16, 20, 6 }, 0.6),
+      [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle, { 0, 0, 16, 22, 6 }, 0.6),
       [ANIMATION_STATE_TYPES.WALKING] = animations.new_animation(walk, { 0, 0, 16, 22, 8 }, 0.8),
-      [ANIMATION_STATE_TYPES.DEAD] = animations.new_animation(dead, { 0, 0, 17, 20, 14 }, 1.4),
+      [ANIMATION_STATE_TYPES.DEAD] = animations.new_animation(dead, { 0, 0, 17, 22, 14 }, 1.4),
+    }),
+    components.box_collider({
+      enabled = true,
+      offset = vector2(0, 0.375),
+      size = vector2.one()
     })
   )
 

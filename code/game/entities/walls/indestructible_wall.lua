@@ -18,7 +18,7 @@ local function create_indestructible_wall(world, start_position, wall_animation)
     }),
     components.box_collider({
       enabled = true,
-      position = vector2(start_position.x, start_position.y),
+      offset = vector2.zero(),
       size = vector2.one()
     }),
     components.position(start_position),

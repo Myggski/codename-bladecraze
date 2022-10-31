@@ -3,6 +3,8 @@ local vector2 = require "code.engine.vector2"
 -- Returns the distance between two points.
 function math.dist(x1, y1, x2, y2) return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5 end
 
+function math.dist_vector(v1, v2) return ((v2.x - v1.x) ^ 2 + (v2.y - v1.y) ^ 2) ^ 0.5 end
+
 -- Clamps a number to within a certain range.
 function math.clamp(low, n, high) return math.min(math.max(low, n), high) end
 
