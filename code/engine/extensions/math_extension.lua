@@ -21,9 +21,9 @@ function math.normalize(x, y) local l = (x * x + y * y) ^ .5 if l == 0 then retu
 function math.normalize2(vector)
   local l = (vector.x * vector.x + vector.y * vector.y) ^ .5
   if l == 0 then
-    return vector2.zero()
+    return vector2.zero(), 0
   else
-    return vector2(vector.x / l, vector.y / l)
+    return vector / l, l
   end
 end
 
