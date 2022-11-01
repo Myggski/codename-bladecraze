@@ -16,6 +16,9 @@ local collision_system = require "code.game.systems.collision_system"
 local bubble_controller_system = require "code.game.systems.bubble_controller_system"
 local target_movement_system = require "code.game.systems.target_movement_system"
 local entity_draw = require "code.game.entity_draw"
+local damager_system = require "code.game.systems.damager_system"
+local destroy_timer_system = require "code.game.systems.destroy_timer_system"
+local explosion_system = require "code.game.systems.explosion_system"
 
 local level
 local draw
@@ -46,6 +49,9 @@ local function load()
   level:add_system(movement_system)
   level:add_system(player_attack_system)
   level:add_system(bubble_controller_system)
+  level:add_system(damager_system)
+  level:add_system(destroy_timer_system)
+  level:add_system(explosion_system)
 
   background_image(level, "level/press_start.png", vector2(-1.6875, -3.5))
   --background_image(level, "level/lobby_ready.png", vector2(4.5, -1.95))

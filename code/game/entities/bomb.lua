@@ -7,20 +7,27 @@ local vector2 = require "code.engine.vector2"
 local bomb_archetype = archetype.setup(
   components.animation,
   components.box_collider,
+  components.destroy_timer,
+  components.explosion_radius,
+  components.health,
+  components.player_stats,
   components.position,
   components.size
 )
 
-local function create_bomb(world, position)
+local function create_bomb(world, position, player_stats)
   local idle = asset_manager:get_image("bomb/bomb.png")
-  local spawn_position = vector2(math.round(position.x), math.round(position.y))
 
   return world:entity(
-    components.position(spawn_position),
+    components.health(1),
+    components.player_stats(player_stats),
+    components.destroy_timer(player_stats.explosion_duration),
+    components.explosion_radius(player_stats.bomb_radius),
+    components.position(position),
     components.size(vector2.one()),
     components.box_collider({
       enabled = true,
-      position = spawn_position,
+      offset = vector2.zero(),
       size = vector2.one()
     }),
     components.animation({
