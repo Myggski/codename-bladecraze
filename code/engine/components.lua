@@ -33,7 +33,7 @@ local health_component = component(1)
 local player_data_component = component({ player_id = -1, controller_type = CONTROLLER_TYPES.GAMEPAD })
 local player_stats_component = component({
   available_bombs = 5,
-  bomb_radius = 3, -- Center and 1 neighbor
+  bomb_radius = 1, -- Center and 1 neighbor
   explosion_duration = 2,
   max_bombs = 1,
 })
