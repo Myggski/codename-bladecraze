@@ -14,8 +14,6 @@ local draw_query = entity_query
     .any(components.animation, components.sprite)
     .none(camera_filter())
 
-
-
 local z_index_range = 100
 local x_range = 13
 local render_group_range = z_index_range + x_range
@@ -26,9 +24,8 @@ local draw = love.graphics.draw
 
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation = nil, nil, nil, nil, nil
+  local render_order_array = {}, entity_array = {}
 
-  local render_order_array = {}
-  local entity_array = {}
   self:for_each(function(entity)
     animation = entity[components.animation]
     position = entity[components.position]
