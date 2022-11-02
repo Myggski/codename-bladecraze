@@ -54,6 +54,7 @@ local function generate_level_from_data(level_data)
   local initial_offset_y = -4.5
   local number_of_level_types = 3
   local level_type = love.math.random(0, number_of_level_types - 1)
+  local level_type = 1
   local player_index = 1
   local max_players = 4
 
@@ -78,7 +79,7 @@ local function generate_level_from_data(level_data)
     end
   end
 
-  local r = level_type == 0 and 1 or 0.25
+  local r = level_type == 0 and 0.5 or 0.25
   local g = level_type == 2 and 0.5 or 0.25
   local b = level_type == 1 and 0.5 or 0.25
   camera.clear_color = { r, g, b, 1 }
@@ -96,7 +97,7 @@ local function load()
   level:add_system(animate_system)
 
   local level_data = level_generator.generate_level_data()
-  print_level_to_console(level_data)
+  --print_level_to_console(level_data)
   generate_level_from_data(level_data)
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)

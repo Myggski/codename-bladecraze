@@ -13,6 +13,8 @@ local fixed_dt = 1 / 60
 
 local show_fps = false
 
+io.stdout:setvbuf("no")
+
 function love.load()
   low, high = love.math.getRandomSeed()
   love.math.setRandomSeed(low, high)

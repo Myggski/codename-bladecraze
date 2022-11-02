@@ -58,9 +58,9 @@ function table.binary_search(t, x, low, high)
     if x == t[mid] then
       return mid
     elseif x > t[mid] then --x is on the right side
-      return binary_search(t, x, mid + 1, high)
+      return table.binary_search(t, x, mid + 1, high)
     else -- x is on the left side
-      return binary_search(t, x, low, mid - 1)
+      return table.binary_search(t, x, low, mid - 1)
     end
   end
 end
@@ -77,23 +77,26 @@ end
    [, comp] behaves as in table.sort(table, value [, comp])
    returns the index where 'value' was inserted"
 ]]
-local fcomp_default = function(a, b) return a < b end
-function table.binary_insert(t, value, fcomp)
+local comparison_func_default = function(a, b) return a < b end
+function table.binary_insert(t, value, comparison_func)
+  local start_position = 1
+  local end_position = #t
+
   -- Initialise compare function
-  local fcomp = fcomp or fcomp_default
+  local comparison_func = comparison_func or comparison_func_default
   --  Initialise numbers
-  local iStart, iEnd, iMid, iState = 1, #t, 1, 0
+  local mid_position, state = 1, 0
   -- Get insert position
-  while iStart <= iEnd do
+  while start_position <= end_position do
     -- calculate middle
-    iMid = math.floor((iStart + iEnd) / 2)
+    mid_position = math.floor((start_position + end_position) / 2)
     -- compare
-    if fcomp(value, t[iMid]) then
-      iEnd, iState = iMid - 1, 0
+    if comparison_func(value, t[mid_position]) then
+      end_position, state = mid_position - 1, 0
     else
-      iStart, iState = iMid + 1, 1
+      start_position, state = mid_position + 1, 1
     end
   end
-  table.insert(t, (iMid + iState), value)
-  return (iMid + iState)
+  table.insert(t, (mid_position + state), value)
+  return (mid_position + state)
 end
