@@ -13,16 +13,16 @@ local draw_query = entity_query
     .any(components.animation, components.sprite)
     .none(camera_filter())
 
-local z_index_range = 100
-local x_range = 13
-local render_group_range = z_index_range + x_range
-
 local binary_insert = table.binary_insert
 local binary_search = table.binary_search
 local draw = love.graphics.draw
 
+local x_segment = 0.01 --decimals are used to avoid conflicts on same row
+local y_segment = 10000 --avoid conflicts between z indices and y positions
+local z_offset = 4999
+
 local entity_draw = system(draw_query, function(self)
-  local animation, position, size, sprite, current_animation, sort_value, z_index, component
+  local animation, position, size, sprite, current_animation, sort_value, component
   local render_order_array, entity_array = {}, {}
 
   self:for_each(function(entity)
@@ -32,8 +32,10 @@ local entity_draw = system(draw_query, function(self)
     size = entity[components.size]
 
     component = animation or sprite
-    z_index = component.z_index
-    sort_value = position.y * render_group_range + position.x + z_index
+    local z = component.z_index
+    local y = math.floor(position.y)
+    local x = position.x
+    sort_value = x * x_segment + y * y_segment + z + z_offset
 
     if binary_search(render_order_array, sort_value, 1, #render_order_array) > -1 then
       goto continue
