@@ -35,7 +35,7 @@ function spatial_grid:get_indices(position, size)
     local min_x_index, min_y_index = position.x - half_w, position.y - half_h
     local max_x_index, max_y_index = position.x + half_w, position.y + half_h
 
-    return math.floor(min_x_index), math.floor(min_y_index), math.ceil(max_x_index), math.ceil(max_y_index)
+    return math.round(min_x_index), math.round(min_y_index), math.round(max_x_index), math.round(max_y_index)
 end
 
 --[[

@@ -9,7 +9,7 @@ local movement_query = entity_query.all(
 ).none(components.target_position)
 
 local movement_system = system(movement_query, function(self, dt)
-  local position, velocity, previous_position = nil, nil, nil
+  local position, velocity, input, previous_position = nil, nil, nil, nil
 
   self:for_each(function(entity)
     position = entity[components.position]
@@ -18,6 +18,8 @@ local movement_system = system(movement_query, function(self, dt)
     previous_position = position:copy()
     position.x = position.x + velocity.x * dt
     position.y = position.y + velocity.y * dt
+
+
 
     if not (position == previous_position) then
       self:update_collision_grid(entity)

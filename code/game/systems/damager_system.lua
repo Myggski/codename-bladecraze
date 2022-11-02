@@ -1,5 +1,6 @@
 local collision = require "code.engine.collision"
 local components = require "code.engine.components"
+local debug = require "code.engine.debug"
 local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
 

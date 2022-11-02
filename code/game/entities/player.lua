@@ -41,7 +41,8 @@ local function create_player(world, player_id, position)
     components.box_collider({
       enabled = true,
       offset = vector2(0, 0.375),
-      size = vector2.one()
+      size = vector2.one(),
+      ignore = set.create({ player_archetype })
     })
   )
 

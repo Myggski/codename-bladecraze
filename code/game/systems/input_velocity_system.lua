@@ -15,7 +15,6 @@ local input_velocity_system = system(nil, function(self, dt)
     velocity.y = velocity.y +
         ((input.movement_direction.y * acceleration.speed) - (velocity.y * acceleration.friction)) * dt
 
-
     if math.abs(velocity.x) < 0.01 then
       velocity.x = 0
     end

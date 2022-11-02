@@ -20,8 +20,8 @@ local function create_fire(world, position)
   return world:entity(
     components.box_collider({
       enabled = true,
-      offset = vector2.zero(),
-      size = vector2.one(),
+      offset = vector2(0.3, 0.3),
+      size = vector2(0.4, 0.4),
     }),
     components.damager(),
     components.destroy_timer(1),
