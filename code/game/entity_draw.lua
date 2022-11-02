@@ -3,7 +3,6 @@ local components = require "code.engine.components"
 local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
 local world_grid = require "code.engine.world_grid"
-local debug = require "code.engine.debug"
 
 local camera_filter = entity_query.filter(function(e)
   return camera:is_outside_camera_view(e[components.position], e[components.size])
@@ -23,8 +22,8 @@ local binary_search = table.binary_search
 local draw = love.graphics.draw
 
 local entity_draw = system(draw_query, function(self)
-  local animation, position, size, sprite, current_animation = nil, nil, nil, nil, nil
-  local render_order_array = {}, entity_array = {}
+  local animation, position, size, sprite, current_animation, sort_value, z_index, component
+  local render_order_array, entity_array = {}, {}
 
   self:for_each(function(entity)
     animation = entity[components.animation]
@@ -32,9 +31,9 @@ local entity_draw = system(draw_query, function(self)
     sprite = entity[components.sprite]
     size = entity[components.size]
 
-    local component = animation or sprite
-    local z_index = component.z_index
-    local sort_value = position.y * render_group_range + position.x + z_index
+    component = animation or sprite
+    z_index = component.z_index
+    sort_value = position.y * render_group_range + position.x + z_index
 
     if binary_search(render_order_array, sort_value, 1, #render_order_array) > -1 then
       goto continue
@@ -44,11 +43,10 @@ local entity_draw = system(draw_query, function(self)
     entity_array[sort_value] = entity
 
     ::continue::
-
   end)
-
+  local entity
   for i = 1, #render_order_array do
-    local entity = entity_array[render_order_array[i]]
+    entity = entity_array[render_order_array[i]]
     animation = entity[components.animation]
     position = entity[components.position]
     size = entity[components.size]

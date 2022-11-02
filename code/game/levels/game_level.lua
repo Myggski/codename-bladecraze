@@ -54,7 +54,6 @@ local function generate_level_from_data(level_data)
   local initial_offset_y = -4.5
   local number_of_level_types = 3
   local level_type = love.math.random(0, number_of_level_types - 1)
-  local level_type = 1
   local player_index = 1
   local max_players = 4
 
