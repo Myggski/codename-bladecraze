@@ -22,7 +22,6 @@ local draw
 
 local function on_update(dt)
   level:update(dt)
-
 end
 
 local function on_draw()
@@ -72,7 +71,7 @@ local function generate_level_from_data(level_data)
       end
     else
       if char == level_data.player_tile and player_index <= max_players then
-        player(level, player_index, vector2(x, y))
+        player(level, player_index, vector2(x, y), 5000 - player_index)
         player_index = player_index + 1
       end
     end
@@ -96,7 +95,6 @@ local function load()
   level:add_system(animate_system)
 
   local level_data = level_generator.generate_level_data()
-  --print_level_to_console(level_data)
   generate_level_from_data(level_data)
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)
