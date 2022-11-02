@@ -12,7 +12,7 @@ local player_archetype = archetype.setup(components.position,
   components.health,
   components.animation)
 
-local function create_player(world, player_id, position)
+local function create_player(world, player_id, position, z_index)
   local idle = asset_manager:get_image("player/player_idle_" .. player_id .. ".png")
   local walk = asset_manager:get_image("player/player_run_" .. player_id .. ".png")
   local dead = asset_manager:get_image("player/player_dead_" .. player_id .. ".png")
@@ -28,6 +28,7 @@ local function create_player(world, player_id, position)
     components.input(),
     components.health(1),
     components.animation({
+      z_index = z_index,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       freeze_frame = false,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle, { 0, 0, 16, 20, 6 }, 0.6),
