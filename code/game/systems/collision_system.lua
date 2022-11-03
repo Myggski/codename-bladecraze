@@ -62,7 +62,8 @@ local function try_adjust_position(self, entity, other_entity, key, dt)
   -- If the entity is moving towards an obstacle or not moving at all when it collides, it should round the position
   if direction[opposite_key_direction] == 0 then
     velocity[opposite_key_direction] = 0
-    return true -- This needs to be true and not rounded :(
+
+    return false
   end
 
   -- Get direction on where to slide to and the distance to the sliding destination

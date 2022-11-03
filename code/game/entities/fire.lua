@@ -19,7 +19,7 @@ local function create_fire(world, position)
 
   return world:entity(
     components.box_collider({
-      enabled = true,
+      enabled = false, -- Trigger collision
       offset = vector2(0.3, 0.3),
       size = vector2(0.4, 0.4),
     }),
@@ -28,7 +28,7 @@ local function create_fire(world, position)
     components.position(spawn_position),
     components.size(vector2.one()),
     components.animation({
-      z_index = 0,
+      z_index = -1000,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle,
         { 0, 0, 16, 16, 8 }

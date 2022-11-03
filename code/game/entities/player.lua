@@ -32,7 +32,7 @@ local function create_player(world, player_id, position, z_index)
     components.health(1),
     components.player_stats(),
     components.animation({
-      z_index = z_index or 0,
+      z_index = z_index + GAME.MAX_PLAYERS - player_id,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       freeze_frame = false,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle, { 0, 0, 16, 22, 6 }, 0.6),

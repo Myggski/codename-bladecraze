@@ -172,7 +172,7 @@ local function destroy_bubbles(world, entities, expected_number_of_bubbles, spaw
 
         if player_data.player_id == active_controller.player_id then
           if spawn_player then
-            active_controller.connected_player = player(world, player_data.player_id, entity[components.position])
+            active_controller.connected_player = player(world, player_data.player_id, entity[components.position], 1)
           end
 
           -- Moves/removes the keyboard bubble if needed

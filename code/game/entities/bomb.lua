@@ -31,7 +31,7 @@ local function create_bomb(world, position, player_stats)
       size = vector2.one(),
     }),
     components.animation({
-      z_index = 0,
+      z_index = -1000,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle,
         { 0, 0, 16, 16, 4 }
