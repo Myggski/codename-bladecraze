@@ -30,6 +30,7 @@ end
 function table.pack_all(...) return { n = select("#", ...), ... } end
 
 function table.unpack_all(t) return unpack(t, 1, t.n) end
+
 -- Deep clones tables, to make sure that a value doesn't refer the same table as another
 function table.deep_clone(root_table, child_table)
   child_table = child_table or {}
@@ -47,4 +48,55 @@ function table.deep_clone(root_table, child_table)
   end
 
   return clone_table
+end
+
+function table.binary_search(t, x, low, high)
+  if low > high then
+    return -1
+  else
+    mid = math.floor((low + high) / 2)
+    if x == t[mid] then
+      return mid
+    elseif x > t[mid] then --x is on the right side
+      return table.binary_search(t, x, mid + 1, high)
+    else -- x is on the left side
+      return table.binary_search(t, x, low, mid - 1)
+    end
+  end
+end
+
+--[[
+   BINARY INSERTION SORT source: http://lua-users.org/wiki/BinaryInsert   
+   
+   "Inserts a given value through BinaryInsert into the table sorted by [, comp].
+   
+   If 'comp' is given, then it must be a function that receives
+   two table elements, and returns true when the first is less
+   than the second, e.g. comp = function(a, b) return a > b end,
+   will give a sorted table, with the biggest value on position 1.
+   [, comp] behaves as in table.sort(table, value [, comp])
+   returns the index where 'value' was inserted"
+]]
+local comparison_func_default = function(a, b) return a < b end
+function table.binary_insert(t, value, comparison_func)
+  local start_position = 1
+  local end_position = #t
+
+  -- Initialise compare function
+  local comparison_func = comparison_func or comparison_func_default
+  --  Initialise numbers
+  local mid_position, state = 1, 0
+  -- Get insert position
+  while start_position <= end_position do
+    -- calculate middle
+    mid_position = math.floor((start_position + end_position) / 2)
+    -- compare
+    if comparison_func(value, t[mid_position]) then
+      end_position, state = mid_position - 1, 0
+    else
+      start_position, state = mid_position + 1, 1
+    end
+  end
+  table.insert(t, (mid_position + state), value)
+  return (mid_position + state)
 end

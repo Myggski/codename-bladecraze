@@ -12,6 +12,10 @@ local battle = require "code.game.levels.battle"
 
 local fixed_dt = 1 / 60
 
+local show_fps = false
+
+io.stdout:setvbuf("no")
+
 function love.load()
   level_manager:initialize({
     lobby,
@@ -36,6 +40,10 @@ function love.draw()
   camera:start_draw_hud()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD)
   camera:stop_draw_hud()
+
+  if show_fps then
+    love.graphics.print("Current FPS: " .. tostring(love.timer.getFPS()), 10, 10)
+  end
 end
 
 function love.mousepressed(x, y, btn, is_touch)
@@ -64,6 +72,10 @@ end
 
 function love.keypressed(key, scancode, is_repeat)
   game_event_manager.invoke(GAME_EVENT_TYPES.KEY_PRESSED, key, scancode, is_repeat)
+
+  if key == "f1" then
+    show_fps = not show_fps
+  end
 
   if key == "escape" then
     love.event.quit()

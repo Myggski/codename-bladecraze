@@ -7,6 +7,7 @@ local acceleration_component = component({
   friction = 5,
 })
 local animation_component = component({
+  z_index = 0,
   current_animation_state = ANIMATION_STATE_TYPES.IDLE,
   direction = 1,
   [ANIMATION_STATE_TYPES.IDLE] = nil,
@@ -42,7 +43,7 @@ local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
 local rotation_component = component(0) -- Radian?
 local size_component = component(vector2.one())
-local sprite_component = component({ texture = nil, quad = nil }) -- Url to static image?
+local sprite_component = component({ z_index = 0, texture = nil, quad = nil }) -- Url to static image?
 local target_position_component = component(vector2.zero())
 local velocity_component = component(vector2.zero())
 
