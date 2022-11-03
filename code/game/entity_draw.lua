@@ -32,7 +32,7 @@ local entity_draw = system(draw_query, function(self)
     size = entity[components.size]
 
     component = animation or sprite
-    local z = component.z_index
+    local z = component.z_index or 0
     local y = math.floor(position.y)
     local x = position.x
     sort_value = x * x_segment + y * y_segment + z + z_offset

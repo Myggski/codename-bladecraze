@@ -28,6 +28,7 @@ local function create_fire(world, position)
     components.position(spawn_position),
     components.size(vector2.one()),
     components.animation({
+      z_index = 0,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle,
         { 0, 0, 16, 16, 8 }
