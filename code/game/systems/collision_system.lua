@@ -3,22 +3,14 @@ local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
 local collision = require "code.engine.collision"
 local vector2 = require "code.engine.vector2"
-local debug = require "code.engine.debug"
 
-local collision_filter = entity_query.filter(function(entity)
-  return entity[components.box_collider] and entity[components.box_collider].enabled
-end)
-
-local collision_query = entity_query.all(
-  components.position,
-  components.size,
-  components.box_collider,
-  components.velocity,
-  collision_filter()
-)
+local AXIS_KEYS = {
+  X = "x",
+  Y = "y",
+}
 
 local function opposite_key(key)
-  return key == "x" and "y" or "x"
+  return key == AXIS_KEYS.X and AXIS_KEYS.Y or AXIS_KEYS.X
 end
 
 local function round_position(self, entity, key)
@@ -32,31 +24,45 @@ local function round_position(self, entity, key)
   self:update_collision_grid(entity)
 end
 
-local function try_adjust_position(self, entity, found_entity, key, dt)
+local function try_adjust_position(self, entity, other_entity, key, dt)
   local input = entity[components.input]
   local direction = input.movement_direction
   local position = entity[components.position]
   local velocity = entity[components.velocity]
   local acceleration = entity[components.acceleration]
   local box_collider = entity[components.box_collider]
+  local new_velocity = 0
   local opposite_key_direction = opposite_key(key)
   local collider_position = collision.get_collider_position(position, box_collider)
-  local found_collider_position = collision.get_collider_position(found_entity[components.position],
-    found_entity[components.box_collider])
+  local other_collider_position = collision.get_collider_position(
+    other_entity[components.position],
+    other_entity[components.box_collider]
+  )
   local rounded_collider_position = vector2(
     math.round(collider_position.x),
     math.round(collider_position.y)
   )
-
   local moving_towards_position = rounded_collider_position:copy()
   moving_towards_position[opposite_key_direction] = moving_towards_position[opposite_key_direction] +
       math.sign(direction[opposite_key_direction])
 
-  -- If the entity is moving towards an obstacle or not moving at all when it collides, it should round the position
-  if moving_towards_position == found_collider_position or direction[opposite_key_direction] == 0 then
+
+  -- If the entity is inside the collider, do nothing, so it can leave the obstacle
+  if rounded_collider_position == other_collider_position then
+    return false
+  end
+
+  -- If entity is moving towards an obsticle, round the position
+  if moving_towards_position == other_collider_position then
     round_position(self, entity, opposite_key_direction)
 
     return true
+  end
+
+  -- If the entity is moving towards an obstacle or not moving at all when it collides, it should round the position
+  if direction[opposite_key_direction] == 0 then
+    velocity[opposite_key_direction] = 0
+    return true -- This needs to be true and not rounded :(
   end
 
   -- Get direction on where to slide to and the distance to the sliding destination
@@ -74,7 +80,6 @@ local function try_adjust_position(self, entity, found_entity, key, dt)
     end
 
     velocity[opposite_key_direction] = 0
-    print(key, position.x, position.y)
     return false
   end
 
@@ -85,112 +90,88 @@ local function try_adjust_position(self, entity, found_entity, key, dt)
     return true
   end
 
-  -- Fixing rounding problem(?)
-  if not (collider_position[opposite_key_direction] == math.round(collider_position[opposite_key_direction]))
-      and velocity[opposite_key_direction] == 0
-      and math.abs(position[opposite_key_direction] - math.round(position[opposite_key_direction])) < 0.09 then
-    round_position(self, entity, opposite_key_direction)
-
-    return true
-  end
-
   -- Move closer to the slide position
-  velocity[key] = velocity[key]
-      + ((math.sign(slide_direction[key]) * acceleration.speed)
-          - (velocity[key] * acceleration.friction))
-      * dt
+  new_velocity = (math.sign(slide_direction[key]) * acceleration.speed) - (velocity[key] * acceleration.friction)
+  velocity[key] = velocity[key] + new_velocity * dt
 
   return false
 end
 
+local function try_handle_collision(self, entity, other_entity, key, dt)
+  local position = entity[components.position]
+  local box_collider = entity[components.box_collider]
+  local velocity = entity[components.velocity]
+  local other_box_collider = other_entity[components.box_collider]
+  local collider_position = collision.get_collider_position(position, box_collider)
+  local other_collider_position = collision.get_collider_position(other_entity[components.position], other_box_collider)
+  local rounded_other_collider_position = vector2(
+    math.round(other_collider_position.x),
+    math.round(other_collider_position.y)
+  )
+  local moving_to_position = vector2(
+    math.round(collider_position.x),
+    math.round(collider_position.y)
+  )
+  moving_to_position[key] = moving_to_position[key] + math.sign(velocity[key])
+
+  local new_position = vector2(collider_position.x, collider_position.y)
+  new_position[key] = new_position[key] + velocity[key] * dt
+
+  local overlapping_obstacle = collision.overlap(
+    rounded_other_collider_position, other_box_collider.size,
+    new_position, box_collider.size
+  )
+  local is_moving_towards_obstacle = math.normalize2(moving_to_position - rounded_other_collider_position)[key] == 0
+
+  if overlapping_obstacle and is_moving_towards_obstacle then
+    if not try_adjust_position(self, entity, other_entity, opposite_key(key), dt) then
+      velocity[key] = 0
+      return true
+    end
+  end
+
+  return false
+end
+
+local collision_filter = entity_query.filter(function(entity)
+  return entity[components.box_collider] and entity[components.box_collider].enabled
+end)
+
+local collision_query = entity_query.all(
+  components.position,
+  components.size,
+  components.box_collider,
+  components.velocity,
+  collision_filter()
+)
+
 -- Collision System - Runs every frame
 local collision_system = system(collision_query, function(self, dt)
-  local position, box_collider, velocity, collider_position = nil, nil, nil, nil
-  local found_entities, found_position, found_box_collider = nil, nil, nil
-  local found_collider_position, rounded_found_collider_position = nil, nil
-  local new_position, rounded_collider_position, velocity_direction = nil, nil, nil
-  local moving_towards_position_x, moving_towards_position_y = nil, nil
-  local position_y_adjusted, position_adjusted = nil, nil
+  local position, box_collider, collider_position = nil, nil, nil
+  local other_entities, other_box_collider, collision_handled = nil, nil, nil
 
   self:for_each(function(entity)
     position = entity[components.position]
     box_collider = entity[components.box_collider]
-    velocity = entity[components.velocity]
-
     collider_position = collision.get_collider_position(position, box_collider)
-    found_entities = self:find_near_entities(collider_position, box_collider.size, set.create({ entity }))
-    for found_entity, _ in pairs(found_entities) do
-      found_position, found_box_collider = found_entity[components.position], found_entity[components.box_collider]
+    other_entities = self:find_near_entities(collider_position, box_collider.size, set.create({ entity }))
+
+    for other_entity, _ in pairs(other_entities) do
+      other_box_collider = other_entity[components.box_collider]
 
       -- Checks ignore-list (should move this to spatial grid)
-      if box_collider.ignore and set.contains(box_collider.ignore, found_entity.archetype) or not found_box_collider then
+      if not other_box_collider
+          or not other_box_collider.enabled
+          or box_collider.ignore and set.contains(box_collider.ignore, other_entity.archetype) then
         goto continue
       end
 
+      -- Checking collision for x-axis
+      collision_handled = try_handle_collision(self, entity, other_entity, AXIS_KEYS.X, dt)
 
-      velocity_direction = vector2(math.sign(velocity.x), math.sign(velocity.y))
-      rounded_collider_position = vector2(
-        math.round(collider_position.x),
-        math.round(collider_position.y)
-      )
-
-      -- Checking collision on the x-axis
-      new_position = vector2(collider_position.x + velocity.x * dt, collider_position.y)
-      found_collider_position = collision.get_collider_position(found_position, found_box_collider)
-      rounded_found_collider_position = vector2(
-        math.round(found_collider_position.x),
-        math.round(found_collider_position.y)
-      )
-
-      moving_towards_position_x = rounded_collider_position:copy()
-      moving_towards_position_x.x = moving_towards_position_x.x + velocity_direction.x
-      position_y_adjusted = false
-
-      if collision.overlap(found_collider_position, found_box_collider.size, new_position, box_collider.size)
-          and math.normalize2(moving_towards_position_x - rounded_found_collider_position).x == 0 then
-        position_adjusted = try_adjust_position(self, entity, found_entity, "y", dt)
-        if not position_adjusted then
-          velocity.x = 0
-          position_y_adjusted = true
-        end
-      end
-
-      -- Checking collision on the y-axis
-      collider_position = collision.get_collider_position(position, box_collider)
-
-      velocity_direction = vector2(math.sign(velocity.x), math.sign(velocity.y))
-      rounded_collider_position = vector2(
-        math.round(collider_position.x),
-        math.round(collider_position.y)
-      )
-
-      -- Fixing scuffed problem
-      if not (collider_position.x == math.round(collider_position.x))
-          and velocity.x == 0
-          and math.abs(position.x - math.round(position.x)) < 0.09 then
-        round_position(self, entity, "x")
-
-        return true
-      end
-
-      new_position = vector2(collider_position.x, collider_position.y + velocity.y * dt)
-      found_collider_position = collision.get_collider_position(found_position, found_box_collider)
-      rounded_found_collider_position = vector2(
-        math.round(found_collider_position.x),
-        math.round(found_collider_position.y)
-      )
-
-      moving_towards_position_y = rounded_collider_position:copy()
-      moving_towards_position_y.y = moving_towards_position_y.y + velocity_direction.y
-
-      if not position_y_adjusted
-          and collision.overlap(found_collider_position, found_box_collider.size, new_position, box_collider.size)
-          and math.normalize2(moving_towards_position_y - rounded_found_collider_position).y == 0 then
-        position_adjusted = try_adjust_position(self, entity, found_entity, "x", dt)
-        if not position_adjusted then
-          velocity.y = 0
-        end
-
+      -- If it didn't collide, check y-axis
+      if not collision_handled then
+        try_handle_collision(self, entity, other_entity, AXIS_KEYS.Y, dt)
       end
 
       ::continue::

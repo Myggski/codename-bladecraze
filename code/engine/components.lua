@@ -36,6 +36,7 @@ local player_stats_component = component({
   bomb_radius = 1, -- Center and 1 neighbor
   explosion_duration = 2,
   max_bombs = 1,
+  bomb_spawn_delay = 0.1,
 })
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()

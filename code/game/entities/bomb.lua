@@ -28,7 +28,7 @@ local function create_bomb(world, position, player_stats)
     components.box_collider({
       enabled = true,
       offset = vector2.zero(),
-      size = vector2.one()
+      size = vector2.one(),
     }),
     components.animation({
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,

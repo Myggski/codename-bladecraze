@@ -18,7 +18,7 @@ local destroy_timer_system = system(damager_query, function(self, dt)
     damage = entity[components.damager]
     box_collider_position = collision.get_collider_position(position, box_collider)
 
-    found_entities = self:find_at(position, size, set.create { entity })
+    found_entities = self:find_at(position, size, set.create({ entity }))
 
     for found_entity, _ in pairs(found_entities) do
       found_health = found_entity[components.health]
@@ -33,10 +33,10 @@ local destroy_timer_system = system(damager_query, function(self, dt)
       found_box_collider_position = collision.get_collider_position(found_position, found_box_collider)
 
       -- If not overlapping with a box_collider, it should not loose health
-      if not collision.overlap(
-        box_collider_position, box_collider.size,
-        found_box_collider_position, found_box_collider.size
-      ) then
+      if not
+          collision.is_touching(
+            box_collider_position, box_collider.size,
+            found_box_collider_position, found_box_collider.size) then
         goto continue
       end
 
