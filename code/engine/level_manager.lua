@@ -32,7 +32,7 @@ function level_manager:_load_by_name(level_name)
   for index = 1, #self._levels do
     if self._levels[index].name == level_name then
       selected_level = self._levels[index]
-      goto continue
+      break
     end
   end
 
@@ -40,7 +40,6 @@ function level_manager:_load_by_name(level_name)
     return
   end
 
-  ::continue::
   self:_level_setup(selected_level)
 end
 
