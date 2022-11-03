@@ -63,7 +63,7 @@ local function try_adjust_position(self, entity, other_entity, key, dt)
   if direction[opposite_key_direction] == 0 then
     velocity[opposite_key_direction] = 0
 
-    return false
+    return false -- If movement is weird, change this to true(?)
   end
 
   -- Get direction on where to slide to and the distance to the sliding destination
