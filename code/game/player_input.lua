@@ -137,7 +137,7 @@ function player_input.is_pressing_start(controller_type, joystick)
     return joystick and joystick:isGamepadDown(GAMEPAD.BUTTONS.START)
   end
 
-  return love.keyboard.isDown(KEYBOARD.SPACE, KEYBOARD.ENTER)
+  return love.keyboard.isDown(KEYBOARD.ENTER)
 end
 
 function player_input.is_controller_active(controller_type, joystick)

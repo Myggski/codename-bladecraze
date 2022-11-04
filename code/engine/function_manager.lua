@@ -2,7 +2,7 @@ local game_event_manager = require "code.engine.game_event.game_event_manager"
 local execution_table = {}
 
 local function execute_after_seconds(func, wait_time, ...)
-  table.insert(execution_table, { func = func, wait_time = wait_time, args = table.pack_all(...) })
+  table.insert(execution_table, { func = func, wait_time = love.timer.getTime() + wait_time, args = table.pack_all(...) })
 end
 
 local function update(_)

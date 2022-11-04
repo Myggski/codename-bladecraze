@@ -18,9 +18,12 @@ local box_collider_component = component({
   enabled = true,
   position = vector2.one(),
   size = vector2.one(),
-}) -- if true -> block movement, if false -> blockage is disabled
+})
+local damager_component = component(1)
+local destroy_timer_component = component(2)
+local explosion_radius_component = component(2)
 local input_component = component({
-  player = 1, -- 1 == player 1, 2 == player 2
+  player_id = 1, -- 1 == player 1, 2 == player 2
   controller = "keyboard" or "gamepad",
   enabled = true,
   movement_direction = vector2.zero(),
@@ -29,6 +32,13 @@ local input_component = component({
 })
 local health_component = component(1)
 local player_data_component = component({ player_id = -1, controller_type = CONTROLLER_TYPES.GAMEPAD })
+local player_stats_component = component({
+  available_bombs = 5,
+  bomb_radius = 1, -- Center and 1 neighbor
+  explosion_duration = 2,
+  max_bombs = 1,
+  bomb_spawn_delay = 0.1,
+})
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
 local rotation_component = component(0) -- Radian?
@@ -41,10 +51,14 @@ return {
   acceleration = acceleration_component,
   animation = animation_component,
   box_collider = box_collider_component,
+  damager = damager_component,
+  destroy_timer = destroy_timer_component,
+  explosion_radius = explosion_radius_component,
   input = input_component,
   health = health_component,
   object_pool = object_pool_component,
   player_data = player_data_component,
+  player_stats = player_stats_component,
   position = position_component,
   rotation = rotation_component,
   size = size_component,

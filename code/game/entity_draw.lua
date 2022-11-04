@@ -32,9 +32,9 @@ local entity_draw = system(draw_query, function(self)
     size = entity[components.size]
 
     component = animation or sprite
-    local z = component.z_index
-    local y = math.floor(position.y)
-    local x = position.x
+    local z = component.z_index or 0
+    local y = math.round(position.y) -- It was floor'ed before
+    local x = math.round(position.x) -- This wasn't anything before
     sort_value = x * x_segment + y * y_segment + z + z_offset
 
     if binary_search(render_order_array, sort_value, 1, #render_order_array) > -1 then

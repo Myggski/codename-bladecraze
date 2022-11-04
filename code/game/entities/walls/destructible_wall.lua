@@ -20,8 +20,8 @@ local function create_destructible_wall(world, start_position, wall_animation)
     }),
     components.box_collider({
       enabled = true,
-      position = vector2(start_position.x, start_position.y + 0.375),
-      size = vector2(1, 0.375)
+      offset = vector2.zero(),
+      size = vector2.one()
     }),
     components.health(1),
     components.position(start_position),

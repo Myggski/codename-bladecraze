@@ -4,7 +4,7 @@ local player_input = require "code.game.player_input"
 local system = require "code.engine.ecs.system"
 
 -- Is being called every frame
-local bubble_controller_system = system(nil, function(self)
+local bubble_controller_system = system(function(self)
   local entities = helper.sort_entities(self:to_list(bubble_controller.get_archetype()))
   local number_available_joysticks = #player_input.get_available_joysticks()
   local number_active_controllers = #player_input.get_active_controllers()

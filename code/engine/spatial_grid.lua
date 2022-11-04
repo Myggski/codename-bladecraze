@@ -2,6 +2,7 @@ require "code.engine.set"
 local components = require "code.engine.components"
 local debug = require "code.engine.debug"
 local world_grid = require "code.engine.world_grid"
+local collision = require "code.engine.collision"
 
 local spatial_grid = {}
 
@@ -34,15 +35,24 @@ function spatial_grid:get_indices(position, size)
     local min_x_index, min_y_index = position.x - half_w, position.y - half_h
     local max_x_index, max_y_index = position.x + half_w, position.y + half_h
 
-    return math.floor(min_x_index), math.floor(min_y_index), math.ceil(max_x_index), math.ceil(max_y_index)
+    return math.round(min_x_index), math.round(min_y_index), math.round(max_x_index), math.round(max_y_index)
 end
 
 --[[
     insert the client into every cell that it occupies
 ]]
 function spatial_grid:insert(entity)
-    local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(entity[components.position],
-        entity[components.size])
+    local position = entity[components.position]
+    local box_collider = entity[components.box_collider]
+    local size = entity[components.size]
+
+    if box_collider then
+        position = collision.get_collider_position(position, box_collider)
+        size = box_collider.size
+    end
+
+    local min_x_index, min_y_index = math.floor(position.x), math.floor(position.y)
+    local max_x_index, max_y_index = math.floor(position.x + size.x - 0.001), math.floor(position.y + size.y - 0.001)
 
     for x = min_x_index, max_x_index do
         for y = min_y_index, max_y_index do
@@ -63,6 +73,29 @@ end
 ]]
 function spatial_grid:find_near_entities(position, size, entities_to_exclude)
     local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(position, size)
+    local entity_set = {}
+    min_x_index = min_x_index - 1
+    min_y_index = min_y_index - 1
+
+    for x = min_x_index, max_x_index do
+        for y = min_y_index, max_y_index do
+            local key = hash_key(x, y)
+            if set.contains(self.cells, key) then
+                for index = 1, #self.cells[key] do
+                    if not set.contains(entities_to_exclude, self.cells[key][index]) then
+                        set.add(entity_set, self.cells[key][index])
+                    end
+                end
+            end
+        end
+    end
+
+    return entity_set
+end
+
+function spatial_grid:find_at(position, size, entities_to_exclude)
+    local min_x_index, min_y_index = position.x, position.y
+    local max_x_index, max_y_index = math.floor(position.x + size.x - 0.001), math.floor(position.y + size.y - 0.001)
     local entity_set = {}
 
     for x = min_x_index, max_x_index do
@@ -87,11 +120,23 @@ function spatial_grid:update(entity)
 end
 
 --[[
-    remove the client from every cell that contains it
+    Remove the client from every cell that contains it
+    Remove-function needs to select a bigger grid than insert, because of position rounding
+    E.g - The position is being rounded to int, and then the spatial grid updates.
+    This can miss previous position that the entity was in before the rounding
 ]]
 function spatial_grid:remove(entity)
-    local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(entity[components.position],
-        entity[components.size])
+    local position = entity[components.position]
+    local box_collider = entity[components.box_collider]
+    local size = entity[components.size]
+
+    if box_collider then
+        position = collision.get_collider_position(position, box_collider)
+        size = box_collider.size
+    end
+
+    local min_x_index, min_y_index = math.floor(position.x - size.x), math.floor(position.y - size.y)
+    local max_x_index, max_y_index = math.floor(position.x + size.x * 2), math.floor(position.y + size.y * 2)
 
     for x = min_x_index, max_x_index do
         for y = min_y_index, max_y_index do

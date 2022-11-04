@@ -57,6 +57,10 @@ local function create_system_type(query, update_fn)
       return self._world:find_near_entities(...)
     end
 
+    function system:find_at(...)
+      return self._world:find_at(...)
+    end
+
     -- Returns the world
     function system:get_world()
       return self._world
@@ -78,8 +82,8 @@ local function create_system_type(query, update_fn)
   -- Destroys the system and everything that's in it
   function system_type:destroy()
     -- If the system has a on_destroy function, call it when the system is being destroyed in the world
-    if system_type.on_destroy then
-      system_type:on_destroy()
+    if self.on_destroy then
+      self:on_destroy()
     end
 
     table.insert(destroyed_systems_ids, self._id)

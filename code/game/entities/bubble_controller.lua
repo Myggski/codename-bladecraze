@@ -29,6 +29,7 @@ local function create_bubble_controller(world, player_id, controller_type, posit
     components.player_data({ player_id = player_id, controller_type = controller_type }),
     components.size(vector2(2, 3)),
     components.animation({
+      z_index = 100,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle,
         { 0, 0, 32, 48, 8 }
