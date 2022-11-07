@@ -10,6 +10,10 @@ local input_velocity_system = system(nil, function(self, dt)
     acceleration = entity[components.acceleration]
     velocity = entity[components.velocity]
 
+    if input.enabled == false then
+      return
+    end
+
     velocity.x = velocity.x +
         ((input.movement_direction.x * acceleration.speed) - (velocity.x * acceleration.friction)) * dt
     velocity.y = velocity.y +
