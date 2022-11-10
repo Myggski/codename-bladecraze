@@ -7,7 +7,7 @@ function set.create(in_table)
 end
 
 function set.union(set_a, set_b)
-  local res = set.create {}
+  local res = set.create({})
   for k in pairs(set_a) do res[k] = true end
   for k in pairs(set_b) do res[k] = true end
   return res
@@ -18,7 +18,7 @@ function set.add(in_set, key)
 end
 
 function set.intersection(set_a, set_b)
-  local res = set.new {}
+  local res = set.create({})
   for k in pairs(set_a) do
     res[k] = set_b[k]
   end

@@ -7,14 +7,23 @@ local vector2 = require "code.engine.vector2"
 local camera = require "code.engine.camera"
 local function_manager = require "code.engine.function_manager"
 local debug = require "code.engine.debug"
-local state_query = entity_query.all(components.input)
 
+-- --[[
+--   offset the topmost text and bottom most text by thne same value from the top and bottom
+--   todo: update margins to adapt based on fontsize and screen size?
+-- ]]
 local screen_offset_top = 240
 local screen_offset_bot = -240
 local title_margin = 20
 local description_margin = 60
 
 local menu_text = { "R - Restart", "M - Menu", "Q - Quit" }
+
+local input_filter = entity_query.filter(function(e)
+  return e[components.input].enabled == false
+end)
+
+local state_query = entity_query.all(components.input).none(input_filter())
 
 local function draw_menu_text(title_text)
   local x = love.graphics.getWidth() / 2
@@ -33,15 +42,12 @@ end
 local function handle_post_game(players)
   local text = "DRAW"
   local winner_entity = set.get_first(players)
-
   if winner_entity then
     local input = winner_entity[components.input]
-    self.winner_id = input.player_id
-    if input.enabled then
-      winner_entity[components.input].enabled = false
-      winner_entity[components.velocity] = vector2.zero()
-    end
-    text = "Player " .. self.winner_id .. " Wins!"
+    local winner_id = input.player_id
+    winner_entity[components.input].enabled = false
+    winner_entity[components.velocity] = vector2.zero()
+    text = "Player " .. winner_id .. " Wins!"
   end
   draw_menu_text(text)
 
@@ -74,7 +80,7 @@ local gamestate_system = system(state_query, function(self, dt)
   end)
 
   local alive_count, dead_count = set.get_length(players), #dead_players
-  self.is_game_over = (alive_count == 0 and dead_count > 0) or (alive_count == 1 and dead_count > 1)
+  self.is_game_over = (alive_count == 0 and dead_count > 0) or (alive_count == 1 and dead_count > 0)
 end)
 
 function gamestate_system:on_start()
