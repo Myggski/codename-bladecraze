@@ -202,8 +202,6 @@ local function draw_text(text, position, size, should_center_x, should_center_y,
     position.y = position.y - h * 0.5
   end
 
-
-
   local shape = {
     line_width = 1,
     text = text,
