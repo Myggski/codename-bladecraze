@@ -1,5 +1,6 @@
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local vector2 = require "code.engine.vector2"
+local asset_manager = require "code.engine.asset_manager"
 
 local DRAW_SPACE = {
   HUD = "hud",
@@ -16,6 +17,7 @@ local GIZMO_TYPE = {
   ELLIPSE = 3,
   RECTANGLE = 4,
   ROUNDED_RECTANGLE = 5,
+  TEXT = 6,
 }
 
 local gizmos = {
@@ -182,6 +184,38 @@ local function draw_rounded_rectangle(position, size, radiuses, segments, draw_m
   table.insert(shape_table, squircle)
 end
 
+local function draw_text(text, position, size, should_center_x, should_center_y, color, duration, draw_space)
+  draw_space = draw_space or DRAW_SPACE.WORLD
+  color = color or COLOR.WHITE
+  duration = duration or 0
+  scale = scale or vector2.one()
+  should_center_x = should_center_x or false
+  should_center_y = should_center_y or false
+  local font = asset_manager:get_font("Silver.ttf", size)
+
+  if should_center_x then
+    local w = font:getWidth(text)
+    position.x = position.x - w * 0.5
+  end
+  if should_center_y then
+    local h = font:getHeight(text)
+    position.y = position.y - h * 0.5
+  end
+
+  local shape = {
+    line_width = 1,
+    text = text,
+    font = font,
+    position = position,
+    color = color,
+    duration = duration,
+    creation_time = love.timer.getTime(),
+    gizmo_type = GIZMO_TYPE.TEXT
+  }
+  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  table.insert(shape_table, shape)
+end
+
 local function draw_shape(shape)
   love.graphics.setLineWidth(shape.line_width)
   love.graphics.setColor(shape.color)
@@ -214,6 +248,8 @@ local function draw_shape(shape)
       shape.radiuses.x,
       shape.radiuses.y,
       shape.segments)
+  elseif shape.gizmo_type == GIZMO_TYPE.TEXT then
+    love.graphics.print(shape.text, shape.font, shape.position.x, shape.position.y, 0, 1, 1, 0, 0)
   end
   love.graphics.setLineWidth(1)
 end
@@ -235,8 +271,8 @@ end
 
 local function remove_expired_objects(object_table, current_time)
   for i = #object_table, 1, -1 do
-    local line = object_table[i]
-    if line.duration > -1 and current_time - line.creation_time > line.duration then
+    local shape = object_table[i]
+    if shape.duration > -1 and current_time - shape.creation_time > shape.duration then
       table.remove(object_table, i)
     end
   end
@@ -260,4 +296,5 @@ return {
   draw_circle = draw_circle,
   draw_rectangle = draw_rectangle,
   draw_rounded_rectangle = draw_rounded_rectangle,
+  draw_text = draw_text
 }

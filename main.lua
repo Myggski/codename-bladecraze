@@ -77,6 +77,11 @@ function love.keypressed(key, scancode, is_repeat)
     show_fps = not show_fps
   end
 
+  if key == "f11" then
+    fullscreen = not fullscreen
+    love.window.setFullscreen(fullscreen, "exclusive")
+  end
+
   if key == "escape" then
     love.event.quit()
   end

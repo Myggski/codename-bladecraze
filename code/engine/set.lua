@@ -1,13 +1,13 @@
 set = {}
-    
+
 function set.create(in_table)
   local res = {}
   for _, val in ipairs(in_table) do res[val] = true end
   return res
 end
 
-function set.union (set_a,set_b)
-  local res = set.create{}
+function set.union(set_a, set_b)
+  local res = set.create({})
   for k in pairs(set_a) do res[k] = true end
   for k in pairs(set_b) do res[k] = true end
   return res
@@ -17,8 +17,8 @@ function set.add(in_set, key)
   in_set[key] = true
 end
 
-function set.intersection (set_a,set_b)
-  local res = set.new{}
+function set.intersection(set_a, set_b)
+  local res = set.create({})
   for k in pairs(set_a) do
     res[k] = set_b[k]
   end
@@ -31,7 +31,7 @@ function set.delete(in_set, key)
   end
 end
 
-function set.tostring (in_set)
+function set.tostring(in_set)
   local s = "{"
   local sep = ""
   for e in pairs(in_set) do
@@ -39,6 +39,18 @@ function set.tostring (in_set)
     sep = ", "
   end
   return s .. "}"
+end
+
+function set.get_length(in_set)
+  local i = 0
+  for index, value in pairs(in_set) do
+    i = i + 1
+  end
+  return i
+end
+
+function set.get_first(in_set)
+  return next(in_set)
 end
 
 function set.print(in_set)

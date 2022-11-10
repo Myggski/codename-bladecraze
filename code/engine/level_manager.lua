@@ -10,6 +10,11 @@ function level_manager:initialize(levels)
   self._current_level.load()
 end
 
+function level_manager:reload_level()
+  self._current_level.destroy()
+  self._current_level.load()
+end
+
 function level_manager:_level_setup(selected_level)
   self._current_level.destroy()
   self._current_level = selected_level
