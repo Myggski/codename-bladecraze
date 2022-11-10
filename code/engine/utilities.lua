@@ -2,8 +2,8 @@ local vector2 = require "code.engine.vector2"
 local gizmos = require "code.engine.debug.gizmos"
 
 local function is_inside(...)
-  local position, size, x, y = ...
-  return position.x <= x and position.y <= y and (position.x + size.w) >= x and (position.y + size.h) >= y
+  local x, y, position, size = ...
+  return position.x <= x and position.y <= y and (position.x + size.x) >= x and (position.y + size.y) >= y
 end
 
 local function get_center_position(...)

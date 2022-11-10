@@ -81,6 +81,10 @@ local function generate_level_from_data(level_data)
   local g = level_type == 2 and 0.5 or 0.25
   local b = level_type == 1 and 0.5 or 0.25
   camera.clear_color = { r, g, b, 1 }
+
+  if level_type == 3 then
+    camera.clear_color = { 46 / 255, 36 / 255, 47 / 255 }
+  end
 end
 
 local function load()
@@ -99,9 +103,11 @@ local function load()
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, on_draw)
+  player_input.active_controller(CONTROLLER_TYPES.KEYBOARD)
 end
 
 return {
+  name = "game",
   load = load,
   destroy = destroy,
 }

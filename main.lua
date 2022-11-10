@@ -8,10 +8,9 @@ local camera = require "code.engine.camera"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local level_manager = require "code.engine.level_manager"
 local lobby = require "code.game.levels.lobby"
-local battle = require "code.game.levels.battle"
+local game_level = require "code.game.levels.game_level"
 
 local fixed_dt = 1 / 60
-
 local show_fps = false
 
 io.stdout:setvbuf("no")
@@ -19,7 +18,7 @@ io.stdout:setvbuf("no")
 function love.load()
   level_manager:initialize({
     lobby,
-    battle
+    game_level,
   })
 
   camera:load()
