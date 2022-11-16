@@ -16,7 +16,7 @@ local function create_background_image(world, sprite_url, position)
   return world:entity(
     components.size(vector2.zero()),
     components.sprite({
-      z_index = 0,
+      z_index = -5000,
       texture = texture,
       quad = love.graphics.newQuad(0, 0, width, height, texture),
     }),
