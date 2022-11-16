@@ -3,7 +3,6 @@ local walls = require "code.game.entities.walls"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local world = require "code.engine.ecs.world"
 local vector2 = require "code.engine.vector2"
-
 -- systems
 local player_attack_system = require "code.game.systems.player_attack_system"
 local input_system = require "code.game.systems.input_system"
