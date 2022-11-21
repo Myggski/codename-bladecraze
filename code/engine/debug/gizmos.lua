@@ -233,7 +233,7 @@ local function draw_shape(shape)
       shape.radiuses.x,
       shape.radiuses.y,
       shape.segments)
-  elseif shape.gizmo_type == GIZMO_TYPE.RECTANGLE or shape.gizmo_type == GIZMO_TYPE.ROUNDED_RECTANGLE then
+  elseif shape.gizmo_type == GIZMO_TYPE.RECTANGLE then
     love.graphics.rectangle(shape.draw_mode,
       shape.position.x,
       shape.position.y,
@@ -285,8 +285,8 @@ local function update(_)
 end
 
 game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, update)
-game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, draw_hud)
-game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, draw_world)
+game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD_DEBUG, draw_hud)
+game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD_DEBUG, draw_world)
 
 return {
   DRAW_SPACE = DRAW_SPACE,

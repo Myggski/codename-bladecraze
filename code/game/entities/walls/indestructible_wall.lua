@@ -12,7 +12,7 @@ local indestructible_wall_archetype = archetype.setup(
 local function create_indestructible_wall(world, start_position, wall_animation)
   return world:entity(
     components.animation({
-      z_index = -4999,
+      z_index = MIN_Z_INDEX,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       freeze_frame = true,
       [ANIMATION_STATE_TYPES.IDLE] = wall_animation,

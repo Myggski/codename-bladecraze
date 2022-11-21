@@ -34,10 +34,12 @@ end
 function love.draw()
   camera:start_draw_world()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_WORLD)
+  game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_WORLD_DEBUG)
   camera:stop_draw_world()
 
   camera:start_draw_hud()
   game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD)
+  game_event_manager.invoke(GAME_EVENT_TYPES.DRAW_HUD_DEBUG)
   camera:stop_draw_hud()
 
   if show_fps then
@@ -83,6 +85,10 @@ function love.keypressed(key, scancode, is_repeat)
 
   if key == "escape" then
     love.event.quit()
+  end
+
+  if key == "f2" then --set to whatever key you want to use
+    os.execute("cls")
   end
 end
 

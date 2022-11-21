@@ -43,6 +43,8 @@ GAME_EVENT_TYPES = {
   MOUSE_RELEASED = "mousereleased",
   DRAW_WORLD = "drawworld",
   DRAW_HUD = "drawhud",
+  DRAW_WORLD_DEBUG = "drawworlddebug",
+  DRAW_HUD_DEBUG = "drawhuddebug",
   UPDATE = "update",
   LATE_UPDATE = "lateupdate",
   JOYSTICK_ADDED = "joystickadded",
@@ -52,8 +54,6 @@ GAME_EVENT_TYPES = {
   KEY_PRESSED = "keypressed",
   KEY_RELEASED = "keyreleased",
 }
-
-ENTITY_EVENT_TYPES = { ACTIVATED = "activated", DEACTIVATED = "deactivated", }
 
 GAMEPAD = {
   BUTTONS = {
