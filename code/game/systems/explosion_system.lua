@@ -4,7 +4,6 @@ local entity_query = require "code.engine.ecs.entity_query"
 local fire = require "code.game.entities.fire"
 local system = require "code.engine.ecs.system"
 local vector2 = require "code.engine.vector2"
-local debug = require "code.engine.debug"
 
 local explosion_query = entity_query.all(components.explosion_radius)
 
@@ -14,7 +13,7 @@ local explosion_system = system(explosion_query, function(self, dt)
   local position, explosion_radius, player_stats = nil, nil, nil
   local spawn_position, found_entities, new_fire = nil, nil, nil
   local found_position, found_box_collider, found_box_collider_position = nil, nil, nil
-  local fire_position, fire_box_collider, fire_box_collider_position = nil, nil, nil
+  local fire_position, fire_box_collider, fire_box_collider_position, found_health = nil, nil, nil, nil
 
   self:for_each(function(entity)
     if entity:is_alive() then
@@ -36,12 +35,13 @@ local explosion_system = system(explosion_query, function(self, dt)
         fire_box_collider_position = collision.get_collider_position(fire_position, fire_box_collider)
 
         -- Checks for entities in in at the fire position
-        found_entities = self:find_at(fire_box_collider_position, fire_box_collider.size,
+        found_entities = self:find_at(spawn_position, vector2.one(),
           set.create({ entity, new_fire }))
 
         -- Checks if the fire collides with anything
         for found_entity, _ in pairs(found_entities) do
           found_position = found_entity[components.position]
+          found_health = found_entity[components.health]
           found_box_collider = found_entity[components.box_collider]
 
           if not found_box_collider then
@@ -55,6 +55,10 @@ local explosion_system = system(explosion_query, function(self, dt)
             fire_box_collider_position, fire_box_collider.size,
             found_box_collider_position, found_box_collider.size
           ) then
+            if not found_health then
+              new_fire:destroy()
+            end
+
             goto next_direction
           end
 
