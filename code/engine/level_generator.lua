@@ -6,7 +6,7 @@ local destructible_tiles = { '1', '2', '3' }
 local player_tile = 'P'
 
 local function generate_level_data()
-  local width, height, content = 15, 9, ""
+  local width, height, content = 16, 9, ""
   local max_tiles = width * height - 12
   local max_percentage_skippable_tiles = 0.2
   local chance_of_empty = 0.1
@@ -15,7 +15,7 @@ local function generate_level_data()
   local outer_edges = { top = 1, bot = height, left = 1, right = width }
   local inner_edges = { top = 2, bot = height - 1, left = 2, right = width - 1 }
 
-  get_random_tile = function()
+  local get_random_tile = function()
     if skipped_tiles < skippable_tile_count then
       local rand = love.math.random()
       if rand <= chance_of_empty then
