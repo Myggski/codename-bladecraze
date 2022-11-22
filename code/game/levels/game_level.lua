@@ -49,7 +49,7 @@ local function print_level_to_console(level_data)
 end
 
 local function generate_level_from_data(level_data)
-  local initial_offset_x = -7.5
+  local initial_offset_x = -8.5
   local initial_offset_y = -4.5
   local number_of_level_types = 3
   local level_type = love.math.random(0, number_of_level_types - 1)
