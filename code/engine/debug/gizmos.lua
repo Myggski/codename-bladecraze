@@ -255,7 +255,6 @@ local function draw_shape(shape)
 end
 
 local function draw_shapes(shape_table)
-  print(#shape_table)
   for i = 1, #shape_table do
     draw_shape(shape_table[i])
   end

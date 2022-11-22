@@ -65,6 +65,24 @@ function table.binary_search(t, x, low, high)
   end
 end
 
+--add number tables with same keys together
+function table.add_numeric(t1, t2)
+  local result = {}
+  for key, value in pairs(t2) do
+    if t1[key] then
+      result[key] = t1[key] + value
+    end
+  end
+  return result
+end
+
+--adds numbers from t2 to t1 numbers without checks
+function table.add_numeric_unsafe(t1, t2)
+  for key, value in pairs(t2) do
+    t1[key] = t1[key] + value
+  end
+end
+
 --[[
    BINARY INSERTION SORT source: http://lua-users.org/wiki/BinaryInsert   
    

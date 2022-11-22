@@ -13,8 +13,8 @@ local debug_draw_entities_system = system(debug_query, function(self, dt)
   self:for_each(function(entity)
     position = entity[components.position]
     size = entity[components.size]
-    position = world_grid:convert_to_world(position)
-    size = world_grid:convert_to_world(size)
+    -- position = world_grid:convert_to_world(position)
+    -- size = world_grid:convert_to_world(size)
     debug.gizmos.draw_rectangle(position, size, nil, COLOR.WHITE, 1, 0)
   end)
 end)

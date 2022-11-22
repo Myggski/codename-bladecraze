@@ -21,7 +21,7 @@ local gamestate_system = require "code.game.systems.gamestate_system"
 local powerup_spawner_system = require "code.game.systems.powerup_spawner_system"
 local powerup_activator_system = require "code.game.systems.powerup_activator_system"
 local debug_draw_entities_system = require "code.game.systems.debug_draw_entities"
-
+local powerup = require "code.game.entities.powerups.powerup"
 local level
 local draw
 
@@ -62,14 +62,14 @@ local function load()
   background_image(level, "level/floor1.png", vector2(-8, -4.5))
   level:add_system(debug_draw_entities_system)
 
-
   --background_image(level, "level/lobby_ready.png", vector2(4.5, -1.95))
   --background_image(level, "level/lobby_quit.png", vector2(-7.5, -1.95))
 
-  walls(level, 1, 1, vector2(3, -4))
+  --walls(level, 1, 1, vector2(3, -4))
   -- walls(level, 0, 1, vector2(3, -2))
   -- walls(level, 0, 1, vector2(3, 0))
-  -- walls(level, 0, 1, vector2(3, 2))
+  walls(level, 1, 1, vector2(3, 2))
+  --local power = powerup(level, vector2(1, 1))
   -- walls(level, 0, 1, vector2(3, 4))
   -- walls(level, 1, 1, vector2(1, -3))
   -- walls(level, 1, 1, vector2(1, -1))

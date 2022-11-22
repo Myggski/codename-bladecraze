@@ -8,8 +8,9 @@ local vector2 = require "code.engine.vector2"
 local powerup_archetype = archetype.setup(
   components.animation,
   components.box_collider,
-  components.size,
-  components.position
+  components.player_stats,
+  components.position,
+  components.size
 )
 
 local function create_powerup(world, position)
@@ -19,7 +20,14 @@ local function create_powerup(world, position)
     components.box_collider({
       enabled = false, -- Trigger collision
       offset = vector2(0, 0),
-      size = vector2(1, 1.5),
+      size = vector2(1, 1),
+    }),
+    components.player_stats({
+      available_bombs = 0,
+      bomb_radius = 1, -- Center and 1 neighbor
+      explosion_duration = 0,
+      max_bombs = 0,
+      bomb_spawn_delay = 0
     }),
     components.position(spawn_position),
     components.size(vector2.one()),
@@ -35,5 +43,6 @@ end
 
 return setmetatable({
   create = create_powerup,
+  archetype = powerup_archetype,
   get_archetype = function() return powerup_archetype end,
 }, { __call = function(_, ...) return create_powerup(...) end })
