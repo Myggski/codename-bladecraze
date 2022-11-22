@@ -14,7 +14,7 @@ local get_execution_time = function(func, ...)
 end
 
 local print_execution_time = function(func_name, func, ...)
-  print(string.format("%s executed in %fms", func_name, get_execution_time(func, ...) * TIME_FORMAT.MILLI))
+  print(string.format("%s executed in %fms", func_name, get_execution_time(func, ...) * TIME_FORMAT.MILLI.conversion))
 end
 
 local print_execution_time_formatted = function(func_name, format, func, ...)

@@ -20,7 +20,7 @@ local GIZMO_TYPE = {
   TEXT = 6,
 }
 
-local gizmos = {
+local shapes = {
   hud_shapes = {},
   world_shapes = {},
 }
@@ -47,7 +47,7 @@ local function draw_line(line_dots, color, line_width, duration, draw_space)
     line_width = line_width,
     gizmo_type = GIZMO_TYPE.LINE
   }
-  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  local shape_table = draw_space == DRAW_SPACE.WORLD and shapes.world_shapes or shapes.hud_shapes
   table.insert(shape_table, line)
 end
 
@@ -78,7 +78,7 @@ local function draw_circle(position, radius, draw_mode, color, line_width, durat
     creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.CIRCLE
   }
-  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  local shape_table = draw_space == DRAW_SPACE.WORLD and shapes.world_shapes or shapes.hud_shapes
   table.insert(shape_table, circle)
 end
 
@@ -111,7 +111,7 @@ local function draw_ellipse(position, radiuses, segments, draw_mode, color, line
     creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.ELLIPSE
   }
-  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  local shape_table = draw_space == DRAW_SPACE.WORLD and shapes.world_shapes or shapes.hud_shapes
   table.insert(shape_table, ellipse)
 end
 
@@ -143,7 +143,7 @@ local function draw_rectangle(position, size, draw_mode, color, line_width, dura
     creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.RECTANGLE
   }
-  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  local shape_table = draw_space == DRAW_SPACE.WORLD and shapes.world_shapes or shapes.hud_shapes
   table.insert(shape_table, rectangle)
 end
 
@@ -180,7 +180,7 @@ local function draw_rounded_rectangle(position, size, radiuses, segments, draw_m
     creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.ROUNDED_RECTANGLE
   }
-  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  local shape_table = draw_space == DRAW_SPACE.WORLD and shapes.world_shapes or shapes.hud_shapes
   table.insert(shape_table, squircle)
 end
 
@@ -212,7 +212,7 @@ local function draw_text(text, position, size, should_center_x, should_center_y,
     creation_time = love.timer.getTime(),
     gizmo_type = GIZMO_TYPE.TEXT
   }
-  local shape_table = draw_space == DRAW_SPACE.WORLD and gizmos.world_shapes or gizmos.hud_shapes
+  local shape_table = draw_space == DRAW_SPACE.WORLD and shapes.world_shapes or shapes.hud_shapes
   table.insert(shape_table, shape)
 end
 
@@ -233,7 +233,7 @@ local function draw_shape(shape)
       shape.radiuses.x,
       shape.radiuses.y,
       shape.segments)
-  elseif shape.gizmo_type == GIZMO_TYPE.RECTANGLE or shape.gizmo_type == GIZMO_TYPE.ROUNDED_RECTANGLE then
+  elseif shape.gizmo_type == GIZMO_TYPE.RECTANGLE then
     love.graphics.rectangle(shape.draw_mode,
       shape.position.x,
       shape.position.y,
@@ -262,11 +262,11 @@ local function draw_shapes(shape_table)
 end
 
 local function draw_world()
-  draw_shapes(gizmos.world_shapes)
+  draw_shapes(shapes.world_shapes)
 end
 
 local function draw_hud()
-  draw_shapes(gizmos.hud_shapes)
+  draw_shapes(shapes.hud_shapes)
 end
 
 local function remove_expired_objects(object_table, current_time)
@@ -280,15 +280,18 @@ end
 
 local function update(_)
   local current_time = love.timer.getTime()
-  remove_expired_objects(gizmos.hud_shapes, current_time)
-  remove_expired_objects(gizmos.world_shapes, current_time)
+  remove_expired_objects(shapes.hud_shapes, current_time)
+  remove_expired_objects(shapes.world_shapes, current_time)
 end
 
 game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, update)
-game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, draw_hud)
-game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, draw_world)
+game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD_DEBUG, draw_hud)
+game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD_DEBUG, draw_world)
 
 return {
+  update = update,
+  draw_hud = draw_hud,
+  draw_world = draw_world,
   DRAW_SPACE = DRAW_SPACE,
   DRAW_MODE = DRAW_MODE,
   draw_line = draw_line,
