@@ -9,6 +9,7 @@ local player = require "code.game.entities.player"
 local camera = require "code.engine.camera"
 
 -- systems
+local player_attack_system = require "code.game.systems.player_attack_system"
 local input_system = require "code.game.systems.input_system"
 local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
@@ -16,6 +17,10 @@ local animate_system = require "code.game.systems.animate_system"
 local animation_set_state_system = require "code.game.systems.animation_set_state_system"
 local collision_system = require "code.game.systems.collision_system"
 local entity_draw = require "code.game.entity_draw"
+local damager_system = require "code.game.systems.damager_system"
+local destroy_timer_system = require "code.game.systems.destroy_timer_system"
+local explosion_system = require "code.game.systems.explosion_system"
+local gamestate_system = require "code.game.systems.gamestate_system"
 
 local level
 local draw
@@ -29,7 +34,6 @@ local function on_draw()
 end
 
 local function destroy()
-  player_input.remove_on_player_activated()
   level:destroy()
 end
 
@@ -49,12 +53,14 @@ local function print_level_to_console(level_data)
 end
 
 local function generate_level_from_data(level_data)
-  local initial_offset_x = -8.5
-  local initial_offset_y = -4.5
+  local initial_offset_x = -8
+  local initial_offset_y = -5
   local number_of_level_types = 3
   local level_type = love.math.random(0, number_of_level_types - 1)
   local player_index = 1
-  local max_players = 4
+  local max_players = table.get_size(player_input.get_active_controllers())
+
+  background_image(level, "level/floor" .. level_type .. ".png", vector2(-8.5, -5))
 
   for i = 0, #level_data.content - 1 do
     local x, y = i % level_data.width + initial_offset_x, math.floor(i / level_data.width) + initial_offset_y
@@ -90,13 +96,19 @@ end
 local function load()
   level = world()
   draw = entity_draw(level)
+  camera:look_at(0.5, -0.5)
 
   level:add_system(input_system)
+  level:add_system(damager_system)
+  level:add_system(destroy_timer_system)
+  level:add_system(explosion_system)
   level:add_system(input_velocity_system)
-  level:add_system(collision_system)
-  level:add_system(movement_system)
   level:add_system(animation_set_state_system)
   level:add_system(animate_system)
+  level:add_system(collision_system)
+  level:add_system(movement_system)
+  level:add_system(player_attack_system)
+  level:add_system(gamestate_system)
 
   local level_data = level_generator.generate_level_data()
   generate_level_from_data(level_data)

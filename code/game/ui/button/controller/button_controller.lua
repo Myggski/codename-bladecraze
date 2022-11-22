@@ -14,19 +14,25 @@ local button = {
 
 function button:_mousepressed(x, y, button_position, _)
   for index = 1, #self._buttons do
-    self._buttons[index]:try_click(x, y, button_position, true)
+    if self._buttons[index].enabled then
+      self._buttons[index]:try_click(x, y, button_position, true)
+    end
   end
 end
 
 function button:_mousereleased(x, y, button_position, _)
   for index = 1, #self._buttons do
-    self._buttons[index]:try_click(x, y, button_position, false)
+    if self._buttons[index].enabled then
+      self._buttons[index]:try_click(x, y, button_position, false)
+    end
   end
 end
 
 function button:_update()
   for index = 1, #self._buttons do
-    self._buttons[index]:try_hover()
+    if self._buttons[index].enabled then
+      self._buttons[index]:try_hover()
+    end
   end
 end
 
@@ -73,7 +79,7 @@ end
 function button:_add_events()
   game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, function(...) button._mousepressed(self, ...) end)
   game_event_manager.add_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, function(...) button._mousereleased(self, ...) end)
-  game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, function(...) button._update(self, ...) end)
+  game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, function() button._update(self) end)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_HUD, function(...) button._draw(self) end)
   game_event_manager.add_listener(GAME_EVENT_TYPES.QUIT, function(...) button._remove_all(self) end)
 end
@@ -81,7 +87,7 @@ end
 function button:_remove_events()
   game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_PRESSED, function(...) button._mousepressed(self, ...) end)
   game_event_manager.remove_listener(GAME_EVENT_TYPES.MOUSE_RELEASED, function(...) button._mousereleased(self, ...) end)
-  game_event_manager.remove_listener(GAME_EVENT_TYPES.UPDATE, function(...) button._update(self, ...) end)
+  game_event_manager.remove_listener(GAME_EVENT_TYPES.UPDATE, function() button._update(self) end)
   game_event_manager.remove_listener(GAME_EVENT_TYPES.DRAW_HUD, function(...) button._draw(self) end)
   game_event_manager.remove_listener(GAME_EVENT_TYPES.QUIT, function(...) button._remove_all(self) end)
 end

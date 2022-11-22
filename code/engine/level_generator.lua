@@ -15,7 +15,7 @@ local function generate_level_data()
   local outer_edges = { top = 1, bot = height, left = 2, right = width - 1 }
   local inner_edges = { top = 2, bot = height - 1, left = 3, right = width - 2 }
 
-  get_random_tile = function()
+  local get_random_tile = function()
     if skipped_tiles < skippable_tile_count then
       local rand = love.math.random()
       if rand <= chance_of_empty then

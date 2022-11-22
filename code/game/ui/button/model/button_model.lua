@@ -12,6 +12,10 @@ function button_model:_clear_state()
   self.animation_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT
 end
 
+function button_model:set_enabled(enabled)
+  self.enabled = enabled
+end
+
 function button_model:add_listener(event_type, callback)
   self.callbacks[event_type] = self.callbacks[event_type] or {}
   table.insert(self.callbacks[event_type], callback)
@@ -34,6 +38,10 @@ function button_model:try_click(x, y, btn, is_pressing)
     end
   elseif btn == BUTTON_CLICK_TYPES.LEFT and not is_pressing then
     self:_clear_state()
+
+    if not utilities.is_inside(x, y, self.position, self.size) then
+      return
+    end
 
     for _, callback in pairs(self.callbacks[BUTTON_EVENT_TYPES.RELEASE]) do
       callback()
@@ -66,6 +74,7 @@ function button_model:create(position, size, text, font, sprite_batch, quads)
   return setmetatable({
     animation_state = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
     animation_state_previous = BUTTON_ANIMATION_STATE_TYPES.DEFAULT,
+    enabled = true,
     font = font,
     is_mouse_hovering = false,
     position = position,
