@@ -60,7 +60,7 @@ local function generate_level_from_data(level_data)
   local player_index = 1
   local max_players = table.get_size(player_input.get_active_controllers())
 
-  background_image(level, "level/floor" .. level_type .. ".png", vector2(-8, -5))
+  background_image(level, "level/floor" .. level_type .. ".png", vector2(-8.5, -5))
 
   for i = 0, #level_data.content - 1 do
     local x, y = i % level_data.width + initial_offset_x, math.floor(i / level_data.width) + initial_offset_y
@@ -96,7 +96,7 @@ end
 local function load()
   level = world()
   draw = entity_draw(level)
-  camera:look_at(0, -0.5)
+  camera:look_at(0.5, -0.5)
 
   level:add_system(input_system)
   level:add_system(damager_system)
