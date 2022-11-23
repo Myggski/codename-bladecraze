@@ -9,12 +9,13 @@ local background_image_archetype = archetype.setup(
   components.position
 )
 
-local function create_background_image(world, sprite_url, position)
+local function create_background_image(world, sprite_url, position, size)
   local texture = asset_manager:get_image(sprite_url)
   local width, height = texture:getDimensions()
+  size = size or vector2.one()
 
   return world:entity(
-    components.size(vector2.zero()),
+    components.size(size),
     components.sprite({
       z_index = MIN_Z_INDEX,
       texture = texture,

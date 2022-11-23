@@ -2,13 +2,22 @@ local asset_manager = require "code.engine.asset_manager"
 local nine_slice_scaling = require "code.engine.nine_slice_scaling"
 local camera = require "code.engine.camera"
 
+local number_of_button_types = 2 -- normal and disabled button
+local number_of_states = table.get_size(BUTTON_ANIMATION_STATE_TYPES)
+local number_of_button_images = number_of_states * number_of_button_types
+
 --[[
   Return all the quads for the active animation
 ]]
 local function _get_active_quads(button)
   local current_quads = {}
-  local number_of_quads = (table.get_size(button.quads) / table.get_size(BUTTON_ANIMATION_STATE_TYPES))
+  local number_of_quads = table.get_size(button.quads) / number_of_button_images
   local animation_offset = button.animation_state - 1
+
+  if not button.enabled then
+    animation_offset = animation_offset + 3
+  end
+
   local animation_offset_index = number_of_quads * animation_offset
 
   for index = 1, number_of_quads do
@@ -29,7 +38,7 @@ local function _update_sprite_batch(button)
   nine_slice_scaling.set_sprite_batch(
     button.position,
     button.size,
-    texture:getWidth() / table.get_size(BUTTON_ANIMATION_STATE_TYPES),
+    texture:getWidth() / number_of_button_images,
     texture:getHeight(),
     active_quads,
     button.sprite_batch
@@ -42,7 +51,7 @@ end
 ]]
 local function _add_text(button, text_list)
   local button_center_x = button.position.x + (button.size.x * 0.5)
-  local button_center_y = button.position.x + (button.size.y * 0.5)
+  local button_center_y = button.position.y + (button.size.y * 0.5)
   local text_width, text_height = asset_manager:get_text_size(button.font, button.text)
   local animation_y_offset = (button.animation_state - 1) * camera:get_scale()
   local text_x = button_center_x - text_width * 0.5
@@ -64,7 +73,7 @@ end
 ]]
 local function get_quads(sprite_batch)
   local texture = sprite_batch:getTexture()
-  local image_width, image_height = texture:getWidth() / table.get_size(BUTTON_ANIMATION_STATE_TYPES),
+  local image_width, image_height = texture:getWidth() / number_of_button_images,
       texture:getHeight()
 
   return nine_slice_scaling.create_quads(sprite_batch, image_width, image_height)
