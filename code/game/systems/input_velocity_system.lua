@@ -9,15 +9,16 @@ local input_velocity_system = system(nil, function(self, dt)
     input = entity[components.input]
     acceleration = entity[components.acceleration]
     velocity = entity[components.velocity]
+    stats = entity[components.player_stats]
 
     if input.enabled == false then
       return
     end
 
     velocity.x = velocity.x +
-        ((input.movement_direction.x * acceleration.speed) - (velocity.x * acceleration.friction)) * dt
+        ((input.movement_direction.x * stats.speed) - (velocity.x * acceleration.friction)) * dt
     velocity.y = velocity.y +
-        ((input.movement_direction.y * acceleration.speed) - (velocity.y * acceleration.friction)) * dt
+        ((input.movement_direction.y * stats.speed) - (velocity.y * acceleration.friction)) * dt
 
     if math.abs(velocity.x) < 0.01 then
       velocity.x = 0

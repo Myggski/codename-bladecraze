@@ -7,10 +7,9 @@ local gizmos = require "code.engine.debug.gizmos"
 local grid = require "code.engine.world_grid"
 local vector2 = require "code.engine.vector2"
 local debug = require "code.engine.debug"
+local player = require "code.game.entities.player"
 
-local player_query = entity_query.all(components.input, components.box_collider)
-
-local powerup_activator_system = system(player_query, function(self, dt)
+local powerup_activator_system = system(function(self, dt)
   local position, size, damage, box_collider, box_collider_position = nil, nil, nil, nil, nil
   local player_stats = nil
   local found_entities = nil
@@ -22,8 +21,6 @@ local powerup_activator_system = system(player_query, function(self, dt)
     local pos = grid:convert_to_world(position)
     box_collider_position = collision.get_collider_position(position, box_collider)
     found_entities = self:find_at(position, size, set.create({ entity })) --hittar bara bomber å eld, inte powerups :(
-    gizmos.draw_rectangle(position,
-      size, nil, COLOR.BLUE, 2, 0)
 
     for other_entity, _ in pairs(found_entities) do
       local found_box_collider = other_entity[components.box_collider]
@@ -43,16 +40,13 @@ local powerup_activator_system = system(player_query, function(self, dt)
         goto continue
       end
       if (other_entity.archetype == powerup.archetype) then
-        debug.print_execution_time_formatted("safe add: ", debug.TIME_FORMAT.MICRO, table.add_numeric, player_stats,
-          found_stats)
-        debug.print_execution_time_formatted("unsafe add: ", debug.TIME_FORMAT.MICRO, table.add_numeric_unsafe,
-          player_stats, found_stats)
+        table.add_numeric_unsafe(player_stats, found_stats)
         other_entity:destroy()
       end
       ::continue::
     end
 
-  end)
+  end, player:get_archetype())
 end)
 
 return powerup_activator_system

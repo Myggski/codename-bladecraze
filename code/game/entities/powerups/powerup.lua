@@ -3,7 +3,7 @@ local archetype = require "code.engine.ecs.archetype"
 local asset_manager = require "code.engine.asset_manager"
 local components = require "code.engine.components"
 local vector2 = require "code.engine.vector2"
--- local data = require "code.game.powerups.powerup_data"
+local powerup_data = require "code.game.entities.powerups.powerup_data".data
 
 local powerup_archetype = archetype.setup(
   components.animation,
@@ -16,27 +16,23 @@ local powerup_archetype = archetype.setup(
 local function create_powerup(world, position)
   local idle = asset_manager:get_image("powerup/powerups.png")
   local spawn_position = vector2(math.round(position.x), math.round(position.y))
+  local powerup_index = math.random(#powerup_data)
+  local powerup = powerup_data[powerup_index]
   return world:entity(
     components.box_collider({
       enabled = false, -- Trigger collision
       offset = vector2(0, 0),
       size = vector2(1, 1),
     }),
-    components.player_stats({
-      available_bombs = 0,
-      bomb_radius = 1, -- Center and 1 neighbor
-      explosion_duration = 0,
-      max_bombs = 0,
-      bomb_spawn_delay = 0
-    }),
+    components.player_stats(powerup.stats),
     components.position(spawn_position),
     components.size(vector2.one()),
     components.animation({
       z_index = -1000,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle,
-        { 0, 0, 16, 24, 1 }
-        , 0.8),
+        powerup.animation_data,
+        0.8)
     })
   )
 end

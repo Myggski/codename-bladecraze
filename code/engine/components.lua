@@ -1,6 +1,8 @@
 -- All the componets with their default values in the game, that the systems will use to get values
 local component = require "code.engine.ecs.component"
 local vector2 = require "code.engine.vector2"
+local data = require "code.game.entities.powerups.powerup_data"
+local keys = data.UPGRADE_KEYS
 
 local acceleration_component = component({
   speed = 10,
@@ -33,11 +35,11 @@ local input_component = component({
 local health_component = component(1)
 local player_data_component = component({ player_id = -1, controller_type = CONTROLLER_TYPES.GAMEPAD })
 local player_stats_component = component({
-  available_bombs = 5,
-  bomb_radius = 1, -- Center and 1 neighbor
   explosion_duration = 2,
-  max_bombs = 1,
   bomb_spawn_delay = 0.1,
+  [keys.BOMB_RADIUS] = 1, -- Center and 1 neighbor
+  [keys.BOMBS] = 1,
+  [keys.SPEED] = 200
 })
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
