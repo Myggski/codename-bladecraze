@@ -4,9 +4,6 @@ local system = require "code.engine.ecs.system"
 local gizmos = require "code.engine.debug.gizmos"
 local level_manager = require "code.engine.level_manager"
 local vector2 = require "code.engine.vector2"
-local camera = require "code.engine.camera"
-local function_manager = require "code.engine.function_manager"
-local debug = require "code.engine.debug"
 
 -- --[[
 --   offset the topmost text and bottom most text by thne same value from the top and bottom
@@ -14,7 +11,6 @@ local debug = require "code.engine.debug"
 -- ]]
 local screen_offset_top = 240
 local screen_offset_bot = -240
-local title_margin = 20
 local description_margin = 60
 
 local menu_text = { "R - Restart", "M - Menu", "Q - Quit" }
@@ -71,7 +67,7 @@ local gamestate_system = system(state_query, function(self, dt)
   end
 
   self:for_each(function(entity)
-    if entity:is_alive() then
+    if entity[components.health] > 0 then
       set.add(players, entity)
     else
       set.delete(players, entity)

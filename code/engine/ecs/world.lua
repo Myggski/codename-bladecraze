@@ -89,7 +89,7 @@ local function update_entities(world)
       entity_index = table.index_of(world._entity_data[archetype_index].entities, changed_entity_data.entity)
 
       if entity_index > 0 then
-        world._entity_data[archetype_index][entity_index] = nil
+        world._entity_data[archetype_index].entities[entity_index] = nil
         add_entity_to_archetype(world, changed_entity_data.entity)
       end
     end
@@ -207,6 +207,8 @@ function world_type:destroy()
   end
 
   self._systems = {}
+  self._system_keys = {}
+  self._number_of_entities = 0
 end
 
 -- Generating the world
