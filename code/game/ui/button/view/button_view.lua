@@ -2,12 +2,16 @@ local asset_manager = require "code.engine.asset_manager"
 local nine_slice_scaling = require "code.engine.nine_slice_scaling"
 local camera = require "code.engine.camera"
 
+local number_of_button_types = 2 -- normal and disabled button
+local number_of_states = table.get_size(BUTTON_ANIMATION_STATE_TYPES)
+local number_of_button_images = number_of_states * number_of_button_types
+
 --[[
   Return all the quads for the active animation
 ]]
 local function _get_active_quads(button)
   local current_quads = {}
-  local number_of_quads = (table.get_size(button.quads) / (table.get_size(BUTTON_ANIMATION_STATE_TYPES) * 2))
+  local number_of_quads = table.get_size(button.quads) / number_of_button_images
   local animation_offset = button.animation_state - 1
 
   if not button.enabled then
@@ -34,7 +38,7 @@ local function _update_sprite_batch(button)
   nine_slice_scaling.set_sprite_batch(
     button.position,
     button.size,
-    texture:getWidth() / (table.get_size(BUTTON_ANIMATION_STATE_TYPES) * 2),
+    texture:getWidth() / number_of_button_images,
     texture:getHeight(),
     active_quads,
     button.sprite_batch
@@ -69,7 +73,7 @@ end
 ]]
 local function get_quads(sprite_batch)
   local texture = sprite_batch:getTexture()
-  local image_width, image_height = texture:getWidth() / (table.get_size(BUTTON_ANIMATION_STATE_TYPES) * 2),
+  local image_width, image_height = texture:getWidth() / number_of_button_images,
       texture:getHeight()
 
   return nine_slice_scaling.create_quads(sprite_batch, image_width, image_height)
