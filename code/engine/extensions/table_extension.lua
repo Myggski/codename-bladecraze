@@ -83,6 +83,22 @@ function table.add_numeric_unsafe(t1, t2)
   end
 end
 
+--in-place fisher-yates shuffle
+function table.shuffle(t)
+  local size = #t
+  local rand
+  for i = size, 2, -1 do
+    rand = love.math.random(1, i)
+    t[i], t[rand] = t[rand], t[i]
+  end
+end
+
+function table.insert_many(t, value, count)
+  for i = 1, count do
+    table.insert(t, value)
+  end
+end
+
 --[[
    BINARY INSERTION SORT source: http://lua-users.org/wiki/BinaryInsert   
    

@@ -53,3 +53,7 @@ function math.average(t)
   end
   return sum / #t
 end
+
+function math.is_odd(val)
+  return val % 2 == 1
+end

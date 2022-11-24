@@ -31,7 +31,7 @@ local data = {
     name = "speed_upgrade",
     animation_data = {0, 48, 16, 24, 1},
     stats = {
-      [UPGRADE_KEYS.SPEED] = 50
+      [UPGRADE_KEYS.SPEED] = 10
     }
   }
 }
