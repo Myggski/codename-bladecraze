@@ -24,7 +24,6 @@ local powerup_spawner_system = system(dead_query, function(self, dt)
     powerup.create(self:get_world(), entity[components.position], data)
     
     ::continue::
-    print(#powerup_table)
   end, wall.archetype)
 end)
 
