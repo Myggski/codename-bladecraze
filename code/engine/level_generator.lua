@@ -6,16 +6,16 @@ local destructible_tiles = { '1', '2', '3' }
 local player_tile = 'P'
 
 local function generate_level_data()
-  local width, height, content = 15, 9, ""
+  local width, height, content = 17, 9, ""
   local max_tiles = width * height - 12
   local max_percentage_skippable_tiles = 0.2
   local chance_of_empty = 0.1
   local skippable_tile_count = math.floor(max_percentage_skippable_tiles * max_tiles)
   local skipped_tiles = 0
-  local outer_edges = { top = 1, bot = height, left = 1, right = width }
-  local inner_edges = { top = 2, bot = height - 1, left = 2, right = width - 1 }
+  local outer_edges = { top = 1, bot = height, left = 2, right = width - 1 }
+  local inner_edges = { top = 2, bot = height - 1, left = 3, right = width - 2 }
 
-  get_random_tile = function()
+  local get_random_tile = function()
     if skipped_tiles < skippable_tile_count then
       local rand = love.math.random()
       if rand <= chance_of_empty then
@@ -32,7 +32,7 @@ local function generate_level_data()
       local tile = ""
 
       --indestructible borders
-      if row == outer_edges.top or row == outer_edges.bot or col == outer_edges.left or col == outer_edges.right then
+      if row == outer_edges.top or row == outer_edges.bot or col <= outer_edges.left or col >= outer_edges.right then
         tile = indestructible_tile
         goto continue
       end
@@ -55,7 +55,7 @@ local function generate_level_data()
       else
         --borders shouldn't have indestructible tiles
         if row > inner_edges.top and row < inner_edges.bot and col > inner_edges.left and col < inner_edges.right then
-          if col % 2 == 1 and row % 2 == 1 then
+          if col % 2 == 0 and row % 2 == 1 then
             tile = indestructible_tile
             goto continue
           end

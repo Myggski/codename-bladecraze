@@ -80,6 +80,7 @@ function spatial_grid:find_near_entities(position, size, entities_to_exclude)
     for x = min_x_index, max_x_index do
         for y = min_y_index, max_y_index do
             local key = hash_key(x, y)
+
             if set.contains(self.cells, key) then
                 for index = 1, #self.cells[key] do
                     if not set.contains(entities_to_exclude, self.cells[key][index]) then
