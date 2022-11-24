@@ -1,6 +1,7 @@
 local components = require "code.engine.components"
 local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
+local audio = require "code.engine.audio"
 
 local player_death_query = entity_query.all(
   components.input,
@@ -17,6 +18,7 @@ local player_death_system = system(player_death_query, function(self, dt)
       input = entity[components.input]
 
       if input.enabled then
+        audio:play("player_death.wav")
         input.enabled = false
       end
     end

@@ -4,17 +4,9 @@ local player = require "code.game.entities.player"
 local system = require "code.engine.ecs.system"
 local collision = require "code.engine.collision"
 local vector2 = require "code.engine.vector2"
-local asset_manager = require "code.engine.asset_manager"
+local audio = require "code.engine.audio"
 
 local BOMB_SIZE = vector2.one()
-
--- https://www.love2d.org/wiki/Source:clone
-local function play_bomb_spawn_sfx(self, bomb_spawn_position)
-  local clone = self.bomb_sound:clone()
-  clone:setVolume(1)
-  clone:setPitch(love.math.random(80, 120) / 100)
-  clone:play()
-end
 
 local attack_player_system = system(function(self, dt)
   local position, bomb_spawn_position, input, player_stats, box_collider, size, has_collision = nil, nil, nil, nil, nil,
@@ -63,7 +55,7 @@ local attack_player_system = system(function(self, dt)
 
       -- If no delay active, drop bomb
       if not self.bombers_on_delay[player_stats] or self.bombers_on_delay[player_stats] == 0 then
-        play_bomb_spawn_sfx(self, bomb_spawn_position)
+        audio:play("drop_bomb.wav", love.math.random(80, 120) / 100)
         player_stats.available_bombs = player_stats.available_bombs - 1
         bomb.create(self:get_world(), bomb_spawn_position, player_stats)
         self.bombers_on_delay[player_stats] = player_stats.bomb_spawn_delay
@@ -76,7 +68,6 @@ end)
 
 function attack_player_system:on_start()
   self.bombers_on_delay = {}
-  self.bomb_sound = asset_manager:get_audio("drop_bomb.wav")
 end
 
 return attack_player_system

@@ -12,27 +12,35 @@ local button = {
   _sprite_batch = nil,
 }
 
+local function on_button_enabled(current_button, callback)
+  if current_button and current_button.enabled then
+    callback()
+  end
+end
+
 function button:_mousepressed(x, y, button_position, _)
+  local current_button = nil
+
   for index = 1, #self._buttons do
-    if self._buttons[index].enabled then
+    on_button_enabled(self._buttons[index], function()
       self._buttons[index]:try_click(x, y, button_position, true)
-    end
+    end)
   end
 end
 
 function button:_mousereleased(x, y, button_position, _)
   for index = 1, #self._buttons do
-    if self._buttons[index].enabled then
+    on_button_enabled(self._buttons[index], function()
       self._buttons[index]:try_click(x, y, button_position, false)
-    end
+    end)
   end
 end
 
 function button:_update()
   for index = 1, #self._buttons do
-    if self._buttons[index].enabled then
+    on_button_enabled(self._buttons[index], function()
       self._buttons[index]:try_hover()
-    end
+    end)
   end
 end
 

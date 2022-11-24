@@ -87,15 +87,6 @@ local function generate_level_from_data(level_data)
       end
     end
   end
-
-  local r = level_type == 0 and 0.5 or 0.25
-  local g = level_type == 2 and 0.5 or 0.25
-  local b = level_type == 1 and 0.5 or 0.25
-  camera.clear_color = { r, g, b, 1 }
-
-  if level_type == 3 then
-    camera.clear_color = { 46 / 255, 36 / 255, 47 / 255 }
-  end
 end
 
 local function load()

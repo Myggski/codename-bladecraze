@@ -4,7 +4,7 @@ local entity_query = require "code.engine.ecs.entity_query"
 local fire = require "code.game.entities.fire"
 local system = require "code.engine.ecs.system"
 local vector2 = require "code.engine.vector2"
-local asset_manager = require "code.engine.asset_manager"
+local audio = require "code.engine.audio"
 
 local explosion_query = entity_query.all(components.explosion_radius)
 
@@ -25,9 +25,7 @@ local explosion_system = system(explosion_query, function(self, dt)
     explosion_radius = entity[components.explosion_radius]
     player_stats = entity[components.player_stats]
 
-    self.explosion_sound:setPitch(love.math.random(70, 105) / 100)
-    self.explosion_sound:setVolume(1)
-    self.explosion_sound:play()
+    audio:play("explosion.wav", love.math.random(70, 105) / 100)
     fire.create(self:get_world(), position)
 
     for _, direction in pairs(directions) do
@@ -76,9 +74,5 @@ local explosion_system = system(explosion_query, function(self, dt)
     player_stats.available_bombs = player_stats.available_bombs + 1
   end)
 end)
-
-function explosion_system:on_start()
-  self.explosion_sound = asset_manager:get_audio("explosion.wav")
-end
 
 return explosion_system

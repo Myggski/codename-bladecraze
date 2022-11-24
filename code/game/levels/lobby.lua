@@ -1,6 +1,8 @@
 local background_image = require "code.game.entities.background_image"
 local game_event_manager = require "code.engine.game_event.game_event_manager"
 local world = require "code.engine.ecs.world"
+local player_input = require "code.game.player_input"
+local camera = require "code.engine.camera"
 local vector2 = require "code.engine.vector2"
 
 -- systems
@@ -35,6 +37,7 @@ end
 local function load()
   level = world()
   draw = entity_draw(level)
+  camera:look_at(0, 0)
 
   level:add_system(input_system)
   level:add_system(input_velocity_system)
@@ -46,6 +49,13 @@ local function load()
   level:add_system(lobby_menu_system)
 
   background_image(level, "level/press_start.png", vector2(-3.375, -4.5), vector2(3.375, 1))
+
+  -- Remove the activated players so they can be activated again
+  local active_controllers = player_input.get_active_controllers()
+
+  for index = #active_controllers, 1, -1 do
+    player_input.deactivate_controller(active_controllers[index].type, active_controllers[index].controller)
+  end
 
   game_event_manager.add_listener(GAME_EVENT_TYPES.UPDATE, on_update)
   game_event_manager.add_listener(GAME_EVENT_TYPES.DRAW_WORLD, on_draw)

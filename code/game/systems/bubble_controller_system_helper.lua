@@ -4,7 +4,7 @@ local game_event_manager = require "code.engine.game_event.game_event_manager"
 local player = require "code.game.entities.player"
 local player_input = require "code.game.player_input"
 local vector2 = require "code.engine.vector2"
-local asset_manager = require "code.engine.asset_manager"
+local audio = require "code.engine.audio"
 
 -- Sorting function for table.sort -> Sorts on player_id
 local function sort_on_player_id(a, b)
@@ -184,10 +184,9 @@ local function destroy_bubbles(world, entities, expected_number_of_bubbles, spaw
             remove_keyboard_bubble(entities, entity)
           end
 
+          audio:play("bubble_burst.wav")
           table.remove(entities, entity_index)
           entity:destroy()
-          local sound = asset_manager:get_audio("bubble_burst.wav")
-          sound:clone():play()
           return
         end
       end

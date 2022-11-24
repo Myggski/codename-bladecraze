@@ -89,7 +89,7 @@ local function update_entities(world)
       entity_index = table.index_of(world._entity_data[archetype_index].entities, changed_entity_data.entity)
 
       if entity_index > 0 then
-        world._entity_data[archetype_index].entities[entity_index] = nil
+        table.remove(world._entity_data[archetype_index].entities, entity_index)
         add_entity_to_archetype(world, changed_entity_data.entity)
       end
     end
