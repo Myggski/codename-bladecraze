@@ -17,7 +17,7 @@ local powerup_activator_system = system(function(self, dt)
     box_collider = entity[components.box_collider]
     size = entity[components.size]
     box_collider_position = collision.get_collider_position(position, box_collider)
-    found_entities = self:find_at(position, size, set.create({ entity })) --hittar bara bomber å eld, inte powerups :(
+    found_entities = self:find_at(position, size, set.create({ entity }))
 
     for other_entity, _ in pairs(found_entities) do
       local found_box_collider = other_entity[components.box_collider]
@@ -29,7 +29,7 @@ local powerup_activator_system = system(function(self, dt)
       local found_box_collider_position = collision.get_collider_position(found_position, found_box_collider)
       local found_stats = other_entity[components.player_stats]
 
-      if not --if not overlapping then skip
+      if not
           collision.is_touching(
             box_collider_position, box_collider.size,
             found_box_collider_position, found_box_collider.size) then

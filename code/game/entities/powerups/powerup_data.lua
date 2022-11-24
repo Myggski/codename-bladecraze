@@ -1,11 +1,3 @@
--- stats = {
---   available_bombs = 0,
---   bomb_radius = 1,
---   explosion_duration = 0,
---   max_bombs = 0,
---   bomb_spawn_delay = 0
--- }
-
 local UPGRADE_KEYS = {
   BOMBS = "available_bombs",
   BOMB_RADIUS = "bomb_radius",

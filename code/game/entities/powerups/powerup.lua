@@ -4,7 +4,6 @@ local asset_manager = require "code.engine.asset_manager"
 local components = require "code.engine.components"
 local vector2 = require "code.engine.vector2"
 
-
 local powerup_archetype = archetype.setup(
   components.animation,
   components.box_collider,
