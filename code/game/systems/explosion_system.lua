@@ -25,7 +25,6 @@ local explosion_system = system(explosion_query, function(self, dt)
     player_stats = entity[components.player_stats]
 
     fire.create(self:get_world(), position)
-
     for _, direction in pairs(directions) do
       for radius = 1, explosion_radius do
         spawn_position = position + (direction * radius)

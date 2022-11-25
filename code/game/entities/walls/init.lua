@@ -21,9 +21,9 @@ end
 
 local function get_archetype(wall_id)
   if wall_id >= 1 and wall_id <= 3 then
-    return destructible_wall.archetype
+    return destructible_wall.get_archetype()
   elseif wall_id == 0 then
-    return indestructible_wall.archetype
+    return indestructible_wall.get_archetype()
   end
 end
 

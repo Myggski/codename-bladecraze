@@ -15,7 +15,7 @@ function spatial_grid:create(bounds)
 end
 
 local function hash_key(x, y)
-    return (x .. "." .. y)
+    return (x .. ";" .. y)
 end
 
 function spatial_grid:draw_debug()
@@ -95,10 +95,9 @@ function spatial_grid:find_near_entities(position, size, entities_to_exclude)
 end
 
 function spatial_grid:find_at(position, size, entities_to_exclude)
-    local min_x_index, min_y_index = position.x, position.y
+    local min_x_index, min_y_index = math.floor(position.x), math.floor(position.y)
     local max_x_index, max_y_index = math.floor(position.x + size.x - 0.001), math.floor(position.y + size.y - 0.001)
     local entity_set = {}
-
     for x = min_x_index, max_x_index do
         for y = min_y_index, max_y_index do
             local key = hash_key(x, y)
@@ -146,6 +145,9 @@ function spatial_grid:remove(entity)
                 local index = table.index_of(self.cells[key], entity)
                 if index > 0 then
                     table.remove(self.cells[key], index)
+                    if #self.cells[key] == 0 then
+                        self.cells[key] = nil
+                    end
                 end
             end
         end

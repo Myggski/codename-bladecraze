@@ -65,6 +65,40 @@ function table.binary_search(t, x, low, high)
   end
 end
 
+--add number tables with same keys together
+function table.add_numeric(t1, t2)
+  local result = {}
+  for key, value in pairs(t2) do
+    if t1[key] then
+      result[key] = t1[key] + value
+    end
+  end
+  return result
+end
+
+--adds numbers from t2 to t1 numbers without checks
+function table.add_numeric_unsafe(t1, t2)
+  for key, value in pairs(t2) do
+    t1[key] = t1[key] + value
+  end
+end
+
+--in-place fisher-yates shuffle
+function table.shuffle(t)
+  local size = #t
+  local rand
+  for i = size, 2, -1 do
+    rand = love.math.random(1, i)
+    t[i], t[rand] = t[rand], t[i]
+  end
+end
+
+function table.insert_many(t, value, count)
+  for i = 1, count do
+    table.insert(t, value)
+  end
+end
+
 --[[
    BINARY INSERTION SORT source: http://lua-users.org/wiki/BinaryInsert   
    
