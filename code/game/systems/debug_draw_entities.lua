@@ -8,13 +8,12 @@ local world_grid = require "code.engine.world_grid"
 local debug_query = entity_query.all(components.position)
 
 local debug_draw_entities_system = system(debug_query, function(self, dt)
-  local position = nil
+  local position, size = nil, nil
 
   self:for_each(function(entity)
     position = entity[components.position]
-    size = entity[components.size]
     position = world_grid:convert_to_world(position)
-    size = world_grid:convert_to_world(size)
+    size = world_grid:convert_to_world(vector2.one())
     debug.gizmos.draw_rectangle(position, size, nil, COLOR.WHITE, 1, 0)
   end)
 end)

@@ -29,7 +29,6 @@ end
 
 local function destroy()
   level:destroy()
-
   game_event_manager.remove_listener(GAME_EVENT_TYPES.UPDATE, on_update)
   game_event_manager.remove_listener(GAME_EVENT_TYPES.DRAW_WORLD, on_draw)
 end

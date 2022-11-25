@@ -19,7 +19,6 @@ function animations.new_animation(image, image_data, duration)
         animation.quads,
         love.graphics.newQuad(x, y, width, height, image)
       )
-
       frames_added = frames_added + 1
       if frames_added >= frame_count then goto end_animation end
     end

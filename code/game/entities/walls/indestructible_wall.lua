@@ -29,5 +29,5 @@ end
 
 return {
   create = create_indestructible_wall,
-  archetype = indestructible_wall_archetype,
+  get_archetype = function() return indestructible_wall_archetype end
 }
