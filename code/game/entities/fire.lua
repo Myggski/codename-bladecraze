@@ -24,7 +24,7 @@ local function create_fire(world, position)
       size = vector2(0.4, 0.4),
     }),
     components.damager(),
-    components.destroy_timer(1),
+    components.destroy_timer(0.8),
     components.position(spawn_position),
     components.size(vector2.one()),
     components.animation({

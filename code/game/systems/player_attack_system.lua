@@ -4,6 +4,7 @@ local player = require "code.game.entities.player"
 local system = require "code.engine.ecs.system"
 local collision = require "code.engine.collision"
 local vector2 = require "code.engine.vector2"
+local audio = require "code.engine.audio"
 
 local BOMB_SIZE = vector2.one()
 
@@ -54,9 +55,9 @@ local attack_player_system = system(function(self, dt)
 
       -- If no delay active, drop bomb
       if not self.bombers_on_delay[player_stats] or self.bombers_on_delay[player_stats] == 0 then
+        audio:play("drop_bomb.wav", love.math.random(80, 120) / 100)
         player_stats.available_bombs = player_stats.available_bombs - 1
         bomb.create(self:get_world(), bomb_spawn_position, player_stats)
-
         self.bombers_on_delay[player_stats] = player_stats.bomb_spawn_delay
       end
 

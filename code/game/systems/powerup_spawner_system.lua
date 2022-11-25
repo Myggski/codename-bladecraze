@@ -5,9 +5,7 @@ local wall = require "code.game.entities.walls.destructible_wall"
 local powerup = require "code.game.entities.powerups.powerup"
 local powerup_data = require "code.game.entities.powerups.powerup_data"
 
-
 local dead_query = entity_query.all(components.health, components.box_collider)
-powerup_data = powerup_data.data
 
 local powerup_spawner_system = system(dead_query, function(self, dt)
   local powerup_table = self.powerup_table

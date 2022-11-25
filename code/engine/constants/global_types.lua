@@ -4,6 +4,11 @@ ANIMATION_STATE_TYPES = {
   DEAD = "dead",
 }
 
+AUDIO_TYPES = {
+  MUSIC = 0,
+  SFX = 1,
+}
+
 BUTTON_CLICK_TYPES = {
   LEFT = 1,
   RIGHT = 2,

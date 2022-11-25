@@ -1,14 +1,11 @@
 local collision = require "code.engine.collision"
 local components = require "code.engine.components"
-local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
 local powerup = require "code.game.entities.powerups.powerup"
-local grid = require "code.engine.world_grid"
-local vector2 = require "code.engine.vector2"
 local player = require "code.game.entities.player"
 
 local powerup_activator_system = system(function(self, dt)
-  local position, size, damage, box_collider, box_collider_position
+  local position, size, box_collider, box_collider_position
   local player_stats, found_entities
 
   self:for_each(function(entity)
