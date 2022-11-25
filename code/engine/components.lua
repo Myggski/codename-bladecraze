@@ -1,7 +1,6 @@
 -- All the componets with their default values in the game, that the systems will use to get values
 local component = require "code.engine.ecs.component"
 local vector2 = require "code.engine.vector2"
-local data = require "code.game.entities.powerups.powerup_data"
 
 local acceleration_component = component({
   speed = 10,
