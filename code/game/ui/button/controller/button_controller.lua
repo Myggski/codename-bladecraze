@@ -19,8 +19,6 @@ local function on_button_enabled(current_button, callback)
 end
 
 function button:_mousepressed(x, y, button_position, _)
-  local current_button = nil
-
   for index = 1, #self._buttons do
     on_button_enabled(self._buttons[index], function()
       self._buttons[index]:try_click(x, y, button_position, true)

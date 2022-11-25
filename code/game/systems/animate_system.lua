@@ -4,8 +4,10 @@ local system = require "code.engine.ecs.system"
 
 local animate_query = entity_query.all(components.animation)
 
--- // Updates the animation by ticking the animation time and sets the current quad
-local function update_animation(animation, current_animation, dt)
+-- Updates the animation by ticking the animation time and sets the current quad
+local function update_animation(animation, dt)
+  local current_animation = animation[animation.current_animation_state]
+
   current_animation.current_time = current_animation.current_time + dt
 
   if current_animation.current_time > current_animation.duration then
@@ -25,16 +27,14 @@ local function update_animation(animation, current_animation, dt)
 end
 
 local animation_set_state_system = system(animate_query, function(self, dt)
-  local animation, velocity, current_animation = nil, nil, nil
+  local animation, velocity = nil, nil, nil
 
   self:for_each(function(entity)
     animation = entity[components.animation]
     velocity = entity[components.velocity]
 
-    current_animation = animation[animation.current_animation_state]
-
     if not animation.freeze_frame then
-      update_animation(animation, current_animation, dt)
+      update_animation(animation, dt)
     end
 
     if animation.current_animation_state == ANIMATION_STATE_TYPES.WALKING then

@@ -9,11 +9,6 @@ local destroy_timer_system = system(destroy_query, function(self, dt)
 
   self:for_each(function(entity)
     destroy_timer = entity[components.destroy_timer]
-
-    if not destroy_timer then
-      goto continue
-    end
-
     destroy_timer = destroy_timer - dt
 
     if destroy_timer <= 0 then
@@ -21,8 +16,6 @@ local destroy_timer_system = system(destroy_query, function(self, dt)
     else
       entity[components.destroy_timer] = destroy_timer
     end
-
-    ::continue::
   end)
 end)
 
