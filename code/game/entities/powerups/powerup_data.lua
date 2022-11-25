@@ -22,7 +22,4 @@ local data = {
   }
 }
 
-return {
-  UPGRADE_KEYS = UPGRADE_KEYS,
-  data = data
-}
+return data
