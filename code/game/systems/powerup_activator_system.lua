@@ -36,7 +36,7 @@ local powerup_activator_system = system(function(self, dt)
         goto continue
       end
 
-      if (other_entity.archetype == powerup.archetype) then
+      if (other_entity.archetype == powerup:get_archetype()) then
         table.add_numeric_unsafe(player_stats, found_stats)
         other_entity:destroy()
       end

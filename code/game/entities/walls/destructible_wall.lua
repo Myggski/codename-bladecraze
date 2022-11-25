@@ -31,5 +31,5 @@ end
 
 return {
   create = create_destructible_wall,
-  archetype = destructible_wall_archetype,
+  get_archetype = function() return destructible_wall_archetype end
 }

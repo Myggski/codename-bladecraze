@@ -29,7 +29,7 @@ local function create_powerup(world, position, data)
       z_index = -1000,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle,
-      data.animation_data,
+        data.animation_data,
         0.8)
     })
   )
@@ -37,6 +37,5 @@ end
 
 return setmetatable({
   create = create_powerup,
-  archetype = powerup_archetype,
   get_archetype = function() return powerup_archetype end,
 }, { __call = function(_, ...) return create_powerup(...) end })

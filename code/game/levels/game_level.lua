@@ -21,6 +21,8 @@ local damager_system = require "code.game.systems.damager_system"
 local destroy_timer_system = require "code.game.systems.destroy_timer_system"
 local explosion_system = require "code.game.systems.explosion_system"
 local gamestate_system = require "code.game.systems.gamestate_system"
+local powerup_activator_system = require "code.game.systems.powerup_activator_system"
+local powerup_spawner_system = require "code.game.systems.powerup_spawner_system"
 
 local level
 local draw
@@ -109,6 +111,8 @@ local function load()
   level:add_system(movement_system)
   level:add_system(player_attack_system)
   level:add_system(gamestate_system)
+  level:add_system(powerup_spawner_system)
+  level:add_system(powerup_activator_system)
 
   local level_data = level_generator.generate_level_data()
   generate_level_from_data(level_data)

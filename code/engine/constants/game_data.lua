@@ -21,3 +21,9 @@ PLAYER = {
 }
 MIN_Z_INDEX = -4999
 MAX_Z_INDEX = 5000
+
+UPGRADE_KEYS = {
+  BOMBS = "available_bombs",
+  BOMB_RADIUS = "bomb_radius",
+  SPEED = "speed",
+}
