@@ -35,7 +35,7 @@ function spatial_grid:get_indices(position, size)
     local min_x_index, min_y_index = position.x - half_w, position.y - half_h
     local max_x_index, max_y_index = position.x + half_w, position.y + half_h
 
-    return math.round(min_x_index), math.round(min_y_index), math.ceil(max_x_index), math.ceil(max_y_index)
+    return math.floor(min_x_index), math.floor(min_y_index), math.ceil(max_x_index), math.ceil(max_y_index)
 end
 
 --[[
@@ -74,8 +74,6 @@ end
 function spatial_grid:find_near_entities(position, size, entities_to_exclude)
     local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(position, size)
     local entity_set = {}
-    min_x_index = min_x_index - 1
-    min_y_index = min_y_index - 1
 
     for x = min_x_index, max_x_index do
         for y = min_y_index, max_y_index do

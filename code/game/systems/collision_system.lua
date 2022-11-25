@@ -3,6 +3,8 @@ local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
 local collision = require "code.engine.collision"
 local vector2 = require "code.engine.vector2"
+local gizmos = require "code.engine.debug.gizmos"
+local grid = require "code.engine.world_grid"
 
 local AXIS_KEYS = {
   X = "x",
@@ -22,6 +24,12 @@ local function round_position(self, entity, key)
   velocity[key] = 0
   position[key] = math.round(position[key]) - (size[key] - box_collider.size[key])
   self:update_collision_grid(entity)
+end
+
+local function position_equal_threshold(position_a, position_b, threshold)
+  local x_diff = math.abs(position_a.x - position_b.x)
+  local y_diff = math.abs(position_a.y - position_b.y)
+  return x_diff <= threshold and y_diff <= threshold
 end
 
 local function try_adjust_position(self, entity, other_entity, key, dt)
@@ -46,16 +54,14 @@ local function try_adjust_position(self, entity, other_entity, key, dt)
   moving_towards_position[opposite_key_direction] = moving_towards_position[opposite_key_direction] +
       math.sign(direction[opposite_key_direction])
 
-
   -- If the entity is inside the collider, do nothing, so it can leave the obstacle
-  if rounded_collider_position == other_collider_position then
+  if position_equal_threshold(rounded_collider_position, other_collider_position, 0.15) then
     return false
   end
 
   -- If entity is moving towards an obsticle, round the position
-  if moving_towards_position == other_collider_position then
+  if position_equal_threshold(moving_towards_position, other_collider_position, 0.15) then
     round_position(self, entity, opposite_key_direction)
-
     return true
   end
 
@@ -122,8 +128,12 @@ local function try_handle_collision(self, entity, other_entity, key, dt)
     rounded_other_collider_position, other_box_collider.size,
     new_position, box_collider.size
   )
-  local is_moving_towards_obstacle = math.normalize2(moving_to_position - rounded_other_collider_position)[key] == 0
 
+  -- if not overlapping_obstacle then
+  --   gizmos.draw_rectangle(rounded_other_collider_position * 16, vector2(1, 1) * 16, "line", COLOR.BLACK)
+  -- end
+
+  local is_moving_towards_obstacle = math.normalize2(moving_to_position - rounded_other_collider_position)[key] == 0
   if overlapping_obstacle and is_moving_towards_obstacle then
     if not try_adjust_position(self, entity, other_entity, opposite_key(key), dt) then
       velocity[key] = 0
@@ -155,7 +165,7 @@ local collision_system = system(collision_query, function(self, dt)
     position = entity[components.position]
     box_collider = entity[components.box_collider]
     collider_position = collision.get_collider_position(position, box_collider)
-    other_entities = self:find_near_entities(collider_position, box_collider.size, set.create({ entity }))
+    other_entities = self:find_near_entities(collider_position, vector2(3, 3), set.create({ entity }))
 
     for other_entity, _ in pairs(other_entities) do
       other_box_collider = other_entity[components.box_collider]
