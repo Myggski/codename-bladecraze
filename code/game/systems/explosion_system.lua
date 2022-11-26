@@ -41,7 +41,6 @@ local explosion_system = system(explosion_query, function(self, dt)
           set.create({ entity, new_fire }))
 
         -- Checks if the fire collides with anything
-        --for found_entity, _ in pairs(found_entities) do
         for i = 1, #found_entities do
           found_entity = found_entities[i]
           found_position = found_entity[components.position]
