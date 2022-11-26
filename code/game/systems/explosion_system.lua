@@ -54,7 +54,8 @@ local explosion_system = system(explosion_query, function(self, dt)
           found_box_collider_position = collision.get_collider_position(found_position, found_box_collider)
 
           -- If the fire collides with something, it stops spawning at the current direction
-          if collision.overlap(
+          -- Unless it collides with fire (same kind), then it should continue
+          if not (found_entity.archetype == new_fire.archetype) and collision.overlap(
             fire_box_collider_position, fire_box_collider.size,
             found_box_collider_position, found_box_collider.size
           ) then

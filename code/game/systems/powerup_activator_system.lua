@@ -3,6 +3,7 @@ local components = require "code.engine.components"
 local system = require "code.engine.ecs.system"
 local powerup = require "code.game.entities.powerups.powerup"
 local player = require "code.game.entities.player"
+local audio = require "code.engine.audio"
 
 local powerup_activator_system = system(function(self, dt)
   local position, size, box_collider, box_collider_position
@@ -35,6 +36,7 @@ local powerup_activator_system = system(function(self, dt)
       end
 
       if (other_entity.archetype == powerup:get_archetype()) then
+        audio:play("powerup.wav")
         table.add_numeric_unsafe(player_stats, found_stats)
         other_entity:destroy()
       end
