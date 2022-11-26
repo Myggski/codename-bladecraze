@@ -42,6 +42,7 @@ local player_stats_component = component({
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
 local rotation_component = component(0) -- Radian?
+local shader_component = component(nil) -- love.graphics.newShader(shader_code)
 local size_component = component(vector2.one())
 local sprite_component = component({ z_index = 0, texture = nil, quad = nil }) -- Url to static image?
 local target_position_component = component(vector2.zero())
@@ -61,6 +62,7 @@ return {
   player_stats = player_stats_component,
   position = position_component,
   rotation = rotation_component,
+  shader = shader_component,
   size = size_component,
   sprite = sprite_component,
   target_position = target_position_component,

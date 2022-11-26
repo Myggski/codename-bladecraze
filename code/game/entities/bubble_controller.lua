@@ -4,6 +4,7 @@ local asset_manager = require "code.engine.asset_manager"
 local components = require "code.engine.components"
 local player_input = require "code.game.player_input"
 local vector2 = require "code.engine.vector2"
+local dissolve_shader = require "code.game.shaders.dissolve"
 
 local bubble_controller_archetype = archetype.setup(
   components.acceleration,
@@ -11,7 +12,8 @@ local bubble_controller_archetype = archetype.setup(
   components.player_data,
   components.position,
   components.size,
-  components.target_position
+  components.target_position,
+  components.shader
 )
 
 local function create_bubble_controller(world, player_id, controller_type, position)
@@ -19,11 +21,14 @@ local function create_bubble_controller(world, player_id, controller_type, posit
       and asset_manager:get_image("bubble_gamepad.png")
       or asset_manager:get_image("bubble_keyboard.png")
 
+  local shader = love.graphics.newShader(dissolve_shader)
+
   return world:entity(
     components.acceleration({
       speed = 20,
       friction = 0,
     }),
+    components.shader(shader),
     components.position(position),
     components.target_position(position),
     components.player_data({ player_id = player_id, controller_type = controller_type }),

@@ -27,7 +27,7 @@ local function update_animation(animation, dt)
 end
 
 local animation_set_state_system = system(animate_query, function(self, dt)
-  local animation, velocity = nil, nil, nil
+  local animation, velocity = nil, nil
 
   self:for_each(function(entity)
     animation = entity[components.animation]
