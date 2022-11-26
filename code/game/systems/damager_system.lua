@@ -12,8 +12,7 @@ local damager_query = entity_query.all(components.damager, components.box_collid
 local destroy_timer_system = system(damager_query, function(self, dt)
   local position, size, damage, box_collider, box_collider_position = nil, nil, nil, nil, nil
   local found_position, found_box_collider, found_box_collider_position, found_health = nil, nil, nil, nil
-  local found_animation, found_entities = nil, nil
-  local other_entity
+  local found_animation, found_entities, found_entity = nil, nil, nil
 
   self:for_each(function(entity)
     position = entity[components.position]
@@ -24,17 +23,17 @@ local destroy_timer_system = system(damager_query, function(self, dt)
     found_entities = self:find_at(position, size, set.create({ entity }))
 
     for i = 1, #found_entities do
-      other_entity = found_entities[i]
-      found_health = other_entity[components.health]
+      found_entity = found_entities[i]
+      found_health = found_entity[components.health]
 
       -- If it has no health, it has no health to loose
       if not found_health or found_health <= 0 then
         goto continue
       end
 
-      found_position = other_entity[components.position]
-      found_box_collider = other_entity[components.box_collider]
-      found_animation = other_entity[components.animation]
+      found_position = found_entity[components.position]
+      found_box_collider = found_entity[components.box_collider]
+      found_animation = found_entity[components.animation]
       found_box_collider_position = collision.get_collider_position(found_position, found_box_collider)
 
       -- If not overlapping with a box_collider, it should not loose health
@@ -49,14 +48,14 @@ local destroy_timer_system = system(damager_query, function(self, dt)
       found_health = found_health - damage
 
       if found_health <= 0 and not found_animation[ANIMATION_STATE_TYPES.DEAD] then
-        other_entity:destroy()
+        found_entity:destroy()
       else
         if found_health <= 0 and found_animation[ANIMATION_STATE_TYPES.DEAD] and
             not (found_animation.current_animation_state == ANIMATION_STATE_TYPES.DEAD) then
-          other_entity[components.destroy_timer] = 30
+          found_entity[components.destroy_timer] = 30
         end
 
-        other_entity[components.health] = found_health
+        found_entity[components.health] = found_health
       end
 
       ::continue::

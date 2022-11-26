@@ -13,9 +13,8 @@ local directions = { vector2.up(), vector2.down(), vector2.left(), vector2.right
 local explosion_system = system(explosion_query, function(self, dt)
   local position, explosion_radius, player_stats = nil, nil, nil
   local spawn_position, found_entities, new_fire = nil, nil, nil
-  local found_position, found_box_collider, found_box_collider_position = nil, nil, nil
+  local found_entity, found_position, found_box_collider, found_box_collider_position = nil, nil, nil, nil
   local fire_position, fire_box_collider, fire_box_collider_position, found_health = nil, nil, nil, nil
-  local found_entity
 
   self:for_each(function(entity)
     if entity:is_alive() then

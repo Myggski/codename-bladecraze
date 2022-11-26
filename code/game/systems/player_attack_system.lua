@@ -12,7 +12,6 @@ local attack_player_system = system(function(self, dt)
   local position, bomb_spawn_position, input, player_stats, box_collider, size, has_collision = nil, nil, nil, nil, nil,
       nil, false
   local is_attacker, can_collide = false, false
-  local other_entity
 
   self:for_each(function(entity)
     input = entity[components.input]
@@ -37,7 +36,7 @@ local attack_player_system = system(function(self, dt)
     -- Check for attack
     if input.action == PLAYER.ACTIONS.BASIC and player_stats.available_bombs > 0 then
       local other_entities = self:find_at(bomb_spawn_position, BOMB_SIZE, set.create { entity })
-      local other_position, other_box_collider = nil, nil
+      local other_entity, other_position, other_box_collider = nil, nil, nil
 
       -- Check for entities in the bomb spawning position
       for i = 1, #other_entities do

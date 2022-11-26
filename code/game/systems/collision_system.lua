@@ -3,8 +3,6 @@ local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
 local collision = require "code.engine.collision"
 local vector2 = require "code.engine.vector2"
-local gizmos = require "code.engine.debug.gizmos"
-local grid = require "code.engine.world_grid"
 
 local AXIS_KEYS = {
   X = "x",
@@ -129,10 +127,6 @@ local function try_handle_collision(self, entity, other_entity, key, dt)
     new_position, box_collider.size
   )
 
-  -- if not overlapping_obstacle then
-  --   gizmos.draw_rectangle(rounded_other_collider_position * 16, vector2(1, 1) * 16, "line", COLOR.BLACK)
-  -- end
-
   local is_moving_towards_obstacle = math.normalize2(moving_to_position - rounded_other_collider_position)[key] == 0
   if overlapping_obstacle and is_moving_towards_obstacle then
     if not try_adjust_position(self, entity, other_entity, opposite_key(key), dt) then
@@ -159,9 +153,8 @@ local collision_query = entity_query.all(
 -- Collision System - Runs every frame
 local collision_system = system(collision_query, function(self, dt)
   local position, box_collider, collider_position = nil, nil, nil
-  local other_entities, other_box_collider, collision_handled = nil, nil, nil
+  local other_entities, other_box_collider, collision_handled, other_entity = nil, nil, nil, nil
 
-  local other_entity
   self:for_each(function(entity)
     position = entity[components.position]
     box_collider = entity[components.box_collider]
@@ -171,7 +164,6 @@ local collision_system = system(collision_query, function(self, dt)
     for i = 1, #other_entities do
       other_entity = other_entities[i]
       other_box_collider = other_entity[components.box_collider]
-
 
       -- Checks ignore-list (should move this to spatial grid)
       if not other_box_collider
