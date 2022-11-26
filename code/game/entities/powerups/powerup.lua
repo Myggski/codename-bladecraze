@@ -19,8 +19,8 @@ local function create_powerup(world, position, data)
   return world:entity(
     components.box_collider({
       enabled = false, -- Trigger collision
-      offset = vector2(0, 0),
-      size = vector2(1, 1),
+      offset = vector2(0.3, 0.3),
+      size = vector2(0.4, 0.4),
     }),
     components.player_stats(data.stats),
     components.position(spawn_position),
