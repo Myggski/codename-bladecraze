@@ -76,11 +76,9 @@ function spatial_grid:_get_objects_in_cells(entities_to_exclude, min_x_index, mi
             if set.contains(self.cells, key) then
                 for index = 1, #self.cells[key] do
                     entity = self.cells[key][index]
-                    if set.contains(entities_to_exclude, entity) or table.contains_key(entity_list, entity) then
-                        goto continue
+                    if not set.contains(entities_to_exclude, entity) and not table.contains_key(entity_list, entity) then
+                        table.insert(entity_list, entity)
                     end
-                    table.insert(entity_list, entity)
-                    ::continue::
                 end
             end
         end
