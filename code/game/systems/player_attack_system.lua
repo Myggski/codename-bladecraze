@@ -12,6 +12,7 @@ local attack_player_system = system(function(self, dt)
   local position, bomb_spawn_position, input, player_stats, box_collider, size, has_collision = nil, nil, nil, nil, nil,
       nil, false
   local is_attacker, can_collide = false, false
+  local other_entity
 
   self:for_each(function(entity)
     input = entity[components.input]
@@ -39,7 +40,8 @@ local attack_player_system = system(function(self, dt)
       local other_position, other_box_collider = nil, nil
 
       -- Check for entities in the bomb spawning position
-      for other_entity, _ in pairs(other_entities) do
+      for i = 1, #other_entities do
+        other_entity = other_entities[i]
         is_attacker = other_entity.archetype == entity.archetype
         other_box_collider = other_entity[components.box_collider]
         can_collide = other_box_collider and other_box_collider.enabled

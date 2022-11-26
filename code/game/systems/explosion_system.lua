@@ -15,6 +15,7 @@ local explosion_system = system(explosion_query, function(self, dt)
   local spawn_position, found_entities, new_fire = nil, nil, nil
   local found_position, found_box_collider, found_box_collider_position = nil, nil, nil
   local fire_position, fire_box_collider, fire_box_collider_position, found_health = nil, nil, nil, nil
+  local found_entity
 
   self:for_each(function(entity)
     if entity:is_alive() then
@@ -40,7 +41,9 @@ local explosion_system = system(explosion_query, function(self, dt)
           set.create({ entity, new_fire }))
 
         -- Checks if the fire collides with anything
-        for found_entity, _ in pairs(found_entities) do
+        --for found_entity, _ in pairs(found_entities) do
+        for i = 1, #found_entities do
+          found_entity = found_entities[i]
           found_position = found_entity[components.position]
           found_health = found_entity[components.health]
           found_box_collider = found_entity[components.box_collider]

@@ -161,14 +161,17 @@ local collision_system = system(collision_query, function(self, dt)
   local position, box_collider, collider_position = nil, nil, nil
   local other_entities, other_box_collider, collision_handled = nil, nil, nil
 
+  local other_entity
   self:for_each(function(entity)
     position = entity[components.position]
     box_collider = entity[components.box_collider]
     collider_position = collision.get_collider_position(position, box_collider)
-    other_entities = self:find_near_entities(collider_position, vector2(3, 3), set.create({ entity }))
+    other_entities = self:find_near_entities(collider_position, box_collider.size, set.create({ entity }))
 
-    for other_entity, _ in pairs(other_entities) do
+    for i = 1, #other_entities do
+      other_entity = other_entities[i]
       other_box_collider = other_entity[components.box_collider]
+
 
       -- Checks ignore-list (should move this to spatial grid)
       if not other_box_collider

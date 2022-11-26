@@ -6,7 +6,7 @@ local player = require "code.game.entities.player"
 
 local powerup_activator_system = system(function(self, dt)
   local position, size, box_collider, box_collider_position
-  local player_stats, found_entities
+  local player_stats, found_entities, other_entity
 
   self:for_each(function(entity)
     player_stats = entity[components.player_stats]
@@ -16,7 +16,8 @@ local powerup_activator_system = system(function(self, dt)
     box_collider_position = collision.get_collider_position(position, box_collider)
     found_entities = self:find_at(position, size, set.create({ entity }))
 
-    for other_entity, _ in pairs(found_entities) do
+    for i = 1, #found_entities do
+      other_entity = found_entities[i]
       local found_box_collider = other_entity[components.box_collider]
       if not found_box_collider then
         goto continue

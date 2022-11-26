@@ -13,6 +13,7 @@ local destroy_timer_system = system(damager_query, function(self, dt)
   local position, size, damage, box_collider, box_collider_position = nil, nil, nil, nil, nil
   local found_position, found_box_collider, found_box_collider_position, found_health = nil, nil, nil, nil
   local found_animation, found_entities = nil, nil
+  local other_entity
 
   self:for_each(function(entity)
     position = entity[components.position]
@@ -20,10 +21,10 @@ local destroy_timer_system = system(damager_query, function(self, dt)
     size = entity[components.size]
     damage = entity[components.damager]
     box_collider_position = collision.get_collider_position(position, box_collider)
-
     found_entities = self:find_at(position, size, set.create({ entity }))
 
-    for other_entity, _ in pairs(found_entities) do
+    for i = 1, #found_entities do
+      other_entity = found_entities[i]
       found_health = other_entity[components.health]
 
       -- If it has no health, it has no health to loose
