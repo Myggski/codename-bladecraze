@@ -24,6 +24,12 @@ local function round_position(self, entity, key)
   self:update_collision_grid(entity)
 end
 
+local function position_equal_threshold(position_a, position_b, threshold)
+  local x_diff = math.abs(position_a.x - position_b.x)
+  local y_diff = math.abs(position_a.y - position_b.y)
+  return x_diff <= threshold and y_diff <= threshold
+end
+
 local function try_adjust_position(self, entity, other_entity, key, dt)
   local input = entity[components.input]
   local direction = input.movement_direction
@@ -46,16 +52,14 @@ local function try_adjust_position(self, entity, other_entity, key, dt)
   moving_towards_position[opposite_key_direction] = moving_towards_position[opposite_key_direction] +
       math.sign(direction[opposite_key_direction])
 
-
   -- If the entity is inside the collider, do nothing, so it can leave the obstacle
-  if rounded_collider_position == other_collider_position then
+  if position_equal_threshold(rounded_collider_position, other_collider_position, 0.15) then
     return false
   end
 
   -- If entity is moving towards an obsticle, round the position
-  if moving_towards_position == other_collider_position then
+  if position_equal_threshold(moving_towards_position, other_collider_position, 0.15) then
     round_position(self, entity, opposite_key_direction)
-
     return true
   end
 
@@ -122,8 +126,8 @@ local function try_handle_collision(self, entity, other_entity, key, dt)
     rounded_other_collider_position, other_box_collider.size,
     new_position, box_collider.size
   )
-  local is_moving_towards_obstacle = math.normalize2(moving_to_position - rounded_other_collider_position)[key] == 0
 
+  local is_moving_towards_obstacle = math.normalize2(moving_to_position - rounded_other_collider_position)[key] == 0
   if overlapping_obstacle and is_moving_towards_obstacle then
     if not try_adjust_position(self, entity, other_entity, opposite_key(key), dt) then
       velocity[key] = 0
@@ -149,7 +153,7 @@ local collision_query = entity_query.all(
 -- Collision System - Runs every frame
 local collision_system = system(collision_query, function(self, dt)
   local position, box_collider, collider_position = nil, nil, nil
-  local other_entities, other_box_collider, collision_handled = nil, nil, nil
+  local other_entities, other_box_collider, collision_handled, other_entity = nil, nil, nil, nil
 
   self:for_each(function(entity)
     position = entity[components.position]
@@ -157,7 +161,8 @@ local collision_system = system(collision_query, function(self, dt)
     collider_position = collision.get_collider_position(position, box_collider)
     other_entities = self:find_near_entities(collider_position, box_collider.size, set.create({ entity }))
 
-    for other_entity, _ in pairs(other_entities) do
+    for i = 1, #other_entities do
+      other_entity = other_entities[i]
       other_box_collider = other_entity[components.box_collider]
 
       -- Checks ignore-list (should move this to spatial grid)

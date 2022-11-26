@@ -35,7 +35,7 @@ function spatial_grid:get_indices(position, size)
     local min_x_index, min_y_index = position.x - half_w, position.y - half_h
     local max_x_index, max_y_index = position.x + half_w, position.y + half_h
 
-    return math.round(min_x_index), math.round(min_y_index), math.ceil(max_x_index), math.ceil(max_y_index)
+    return math.floor(min_x_index), math.floor(min_y_index), math.ceil(max_x_index), math.ceil(max_y_index)
 end
 
 --[[
@@ -67,51 +67,37 @@ function spatial_grid:insert(entity)
     end
 end
 
+function spatial_grid:_get_objects_in_cells(entities_to_exclude, min_x_index, min_y_index, max_x_index, max_y_index)
+    local entity_list = {}
+    local entity = nil
+    for x = min_x_index, max_x_index do
+        for y = min_y_index, max_y_index do
+            local key = hash_key(x, y)
+            if set.contains(self.cells, key) then
+                for index = 1, #self.cells[key] do
+                    entity = self.cells[key][index]
+                    if not set.contains(entities_to_exclude, entity) and not table.contains_key(entity_list, entity) then
+                        table.insert(entity_list, entity)
+                    end
+                end
+            end
+        end
+    end
+    return entity_list
+end
+
 --[[
     check all the cells that the client occupies
     and return all the other clients that occupy the same 
 ]]
 function spatial_grid:find_near_entities(position, size, entities_to_exclude)
-    local min_x_index, min_y_index, max_x_index, max_y_index = self:get_indices(position, size)
-    local entity_set = {}
-    min_x_index = min_x_index - 1
-    min_y_index = min_y_index - 1
-
-    for x = min_x_index, max_x_index do
-        for y = min_y_index, max_y_index do
-            local key = hash_key(x, y)
-
-            if set.contains(self.cells, key) then
-                for index = 1, #self.cells[key] do
-                    if not set.contains(entities_to_exclude, self.cells[key][index]) then
-                        set.add(entity_set, self.cells[key][index])
-                    end
-                end
-            end
-        end
-    end
-
-    return entity_set
+    return self:_get_objects_in_cells(entities_to_exclude, self:get_indices(position, size))
 end
 
 function spatial_grid:find_at(position, size, entities_to_exclude)
     local min_x_index, min_y_index = math.floor(position.x), math.floor(position.y)
     local max_x_index, max_y_index = math.floor(position.x + size.x - 0.001), math.floor(position.y + size.y - 0.001)
-    local entity_set = {}
-    for x = min_x_index, max_x_index do
-        for y = min_y_index, max_y_index do
-            local key = hash_key(x, y)
-            if set.contains(self.cells, key) then
-                for index = 1, #self.cells[key] do
-                    if not set.contains(entities_to_exclude, self.cells[key][index]) then
-                        set.add(entity_set, self.cells[key][index])
-                    end
-                end
-            end
-        end
-    end
-
-    return entity_set
+    return self:_get_objects_in_cells(entities_to_exclude, min_x_index, min_y_index, max_x_index, max_y_index)
 end
 
 function spatial_grid:update(entity)

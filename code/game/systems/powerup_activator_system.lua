@@ -6,8 +6,8 @@ local player = require "code.game.entities.player"
 local audio = require "code.engine.audio"
 
 local powerup_activator_system = system(function(self, dt)
-  local position, size, box_collider, box_collider_position
-  local player_stats, found_entities
+  local position, size, box_collider, box_collider_position = nil, nil, nil, nil
+  local player_stats, found_entities, found_entity = nil, nil, nil
 
   self:for_each(function(entity)
     player_stats = entity[components.player_stats]
@@ -17,15 +17,16 @@ local powerup_activator_system = system(function(self, dt)
     box_collider_position = collision.get_collider_position(position, box_collider)
     found_entities = self:find_at(position, size, set.create({ entity }))
 
-    for other_entity, _ in pairs(found_entities) do
-      local found_box_collider = other_entity[components.box_collider]
+    for i = 1, #found_entities do
+      found_entity = found_entities[i]
+      local found_box_collider = found_entity[components.box_collider]
       if not found_box_collider then
         goto continue
       end
 
-      local found_position = other_entity[components.position]
+      local found_position = found_entity[components.position]
       local found_box_collider_position = collision.get_collider_position(found_position, found_box_collider)
-      local found_stats = other_entity[components.player_stats]
+      local found_stats = found_entity[components.player_stats]
 
       if not
           collision.is_touching(
@@ -34,10 +35,10 @@ local powerup_activator_system = system(function(self, dt)
         goto continue
       end
 
-      if (other_entity.archetype == powerup:get_archetype()) then
+      if (found_entity.archetype == powerup:get_archetype()) then
         audio:play("powerup.wav")
         table.add_numeric_unsafe(player_stats, found_stats)
-        other_entity:destroy()
+        found_entity:destroy()
       end
       ::continue::
     end
