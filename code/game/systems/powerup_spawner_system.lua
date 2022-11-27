@@ -33,19 +33,21 @@ end)
 
 function powerup_spawner_system:on_start()
   local powerup_table = {}
-  local size, count, powerup_data_count = 128, 0, 0
-  local powerup_data_count = #powerup_data
-  if math.is_odd(powerup_data_count) then --check odd and add padding
-    powerup_data_count = powerup_data_count + 1
-  end
+  local size = GAME.INNER_GRID_COL_COUNT * GAME.INNER_GRID_ROW_COUNT - GAME.SPAWN_TILE_COUNT
+  local count, powerup_data_count = 0, 0
+  local empty_padding = 1.5
+  --add padding for empty tiles, ie. datacount = 3, empty_padding == 2, powerup chance is 3/5
+  local powerup_data_count = #powerup_data + empty_padding
 
-  count = math.floor(size / powerup_data_count)
+
+  count = math.ceil(size / powerup_data_count)
   for i = 1, #powerup_data do
     table.insert_many(powerup_table, powerup_data[i], count)
   end
 
-  table.insert_many(powerup_table, -1, count)
+  table.insert_many(powerup_table, -1, count * empty_padding)
   table.shuffle(powerup_table)
+  assert(#powerup_table >= size)
   self.powerup_table = powerup_table
 end
 
