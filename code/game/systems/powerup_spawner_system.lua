@@ -1,17 +1,22 @@
 local components = require "code.engine.components"
 local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
-local wall = require "code.game.entities.walls.destructible_wall"
 local powerup = require "code.game.entities.powerups.powerup"
 local powerup_data = require "code.game.entities.powerups.powerup_data"
 
-local dead_query = entity_query.all(components.health, components.box_collider)
+local dead_query = entity_query.all(
+  components.animation,
+  components.box_collider,
+  components.health,
+  components.position,
+  components.size
+).none(components.input, components.damager, components.explosion_radius)
 
 local powerup_spawner_system = system(dead_query, function(self, dt)
   local powerup_table = self.powerup_table
   local data
   self:for_each(function(entity)
-    if (entity:is_alive()) then
+    if entity:is_alive() then
       goto continue
     end
 
@@ -23,7 +28,7 @@ local powerup_spawner_system = system(dead_query, function(self, dt)
     powerup.create(self:get_world(), entity[components.position], data)
 
     ::continue::
-  end, wall:get_archetype())
+  end)
 end)
 
 function powerup_spawner_system:on_start()

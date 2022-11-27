@@ -11,6 +11,7 @@ local camera = require "code.engine.camera"
 -- systems
 local player_attack_system = require "code.game.systems.player_attack_system"
 local player_death_system = require "code.game.systems.player_death_system"
+local destructible_wall_death_system = require "code.game.systems.destructible_wall_death_system"
 local input_system = require "code.game.systems.input_system"
 local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
@@ -66,6 +67,7 @@ local function generate_level_from_data(level_data)
   local level_type = love.math.random(0, number_of_level_types - 1)
   local player_index = 1
   local max_players = table.get_size(player_input.get_active_controllers())
+  local player_spawn_y_offset = 0.375
 
   background_image(level, "level/floor" .. level_type .. ".png", vector2(-8.5, -5.5))
 
@@ -84,7 +86,7 @@ local function generate_level_from_data(level_data)
       end
     else
       if char == level_data.player_tile and player_index <= max_players then
-        player(level, player_index, vector2(x, y), 5000 - player_index)
+        player(level, player_index, vector2(x, y - player_spawn_y_offset), 5000 - player_index)
         player_index = player_index + 1
       end
     end
@@ -97,10 +99,13 @@ local function load()
   camera:look_at(0.5, -0.5)
 
   level:add_system(input_system)
-  level:add_system(damager_system)
   level:add_system(player_death_system)
   level:add_system(destroy_timer_system)
+  level:add_system(damager_system)
   level:add_system(explosion_system)
+  level:add_system(destructible_wall_death_system)
+  level:add_system(powerup_spawner_system)
+  level:add_system(powerup_activator_system)
   level:add_system(input_velocity_system)
   level:add_system(animation_set_state_system)
   level:add_system(animate_system)
@@ -108,8 +113,6 @@ local function load()
   level:add_system(movement_system)
   level:add_system(player_attack_system)
   level:add_system(music_playlist_system)
-  level:add_system(powerup_spawner_system)
-  level:add_system(powerup_activator_system)
   level:add_system(gamestate_system)
 
   local level_data = level_generator.generate_level_data()

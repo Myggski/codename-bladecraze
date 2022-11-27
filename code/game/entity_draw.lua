@@ -5,7 +5,7 @@ local system = require "code.engine.ecs.system"
 local world_grid = require "code.engine.world_grid"
 
 local camera_filter = entity_query.filter(function(e)
-  return camera:is_outside_camera_view(e[components.position], e[components.size])
+  return camera:is_outside_camera_view(e[components.position], e[components.size]) and e:is_alive()
 end)
 
 local draw_query = entity_query
@@ -46,13 +46,18 @@ local entity_draw = system(draw_query, function(self)
 
     ::continue::
   end)
-  local entity
+  local entity, shader
   for i = 1, #render_order_array do
     entity = entity_array[render_order_array[i]]
     animation = entity[components.animation]
     position = entity[components.position]
     size = entity[components.size]
     sprite = entity[components.sprite]
+    shader = entity[components.shader]
+    if shader then
+      love.graphics.setShader(shader)
+    end
+
     if animation then
       current_animation = animation[animation.current_animation_state]
       draw(
@@ -72,6 +77,10 @@ local entity_draw = system(draw_query, function(self)
         world_grid:convert_to_world(position.x + size.x * 0.5),
         world_grid:convert_to_world(position.y + size.y * 0.5)
       )
+    end
+
+    if shader then
+      love.graphics.setShader()
     end
   end
 end)
