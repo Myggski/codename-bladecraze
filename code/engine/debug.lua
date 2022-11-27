@@ -1,4 +1,4 @@
-local gizmos = require "code.engine.debug.gizmos"
+local gizmos = require "code.engine.gizmos"
 
 local TIME_FORMAT = {
   SECONDS = { suffix = "s", conversion = 1 },

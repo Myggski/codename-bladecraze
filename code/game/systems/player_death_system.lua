@@ -26,7 +26,7 @@ local player_death_system = system(player_death_query, function(self, dt)
       end
 
       if velocity then
-        velocity = vector2.zero()
+        velocity.x, velocity.y = 0, 0
       end
     end
   end)

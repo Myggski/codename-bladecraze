@@ -1,14 +1,12 @@
-
-
 insulate("camera", function()
   require "spec.love_setup"
-  local camera = require "code.engine.camera.camera"
+  local camera = require "code.engine.camera"
   local vector2 = require "code.engine.vector2"
   local world_grid = require "code.engine.world_grid"
 
   local ZOOM_MAX = -3
   local ZOOM_MIN = 0
-  
+
   local default_scale = camera.scale
   local default_zoom = camera.zoom
 
@@ -347,7 +345,7 @@ insulate("camera", function()
         it("should not be outside of camera view", function()
           local world_x, world_y = world_grid:world_to_grid(camera:get_screen_game_half_size())
 
-          assert.is.falsy(camera:is_outside_camera_view(vector2(world_x, world_y), vector2(1, 1 )))
+          assert.is.falsy(camera:is_outside_camera_view(vector2(world_x, world_y), vector2(1, 1)))
         end)
       end)
 
@@ -383,7 +381,7 @@ insulate("camera", function()
       assert.stub(love.graphics.setCanvas).was.called(1)
       assert.stub(love.graphics.setCanvas).was.called_with(camera.canvas_game)
       assert.stub(love.graphics.clear).was.called(1)
-      assert.stub(love.graphics.clear).was.called_with(0.18039215686, 0.13333333333, 0.18431372549, 1)
+      assert.stub(love.graphics.clear).was.called_with(camera.clear_color)
       assert.stub(love.graphics.push).was.called(1)
       assert.stub(love.graphics.translate).was.called(2)
       assert.stub(love.graphics.translate).was.called_with(math.round(half_width), math.round(half_height))

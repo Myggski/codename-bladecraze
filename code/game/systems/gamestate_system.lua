@@ -1,7 +1,7 @@
 local components = require "code.engine.components"
 local entity_query = require "code.engine.ecs.entity_query"
 local system = require "code.engine.ecs.system"
-local gizmos = require "code.engine.debug.gizmos"
+local gizmos = require "code.engine.gizmos"
 local level_manager = require "code.engine.level_manager"
 local button = require "code.game.ui.button"
 local vector2 = require "code.engine.vector2"
