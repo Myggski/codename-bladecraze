@@ -3,9 +3,11 @@ entity_query.__index = entity_query
 
 -- Seperates the query-list from components and filters
 local function separate_query_type(list)
-  local components, filters = {}, {}
+  local components, filters, item = {}, {}, nil
 
-  for _, item in pairs(list) do
+  for index = 1, #list do
+    item = list[index]
+
     if item.is_component_type and not item.is_component then
       table.insert(components, item)
     elseif item.is_filter then

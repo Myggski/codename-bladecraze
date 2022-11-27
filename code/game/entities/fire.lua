@@ -24,11 +24,11 @@ local function create_fire(world, position)
       size = vector2(0.4, 0.4),
     }),
     components.damager(),
-    components.destroy_timer(0.8),
+    components.destroy_timer(0.6),
     components.position(spawn_position),
     components.size(vector2.one()),
     components.animation({
-      z_index = -1000,
+      z_index = MIN_Z_INDEX,
       current_animation_state = ANIMATION_STATE_TYPES.IDLE,
       [ANIMATION_STATE_TYPES.IDLE] = animations.new_animation(idle,
         { 0, 0, 16, 16, 8 }

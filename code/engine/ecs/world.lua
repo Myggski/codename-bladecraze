@@ -202,8 +202,8 @@ function world_type:destroy()
     end
   end
 
-  for _, system in pairs(self._systems) do
-    system:destroy()
+  for index = #self._system_keys, 1, -1 do
+    self._systems[self._system_keys[index]]:destroy()
   end
 
   self._systems = {}

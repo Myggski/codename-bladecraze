@@ -11,6 +11,7 @@ local camera = require "code.engine.camera"
 -- systems
 local player_attack_system = require "code.game.systems.player_attack_system"
 local player_death_system = require "code.game.systems.player_death_system"
+local destructible_wall_death_system = require "code.game.systems.destructible_wall_death_system"
 local input_system = require "code.game.systems.input_system"
 local input_velocity_system = require "code.game.systems.input_velocity_system"
 local movement_system = require "code.game.systems.movement_system"
@@ -97,10 +98,13 @@ local function load()
   camera:look_at(0.5, -0.5)
 
   level:add_system(input_system)
-  level:add_system(damager_system)
   level:add_system(player_death_system)
   level:add_system(destroy_timer_system)
+  level:add_system(damager_system)
   level:add_system(explosion_system)
+  level:add_system(destructible_wall_death_system)
+  level:add_system(powerup_spawner_system)
+  level:add_system(powerup_activator_system)
   level:add_system(input_velocity_system)
   level:add_system(animation_set_state_system)
   level:add_system(animate_system)
@@ -108,8 +112,6 @@ local function load()
   level:add_system(movement_system)
   level:add_system(player_attack_system)
   level:add_system(music_playlist_system)
-  level:add_system(powerup_spawner_system)
-  level:add_system(powerup_activator_system)
   level:add_system(gamestate_system)
 
   local level_data = level_generator.generate_level_data()

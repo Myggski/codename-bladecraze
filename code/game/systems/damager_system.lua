@@ -52,7 +52,7 @@ local destroy_timer_system = system(damager_query, function(self, dt)
       else
         if found_health <= 0 and found_animation[ANIMATION_STATE_TYPES.DEAD] and
             not (found_animation.current_animation_state == ANIMATION_STATE_TYPES.DEAD) then
-          found_entity[components.destroy_timer] = 30
+          found_entity[components.destroy_timer] = found_animation[ANIMATION_STATE_TYPES.DEAD].duration
         end
 
         found_entity[components.health] = found_health

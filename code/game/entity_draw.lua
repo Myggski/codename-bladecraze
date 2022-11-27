@@ -5,7 +5,7 @@ local system = require "code.engine.ecs.system"
 local world_grid = require "code.engine.world_grid"
 
 local camera_filter = entity_query.filter(function(e)
-  return camera:is_outside_camera_view(e[components.position], e[components.size])
+  return camera:is_outside_camera_view(e[components.position], e[components.size]) and e:is_alive()
 end)
 
 local draw_query = entity_query

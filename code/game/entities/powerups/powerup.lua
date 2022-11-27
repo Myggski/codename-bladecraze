@@ -9,6 +9,7 @@ local powerup_archetype = archetype.setup(
   components.box_collider,
   components.player_stats,
   components.position,
+  components.health,
   components.size
 )
 
@@ -24,6 +25,7 @@ local function create_powerup(world, position, data)
     }),
     components.player_stats(data.stats),
     components.position(spawn_position),
+    components.health(1),
     components.size(vector2.one()),
     components.animation({
       z_index = -1000,

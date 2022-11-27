@@ -1,17 +1,19 @@
-local dissolve = [[
+local dissolve = [[  
   uniform float dissolve_value;
   uniform Image noise_texture;
   uniform vec2 resolution;
 
   vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
   {
-      vec2 uv = pixel_coords / resolution;
       vec4 current_pixel = Texel(texture, texture_coords);
-      vec4 noise_pixel = Texel(noise_texture, uv);
+      vec4 noise_pixel = Texel(noise_texture, texture_coords);
+      float dissolve_pixel = noise_pixel.r - dissolve_value;
 
-      if (noise_pixel.b - dissolve_value <= 0) { discard; }
-      if (noise_pixel.b - dissolve_value < 0.032) { current_pixel = vec4(0.701, 0.219, 0.192, current_pixel.w); }
-      if (noise_pixel.b - dissolve_value < 0.016) { current_pixel = vec4(0.917, 0.309, 0.211, current_pixel.w); }
+      if (dissolve_pixel <= 0) { discard; }
+      if (dissolve_pixel < 0.060) { current_pixel = vec4(0.701, 0.219, 0.192, current_pixel.w); }
+      if (dissolve_pixel < 0.030) { current_pixel = vec4(0.917, 0.309, 0.211, current_pixel.w); }
+
+      current_pixel = mix(current_pixel, vec4(0.701, 0.219, 0.192, current_pixel.a), dissolve_value);
 
       return current_pixel;
   }

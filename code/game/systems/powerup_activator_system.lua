@@ -35,7 +35,7 @@ local powerup_activator_system = system(function(self, dt)
         goto continue
       end
 
-      if (found_entity.archetype == powerup:get_archetype()) then
+      if (found_entity.archetype == powerup.get_archetype()) then
         audio:play("powerup.wav")
         table.add_numeric_unsafe(player_stats, found_stats)
         found_entity:destroy()
@@ -43,7 +43,7 @@ local powerup_activator_system = system(function(self, dt)
       ::continue::
     end
 
-  end, player:get_archetype())
+  end, player.get_archetype())
 end)
 
 return powerup_activator_system
