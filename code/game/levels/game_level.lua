@@ -67,6 +67,7 @@ local function generate_level_from_data(level_data)
   local level_type = love.math.random(0, number_of_level_types - 1)
   local player_index = 1
   local max_players = table.get_size(player_input.get_active_controllers())
+  local player_spawn_y_offset = 0.375
 
   background_image(level, "level/floor" .. level_type .. ".png", vector2(-8.5, -5.5))
 
@@ -85,7 +86,7 @@ local function generate_level_from_data(level_data)
       end
     else
       if char == level_data.player_tile and player_index <= max_players then
-        player(level, player_index, vector2(x, y), 5000 - player_index)
+        player(level, player_index, vector2(x, y - player_spawn_y_offset), 5000 - player_index)
         player_index = player_index + 1
       end
     end
