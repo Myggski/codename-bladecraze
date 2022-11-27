@@ -1,5 +1,13 @@
 # codename-bladecraze
-This project was made to get a better knowledge for Lua, and having fun at the same time. That's why we decided to make a Bomberman clone in LÖVE2D. 
+This project, which is a clone of the classic game Bomberman, was created in Lua using the Löve2D game framework. The objective of this local 2-4 player multiplayer game is to be the last person standing and eliminate all other players.
 
-The project is made by Tomas Wallin ([@Myggski](https://github.com/Myggski)) and David Bång ([@Sodaro](https://github.com/Sodaro)).
+## Special Thanks
 
+The music that we use in this project is created by [Zane Little](https://opengameart.org/users/zane-little-music) and thanks to him we were able to significantly enhance the game's feel.
+
+We also use the Silver font by [Poppy](https://poppyworks.itch.io/silver) which improves the text of our buttons.
+
+## Contributors
+
+- Tomas Wallin ([@Myggski](https://github.com/Myggski)) 
+- David Bång ([@Sodaro](https://github.com/Sodaro)).
