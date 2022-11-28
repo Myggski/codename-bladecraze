@@ -34,10 +34,10 @@ local health_component = component(1)
 local player_data_component = component({ player_id = -1, controller_type = CONTROLLER_TYPES.GAMEPAD })
 local player_stats_component = component({
   explosion_duration = 2,
-  bomb_spawn_delay = 0.1,
+  bomb_spawn_delay = 0.25,
   [UPGRADE_KEYS.BOMB_RADIUS] = 1, -- Center and 1 neighbor
   [UPGRADE_KEYS.BOMBS] = 1,
-  [UPGRADE_KEYS.SPEED] = 200
+  [UPGRADE_KEYS.SPEED] = 100
 })
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()

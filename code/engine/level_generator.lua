@@ -6,8 +6,8 @@ local destructible_tiles = { '1', '2', '3' }
 local player_tile = 'P'
 
 local function generate_level_data()
-  local width, height, content = 17, 9, ""
-  local max_tiles = width * height - 12
+  local width, height, content = GAME.OUTER_GRID_COL_COUNT, GAME.OUTER_GRID_ROW_COUNT, ""
+  local max_tiles = GAME.INNER_GRID_COL_COUNT * GAME.INNER_GRID_ROW_COUNT - GAME.SPAWN_TILE_COUNT
   local max_percentage_skippable_tiles = 0.2
   local chance_of_empty = 0.1
   local skippable_tile_count = math.floor(max_percentage_skippable_tiles * max_tiles)
