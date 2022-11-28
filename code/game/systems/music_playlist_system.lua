@@ -23,11 +23,11 @@ end)
 
 function music_playlist_system:on_start()
   self.playlist = {
-    "music/game/buddy_power.wav",
-    "music/game/extradimensional_portalhopping.wav",
-    "music/game/moms_workout_cd.wav",
-    "music/game/squashin_bugs_fixed.wav",
-    "music/game/stumble_around.wav"
+    "music/game/buddy_power.mp3",
+    "music/game/extradimensional_portalhopping.mp3",
+    "music/game/moms_workout_cd.mp3",
+    "music/game/squashin_bugs_fixed.mp3",
+    "music/game/stumble_around.mp3"
   }
 
   play_next(self)

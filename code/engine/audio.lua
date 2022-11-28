@@ -15,7 +15,7 @@ function audio:_get_volume(audio_type)
 end
 
 function audio:play(path, pitch, audio_type)
-  local sound = asset_manager:get_audio(path):clone()
+  local sound = asset_manager:get_audio(path, AUDIO_TYPES.SFX and "static" or "stream"):clone()
 
   sound:setPitch(pitch or 1)
   sound:setVolume(self:_get_volume(audio_type or AUDIO_TYPES.SFX))
