@@ -86,10 +86,6 @@ function love.keypressed(key, scancode, is_repeat)
   if key == "escape" then
     love.event.quit()
   end
-
-  if key == "f2" then --set to whatever key you want to use
-    os.execute("cls")
-  end
 end
 
 function love.keyreleased(key, scancode)
