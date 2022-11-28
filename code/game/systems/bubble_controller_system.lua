@@ -1,8 +1,8 @@
 local bubble_controller = require "code.game.entities.bubble_controller"
+local player = require "code.game.entities.player"
 local helper = require "code.game.systems.bubble_controller_system_helper"
 local player_input = require "code.game.player_input"
 local system = require "code.engine.ecs.system"
-
 
 -- Is being called every frame
 local bubble_controller_system = system(function(self, dt)
@@ -12,8 +12,11 @@ local bubble_controller_system = system(function(self, dt)
   local expected_number_of_bubbles = number_available_joysticks + 1 - number_active_controllers
 
   -- Remove all bubbles if max players is reached
-  if number_active_controllers >= GAME.MAX_PLAYERS then
-    helper.destroy_all(entities)
+  if #self:to_list(player.get_archetype()) >= GAME.MAX_PLAYERS then
+    if #entities > 0 then
+      helper.destroy_all(entities)
+    end
+
     return
   end
 
@@ -22,6 +25,7 @@ local bubble_controller_system = system(function(self, dt)
   if #entities < expected_number_of_bubbles then
     helper.create_bubbles(self:get_world(), entities, number_available_joysticks, expected_number_of_bubbles)
   elseif #entities > expected_number_of_bubbles then
+    print("ADD PLAYER")
     helper.destroy_bubbles(self:get_world(), entities, expected_number_of_bubbles, true)
   end
 end)
