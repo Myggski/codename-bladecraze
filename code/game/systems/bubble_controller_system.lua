@@ -25,7 +25,6 @@ local bubble_controller_system = system(function(self, dt)
   if #entities < expected_number_of_bubbles then
     helper.create_bubbles(self:get_world(), entities, number_available_joysticks, expected_number_of_bubbles)
   elseif #entities > expected_number_of_bubbles then
-    print("ADD PLAYER")
     helper.destroy_bubbles(self:get_world(), entities, expected_number_of_bubbles, true)
   end
 end)
