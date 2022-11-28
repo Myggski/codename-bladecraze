@@ -37,7 +37,7 @@ local player_stats_component = component({
   bomb_spawn_delay = 0.25,
   [UPGRADE_KEYS.BOMB_RADIUS] = 1, -- Center and 1 neighbor
   [UPGRADE_KEYS.BOMBS] = 1,
-  [UPGRADE_KEYS.SPEED] = 75
+  [UPGRADE_KEYS.SPEED] = 100
 })
 local object_pool_component = component(1000) -- Number of entites to pre-spawn
 local position_component = component()
