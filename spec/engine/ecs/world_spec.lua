@@ -2,6 +2,8 @@ insulate("world", function()
   require "spec.love_setup"
   local world = require "code.engine.ecs.world"
   local system = require "code.engine.ecs.system"
+  local components = require "code.engine.components"
+  local vector2 = require "code.engine.vector2"
 
   local level_one
 
@@ -17,19 +19,19 @@ insulate("world", function()
 
   describe("entity", function()
     it("should create an entity and group it to a the right archetype", function()
-      local new_entity = level_one:entity()
+      local new_entity = level_one:entity(components.position(vector2.zero()), components.size(vector2.zero()))
 
       assert.is_not_equal(level_one._entity_data[1].entities[1], nil)
       assert.is_equal(level_one._entity_data[1].entities[1], new_entity)
     end)
 
     it("should reuse an id of a destroyed entity when created", function()
-      local new_entity = level_one:entity()
+      local new_entity = level_one:entity(components.position(vector2.zero()), components.size(vector2.zero()))
 
       assert.is_truthy(new_entity:get_id() == 1)
 
       level_one:destroy()
-      local another_entity = level_one:entity()
+      local another_entity = level_one:entity(components.position(vector2.zero()), components.size(vector2.zero()))
 
       assert.is_truthy(new_entity:get_id() == -1)
       assert.is_truthy(another_entity:get_id() == 1)
@@ -38,7 +40,7 @@ insulate("world", function()
 
   describe("destroy", function()
     it("should remove all systems and entities from the world but keeps the archetypes", function()
-      level_one:entity()
+      level_one:entity(components.position(vector2.zero()), components.size(vector2.zero()))
       level_one:add_system(system())
 
       assert.is_truthy(#level_one._entity_data == 1)

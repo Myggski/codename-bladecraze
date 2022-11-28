@@ -3,7 +3,7 @@ local player = require "code.game.entities.player"
 local system = require "code.engine.ecs.system"
 
 local input_velocity_system = system(nil, function(self, dt)
-  local input, acceleration, velocity = nil, nil, nil
+  local input, acceleration, velocity, stats = nil, nil, nil, nil
 
   self:for_each(function(entity)
     input = entity[components.input]

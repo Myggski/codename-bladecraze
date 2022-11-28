@@ -1,5 +1,4 @@
 local vector2 = require "code.engine.vector2"
-local gizmos = require "code.engine.debug.gizmos"
 
 local function is_inside(x, y, position, size)
   return position.x <= x and position.y <= y and (position.x + size.x) >= x and (position.y + size.y) >= y
