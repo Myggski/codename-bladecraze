@@ -1,4 +1,4 @@
-# codename-bladecraze
+# Bömberbots (codename-bladecraze)
 This project, which is a clone of the classic game Bomberman, was created in Lua using the Löve2D game framework. The objective of this local 2-4 player multiplayer game is to be the last person standing and eliminate all other players.
 
 ## How To Run
