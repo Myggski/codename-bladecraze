@@ -19,12 +19,12 @@ local draw = love.graphics.draw
 
 local y_segment = 10000 --avoid conflicts between z indices and y positions
 local z_offset = 4999
-local min_x_pos = 8;
 
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation, sort_value, component
   local render_order_array, entity_array = {}, {}
-
+  local game_width = GAME.GAME_WIDTH
+  local game_half_width = game_width / 2
   self:for_each(function(entity)
     animation = entity[components.animation]
     position = entity[components.position]
@@ -34,15 +34,14 @@ local entity_draw = system(draw_query, function(self)
     component = animation or sprite
     local z = component.z_index or 0
     local y = math.round(position.y)
-    local x = world_grid:convert_to_world(position.x) + GAME.GAME_WIDTH / 2 --get screen position in range 0:GAME_WIDTH while inside screen
-    x = math.clamp01(x / GAME.GAME_WIDTH) --safety clamp, not needed if object is culled outside screen
+    local x = world_grid:convert_to_world(position.x) + game_half_width --get screen position in range 0:GAME_WIDTH while inside screen
+    x = math.clamp01(x / game_width) --safety clamp, not needed if object is culled outside screen
     --[[
       x is stored in decimal points
       z is stored in the first 4 integer digits
       y is stored in the 5 digit and greater
       ]]
-    x is stored in decimal, y is
-    sort_value = x + y * y_segment + z + z_offset 
+    sort_value = x + y * y_segment + z + z_offset
 
     if binary_search(render_order_array, sort_value, 1, #render_order_array) > -1 then
       goto continue
