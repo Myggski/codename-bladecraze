@@ -17,9 +17,9 @@ local binary_insert = table.binary_insert
 local binary_search = table.binary_search
 local draw = love.graphics.draw
 
-local x_segment = 0.01 --decimals are used to avoid conflicts on same row
 local y_segment = 10000 --avoid conflicts between z indices and y positions
 local z_offset = 4999
+local min_x_pos = 8;
 
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation, sort_value, component
@@ -33,9 +33,16 @@ local entity_draw = system(draw_query, function(self)
 
     component = animation or sprite
     local z = component.z_index or 0
-    local y = math.round(position.y) -- It was floor'ed before
-    local x = math.round(position.x) -- This wasn't anything before
-    sort_value = x * x_segment + y * y_segment + z + z_offset
+    local y = math.round(position.y)
+    local x = world_grid:convert_to_world(position.x) + GAME.GAME_WIDTH / 2 --get screen position in range 0:GAME_WIDTH while inside screen
+    x = math.clamp01(x / GAME.GAME_WIDTH) --safety clamp, not needed if object is culled outside screen
+    --[[
+      x is stored in decimal points
+      z is stored in the first 4 integer digits
+      y is stored in the 5 digit and greater
+      ]]
+    x is stored in decimal, y is
+    sort_value = x + y * y_segment + z + z_offset 
 
     if binary_search(render_order_array, sort_value, 1, #render_order_array) > -1 then
       goto continue
