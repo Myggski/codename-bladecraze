@@ -22,7 +22,7 @@ local z_offset = 4999
 
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation, sort_value, component
-  local render_order_array, entity_array = {}, {}
+  local render_order_array, entity_table = {}, {}
   local game_width = GAME.GAME_WIDTH
   local game_half_width = game_width / 2
   self:for_each(function(entity)
@@ -48,13 +48,13 @@ local entity_draw = system(draw_query, function(self)
     end
 
     binary_insert(render_order_array, sort_value)
-    entity_array[sort_value] = entity
+    entity_table[sort_value] = entity
 
     ::continue::
   end)
   local entity, shader
   for i = 1, #render_order_array do
-    entity = entity_array[render_order_array[i]]
+    entity = entity_table[render_order_array[i]]
     animation = entity[components.animation]
     position = entity[components.position]
     size = entity[components.size]
