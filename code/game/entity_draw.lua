@@ -17,14 +17,14 @@ local binary_insert = table.binary_insert
 local binary_search = table.binary_search
 local draw = love.graphics.draw
 
-local x_segment = 0.01 --decimals are used to avoid conflicts on same row
 local y_segment = 10000 --avoid conflicts between z indices and y positions
 local z_offset = 4999
 
 local entity_draw = system(draw_query, function(self)
   local animation, position, size, sprite, current_animation, sort_value, component
-  local render_order_array, entity_array = {}, {}
-
+  local render_order_array, entity_table = {}, {}
+  local game_width = GAME.GAME_WIDTH
+  local game_half_width = game_width / 2
   self:for_each(function(entity)
     animation = entity[components.animation]
     position = entity[components.position]
@@ -33,22 +33,28 @@ local entity_draw = system(draw_query, function(self)
 
     component = animation or sprite
     local z = component.z_index or 0
-    local y = math.round(position.y) -- It was floor'ed before
-    local x = math.round(position.x) -- This wasn't anything before
-    sort_value = x * x_segment + y * y_segment + z + z_offset
+    local y = math.round(position.y)
+    local x = world_grid:convert_to_world(position.x) + game_half_width --get screen position in range 0:GAME_WIDTH while inside screen
+    x = math.clamp01(x / game_width) --safety clamp, not needed if object is culled outside screen
+    --[[
+      x is stored in decimal points
+      z is stored in the first 4 integer digits
+      y is stored in the 5 digit and greater
+      ]]
+    sort_value = x + y * y_segment + z + z_offset
 
     if binary_search(render_order_array, sort_value, 1, #render_order_array) > -1 then
       goto continue
     end
 
     binary_insert(render_order_array, sort_value)
-    entity_array[sort_value] = entity
+    entity_table[sort_value] = entity
 
     ::continue::
   end)
   local entity, shader
   for i = 1, #render_order_array do
-    entity = entity_array[render_order_array[i]]
+    entity = entity_table[render_order_array[i]]
     animation = entity[components.animation]
     position = entity[components.position]
     size = entity[components.size]
